@@ -126,7 +126,7 @@ class PeerNetWork {
           }
         }
       };
-      console.log('onPeerPing__ peerInfo.ports.ctrl=<',peerInfo.ports.ctrl,'>');
+      //console.log('onPeerPing__ peerInfo.ports.ctrl=<',peerInfo.ports.ctrl,'>');
       let msgSign = this.crypto_.sign(msg);
       const bufMsg = Buffer.from(JSON.stringify(msgSign));
       this.client.send(bufMsg, peerInfo.ports.ctrl.port, peerInfo.host, (err) => {
