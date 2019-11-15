@@ -3,7 +3,8 @@ const os = require('os');
 const dgram = require("dgram");
 
 class PeerMachine {
-  constructor() {
+  constructor(config) {
+    this.config_ = config;
   }
   readMachienIp() {
     const ips = [];
@@ -24,6 +25,11 @@ class PeerMachine {
   filtoutLocalLink__(ips) {
     let outIps = [];
     for (const ip of ips) {
+      if(!this.config_.localhost) {
+        if(ip === '::1') {
+          continue;
+        }
+      }
       //console.log('filtoutLocalLink__ ip=<',ip,'>');
       const isLocalLink = ip.startsWith('fe80::');
       //console.log('filtoutLocalLink__ isLocalLink=<',isLocalLink,'>');

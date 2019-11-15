@@ -8,7 +8,7 @@ class PeerNetWork {
     this.config = config;
     this.serverData = dgram.createSocket("udp6");
     this.client = dgram.createSocket("udp6");
-    this.machine_ = new PeerMachine();
+    this.machine_ = new PeerMachine(config);
 
     let self = this;
 

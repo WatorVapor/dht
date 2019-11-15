@@ -2,6 +2,7 @@ const path = require('path');
 //console.log(':: __filename=<',__filename,'>');
 const repsPath = __dirname + '/node_data.' + path.parse(__filename).name;;
 const config = {
+  localhost:true,
   listen:{
     ctrl:{
       port:8890
@@ -10,7 +11,6 @@ const config = {
       port:8891
     }
   },
-  local:true
   entrance:[
     {
       host:'::1',
