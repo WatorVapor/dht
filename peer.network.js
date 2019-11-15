@@ -2,12 +2,14 @@
 const os = require('os');
 const dgram = require("dgram");
 const PeerMachine = require('./peer.machine.js');
+const PeerCrypto = require('./peer.crypto.js');
 
 
 class PeerNetWork {
   constructor(config) {
     this.config = config;
     this.peers = {};
+    this.crypto_ = new PeerCrypto(config);
     this.serverCtrl = dgram.createSocket("udp6");
     this.client = dgram.createSocket("udp6");
     this.machine_ = new PeerMachine(config);
@@ -35,13 +37,13 @@ class PeerNetWork {
       const msgJson = JSON.parse(msg.toString('utf-8'));
       //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
       //console.log('onMessageCtrlServer__ this.config=<',this.config,'>');
-      const good = this.security.verify(msgJson);
+      const good = this.crypto_.verify(msgJson);
       //console.log('onMessageCtrlServer__ good=<',good,'>');
       if (!good) {
         console.log('onMessageCtrlServer__ msgJson=<', msgJson, '>');
         return;
       }
-      const rPeerId = this.security.calcID(msgJson);
+      const rPeerId = this.crypto_.calcID(msgJson);
       if (msgJson.ctrl) {
         if (msgJson.ctrl.entry) {
           const addressIndex = this.ip__.indexOf(rinfo.address);
@@ -100,7 +102,7 @@ class PeerNetWork {
         entrance: this.peers
       }
     };
-    let msgSign = this.security.sign(msg);
+    let msgSign = this.crypto_.sign(msg);
     const bufMsg = Buffer.from(JSON.stringify(msgSign));
     this.client.send(bufMsg, ports.ctrl, rAddress, (err) => {
       //console.log('doClientEntry__ err=<',err,'>');
@@ -111,7 +113,6 @@ class PeerNetWork {
     this.peers = Object.assign(this.peers, entrance);
     //console.log('onEntranceNode__ this.peers=<',this.peers,'>');
     try {
-      setTimeout(this.onReady, 0);
     } catch (e) {
       console.log('onEntranceNode__ e=<', e, '>');
     }
@@ -142,7 +143,7 @@ class PeerNetWork {
           }
         }
       };
-      let msgSign = this.security.sign(msg);
+      let msgSign = this.crypto_.sign(msg);
       const bufMsg = Buffer.from(JSON.stringify(msgSign));
       this.client.send(bufMsg, peerInfo.ports.ctrl, peerInfo.host, (err) => {
         //console.log('onPeerPing__ err=<',err,'>');
@@ -190,7 +191,7 @@ class PeerNetWork {
         },
         listen: listen
       };
-      let msgSign = this.security.sign(msg);
+      let msgSign = this.crypto_.sign(msg);
       const bufMsg = Buffer.from(JSON.stringify(msgSign));
       this.client.send(bufMsg, address.port, address.host, (err) => {
         //console.log('doClientEntry__ err=<',err,'>');
@@ -208,7 +209,7 @@ class PeerNetWork {
           ping: true
         }
       };
-      let msgSign = this.security.sign(msg);
+      let msgSign = this.crypto_.sign(msg);
       const bufMsg = Buffer.from(JSON.stringify(msgSign));
       this.client.send(bufMsg, peerInfo.ports.ctrl, peerInfo.host, (err) => {
         //console.log('doClientPing__ err=<',err,'>');
@@ -221,7 +222,7 @@ class PeerNetWork {
       //console.log('eachRemotePeer__ peer=<',peer,'>');
       let peerInfo = this.peers[peer];
       //console.log('eachRemotePeer__ peerInfo=<',peerInfo,'>');
-      if (peer !== this.security.idB58) {
+      if (peer !== this.crypto_.idB58) {
         fn(peer, peerInfo);
       }
     }
@@ -230,17 +231,12 @@ class PeerNetWork {
   onListenCtrlServer(evt) {
     const address = this.serverCtrl.address();
     console.log('onListenCtrlServer address=<', address, '>');
+    const self = this;
+    setTimeout(()=>{
+      self.doClientEntry__(self.config.entrance, self.config.listen);
+    },0);
   };
-  onListenDataServer(evt) {
-    const address = this.serverData.address();
-    console.log('onListenDataServer address=<', address, '>');
-  };
 
-
-  ///
-  onReady() {
-
-  }
 }
 
 module.exports = PeerNetWork;
