@@ -70,8 +70,6 @@ class PeerNetWork {
     }
   };
 
-
-
   onNewNodeEntry__(id, rAddress, ports) {
     //console.log('onNewNodeEntry__ id=<',id,'>');
     //console.log('onNewNodeEntry__ rAddress=<',rAddress,'>');
@@ -81,7 +79,7 @@ class PeerNetWork {
       host: rAddress,
       ports: ports
     };
-    console.log('onNewNodeEntry__ this.peers=<', this.peers, '>');
+    //console.log('onNewNodeEntry__ this.peers=<', this.peers, '>');
 
     let msg = {
       ctrl: {
@@ -91,20 +89,18 @@ class PeerNetWork {
     let msgSign = this.crypto_.sign(msg);
     const bufMsg = Buffer.from(JSON.stringify(msgSign));
     this.client.send(bufMsg, ports.ctrl.port, rAddress, (err) => {
-      //console.log('doClientEntry__ err=<',err,'>');
+      console.log('onNewNodeEntry__ err=<',err,'>');
     });
   }
   onEntranceNode__(entrance) {
     //console.log('onEntranceNode__ entrance=<',entrance,'>');
     this.peers = Object.assign(this.peers, entrance);
-    //console.log('onEntranceNode__ this.peers=<',this.peers,'>');
+    console.log('onEntranceNode__ this.peers=<',this.peers,'>');
     try {
     } catch (e) {
       console.log('onEntranceNode__ e=<', e, '>');
     }
   }
-
-
 
   onPeerPing__(msgJson) {
     //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
