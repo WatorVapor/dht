@@ -108,7 +108,9 @@ class PeerCrypto {
     //console.log('PeerCrypto::calcKeyB58__ this.id =<',this.id ,'>');
     const keyRipemd = new RIPEMD160().update(this.keyMaster.pubKeyHex).digest('hex');
     const keyBuffer = Buffer.from(keyRipemd,'hex');
+    //console.log('PeerCrypto::calcKeyB58__ keyBuffer =<',keyBuffer ,'>');
     this.idB58 = bs58.encode(keyBuffer);
+    this.address = keyBuffer;
   }
 }
 module.exports = PeerCrypto;

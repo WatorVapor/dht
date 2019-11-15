@@ -12,17 +12,13 @@ const config = {
   },
   entrance:[
     {
-      host:'::1',
+      host:'2400:2412:13e0:9d00:2ce:39ff:fece:132',
       port:8890
     },
     {
-      host:'::1',
-      port:8895
-    },
-    {
-      host:'::1',
-      port:8897
-    },
+      host:'2400:2412:13e0:9d00:8639:beff:fe67:dcc9',
+      port:8890
+    }
   ],
   reps: {
     path:repsPath
