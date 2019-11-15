@@ -1,3 +1,6 @@
+const path = require('path');
+//console.log(':: __filename=<',__filename,'>');
+const repsPath = __dirname + '/node_data.' + path.parse(__filename).name;;
 const config = {
   listen:{
     ctrl:{
@@ -22,7 +25,7 @@ const config = {
     },
   ],
   reps: {
-    path:__dirname + '/node_data_1'
+    path:repsPath
   }
 };
 module.exports = config;
