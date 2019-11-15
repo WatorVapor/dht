@@ -1,7 +1,11 @@
 const config = {
   listen:{
-    ctrl:8890,
-    data:8891
+    ctrl:{
+      port:8890
+    },
+    data:{
+      port:8891
+    }
   },
   entrance:[
     {

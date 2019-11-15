@@ -1,6 +1,8 @@
 'use strict';
 const os = require('os');
 const dgram = require("dgram");
+const PeerMachine = require('./peer.machine.js');
+
 
 class PeerNetWork {
   constructor(config) {
@@ -8,6 +10,7 @@ class PeerNetWork {
     this.peers = {};
     this.serverCtrl = dgram.createSocket("udp6");
     this.client = dgram.createSocket("udp6");
+    this.machine_ = new PeerMachine();
 
     let self = this;
     this.serverCtrl.on("listening", () => {
@@ -16,14 +19,13 @@ class PeerNetWork {
     this.serverCtrl.on("message", (msg, rinfo) => {
       self.onMessageCtrlServer__(msg, rinfo)
     });
-    this.serverCtrl.bind(config.listen.ctrl);
+    this.serverCtrl.bind(config.listen.ctrl.port);
   }
   host() {
-    this.readMachienIp__();
-    return this.ip__;
+    return this.machine_.readMachienIp();
   }
   port() {
-    return this.config.listen.ctrl;
+    return this.config.listen.ctrl.port;
   }
 
   onMessageCtrlServer__(msg, rinfo) {
@@ -176,21 +178,6 @@ class PeerNetWork {
     }
     this.subscribers[subscribe.address][rPeer][subscribe.topic] = true;
     //console.log('onSubscribe__ this.subscribers=<',this.subscribers,'>');
-  }
-
-  readMachienIp__() {
-    this.ip__ = [];
-    const interfaces = os.networkInterfaces();
-    //console.log('readMachienIp__ interfaces=<',interfaces,'>');
-    for (const [dev, infos] of Object.entries(interfaces)) {
-      //console.log('onListenDataServer dev=<',dev,'>');
-      //console.log('onListenDataServer infos=<',infos,'>');
-      for (const info of infos) {
-        if (info.family === 'IPv6') {
-          this.ip__.push(info.address);
-        }
-      }
-    }
   }
 
   doClientEntry__(entrance, listen) {

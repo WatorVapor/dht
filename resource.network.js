@@ -1,12 +1,14 @@
 'use strict';
 const os = require('os');
 const dgram = require("dgram");
+const PeerMachine = require('./peer.machine.js');
 
 class PeerNetWork {
   constructor(config) {
     this.config = config;
     this.serverData = dgram.createSocket("udp6");
     this.client = dgram.createSocket("udp6");
+    this.machine_ = new PeerMachine();
 
     let self = this;
 
@@ -16,14 +18,13 @@ class PeerNetWork {
     this.serverData.on("message", (msg, rinfo) => {
       self.onMessageDataServer__(msg, rinfo)
     });
-    this.serverData.bind(config.listen.data);
+    this.serverData.bind(config.listen.data.port);
   }
   host() {
-    this.readMachienIp__();
-    return this.ip__;
+    return this.machine_.readMachienIp();
   }
   port() {
-    return this.config.listen.data;
+    return this.config.listen.data.port;
   }
   
   
@@ -55,23 +56,6 @@ class PeerNetWork {
       console.log('onMessageDataServer__ e=<',e,'>');
     }
   };
-
-
-  readMachienIp__() {
-    this.ip__ = [];
-    const interfaces = os.networkInterfaces();
-    //console.log('readMachienIp__ interfaces=<',interfaces,'>');
-    for (const [dev, infos] of Object.entries(interfaces)) {
-      //console.log('onListenDataServer dev=<',dev,'>');
-      //console.log('onListenDataServer infos=<',infos,'>');
-      for (const info of infos) {
-        console.log('onListenDataServer info=<',info,'>');
-        if (info.family === 'IPv6') {
-          this.ip__.push(info.address);
-        }
-      }
-    }
-  }
 }
 
 module.exports = PeerNetWork;

@@ -27,5 +27,4 @@ class DHT {
     return this.info_;
   }
 }
-
 module.exports = DHT;
