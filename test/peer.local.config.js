@@ -10,6 +10,7 @@ const config = {
       port:8891
     }
   },
+  local:true
   entrance:[
     {
       host:'::1',
