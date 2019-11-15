@@ -54,16 +54,12 @@ class PeerNetWork {
         } else if (msgJson.ctrl.pong) {
           //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
           this.onPeerPong__(rPeerId, msgJson.ctrl.pong);
-        } else if (msgJson.ctrl.subscribe) {
-          //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
-          this.onSubscribe__(rPeerId, msgJson.ctrl.subscribe);
         } else {
           console.log('onMessageCtrlServer__ msgJson=<', msgJson, '>');
         }
       } else {
         console.log('onMessageCtrlServer__ msgJson=<', msgJson, '>');
       }
-
     } catch (e) {
       console.log('onMessageCtrlServer__ e=<', e, '>');
       console.log('onMessageCtrlServer__ msg.toString("utf-8")=<', msg.toString('utf-8'), '>');
@@ -89,7 +85,7 @@ class PeerNetWork {
     let msgSign = this.crypto_.sign(msg);
     const bufMsg = Buffer.from(JSON.stringify(msgSign));
     this.client.send(bufMsg, ports.ctrl.port, rAddress, (err) => {
-      console.log('onNewNodeEntry__ err=<',err,'>');
+      //console.log('onNewNodeEntry__ err=<',err,'>');
     });
   }
   onEntranceNode__(entrance) {
@@ -102,7 +98,7 @@ class PeerNetWork {
     }
   }
 
-  onPeerPing__(msgJson) {
+  onPeerPing__(id,msgJson) {
     //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
     const sentTp = new Date(msgJson.sign.ts);
     sentTp.setMilliseconds(msgJson.sign.ms);
@@ -153,20 +149,8 @@ class PeerNetWork {
     }
     //console.log('onPeerPong__ this.peers=<',this.peers,'>');
   }
-  
-  onSubscribe__(rPeer,subscribe) {
-    //console.log('onSubscribe__ rPeer=<',rPeer,'>');
-    //console.log('onSubscribe__ subscribe=<',subscribe,'>');
-    if(!this.subscribers[subscribe.address]) {
-      this.subscribers[subscribe.address] = {};
-      this.subscribers[subscribe.address][rPeer] = {};
-    }
-    if(!this.subscribers[subscribe.address][rPeer]) {
-      this.subscribers[subscribe.address][rPeer] = {};
-    }
-    this.subscribers[subscribe.address][rPeer][subscribe.topic] = true;
-    //console.log('onSubscribe__ this.subscribers=<',this.subscribers,'>');
-  }
+
+
 
   doClientEntry__(entrance, listen) {
     console.log('doClientEntry__ entrance=<', entrance, '>');
@@ -198,7 +182,7 @@ class PeerNetWork {
       };
       let msgSign = this.crypto_.sign(msg);
       const bufMsg = Buffer.from(JSON.stringify(msgSign));
-      this.client.send(bufMsg, peerInfo.ports.ctrl, peerInfo.host, (err) => {
+      this.client.send(bufMsg, peerInfo.ports.ctrl.port, peerInfo.host, (err) => {
         //console.log('doClientPing__ err=<',err,'>');
       });
     });
@@ -222,6 +206,9 @@ class PeerNetWork {
     setTimeout(()=>{
       self.doClientEntry__(self.config.entrance, self.config.listen);
     },0);
+    setTimeout(()=>{
+      self.doClientPing__();
+    },1000*1);
   };
 
 }
