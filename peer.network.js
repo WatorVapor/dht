@@ -116,8 +116,8 @@ class PeerNetWork {
         ctrl: {
           pong: {
             ping: {
-              ts: pingTp.toGMTString(),
-              ms: pingTp.getMilliseconds()
+              ts: sentTp.toGMTString(),
+              ms: sentTp.getMilliseconds()
             },
             pong: {
               ts: now.toGMTString(),
