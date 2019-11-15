@@ -46,25 +46,11 @@ class PeerNetWork {
       const rPeerId = this.crypto_.calcID(msgJson);
       if (msgJson.ctrl) {
         if (msgJson.ctrl.entry) {
-          const addressIndex = this.ip__.indexOf(rinfo.address);
-          //console.log('onMessageCtrlServer__ addressIndex=<',addressIndex,'>');
-          if (addressIndex === -1) {
-            this.onNewNodeEntry__(rPeerId, rinfo.address, msgJson.listen);
-          } else {
-            this.onNewNodeEntry__(rPeerId, rinfo.address, msgJson.listen);
-          }
+          this.onNewNodeEntry__(rPeerId, rinfo.address, msgJson.listen);
         } else if (msgJson.ctrl.entrance) {
-          //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
           this.onEntranceNode__(msgJson.ctrl.entrance);
         } else if (msgJson.ctrl.ping) {
-          //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
-          const sentTp = new Date(msgJson.sign.ts);
-          sentTp.setMilliseconds(msgJson.sign.ms);
-          //console.log('onMessageCtrlServer__ sentTp=<',sentTp,'>');
-          const recieveTp = new Date();
-          const tta = recieveTp - sentTp;
-          //console.log('onMessageCtrlServer__ tta=<',tta,'>');
-          this.onPeerPing__(rPeerId, sentTp, tta);
+          this.onPeerPing__(rPeerId,msgJson);
         } else if (msgJson.ctrl.pong) {
           //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
           this.onPeerPong__(rPeerId, msgJson.ctrl.pong);
@@ -104,7 +90,7 @@ class PeerNetWork {
     };
     let msgSign = this.crypto_.sign(msg);
     const bufMsg = Buffer.from(JSON.stringify(msgSign));
-    this.client.send(bufMsg, ports.ctrl, rAddress, (err) => {
+    this.client.send(bufMsg, ports.ctrl.port, rAddress, (err) => {
       //console.log('doClientEntry__ err=<',err,'>');
     });
   }
@@ -120,9 +106,14 @@ class PeerNetWork {
 
 
 
-  onPeerPing__(id, pingTp, tta) {
-    //console.log('onPeerPing__ id=<',id,'>');
-    //console.log('onPeerPing__ tta=<',tta,'>');
+  onPeerPing__(msgJson) {
+    //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
+    const sentTp = new Date(msgJson.sign.ts);
+    sentTp.setMilliseconds(msgJson.sign.ms);
+    //console.log('onMessageCtrlServer__ sentTp=<',sentTp,'>');
+    const recieveTp = new Date();
+    const tta = recieveTp - sentTp;
+    //console.log('onMessageCtrlServer__ tta=<',tta,'>');
     if (this.peers[id]) {
       //console.log('onPeerPing__ this.peers[id]=<',this.peers[id],'>');
       this.peers[id].tta = tta;
