@@ -148,7 +148,7 @@ class PeerNetWork {
       //console.log('onPeerPong__ this.peers[id]=<',this.peers[id],'>');
       this.peers[id].ttr = ttr;
     }
-    //console.log('onPeerPong__ this.peers=<',this.peers,'>');
+    console.log('onPeerPong__ this.peers=<',this.peers,'>');
   }
 
 
@@ -171,7 +171,7 @@ class PeerNetWork {
     }
   };
 
-  doClientPing__() {
+  async doClientPing__() {
     //console.log('doClientPing__ this.peers=<',this.peers,'>');
     this.eachRemotePeer__((peer, peerInfo) => {
       //console.log('doClientPing__ peer=<',peer,'>');
@@ -187,6 +187,10 @@ class PeerNetWork {
         //console.log('doClientPing__ err=<',err,'>');
       });
     });
+    const self = this;
+    setTimeout(()=>{
+      self.doClientPing__();
+    },1000*10);    
   };
 
   eachRemotePeer__(fn) {
