@@ -26,7 +26,7 @@ const config = {
   }
 };
 console.log(':: config=<',config,'>');
-const DHT = require('../dht.js');
+const DHT = require('../src/dht.js');
 const dht = new DHT(config);
 //console.log(':: dht=<',dht,'>');
 const peer = dht.peerInfo();
