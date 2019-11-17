@@ -158,7 +158,7 @@ class PeerNetWork {
       //console.log('onPeerPong__ this.peers[id]=<',this.peers[id],'>');
       this.peers[id].ttr = ttr;
     }
-    console.log('onPeerPong__ this.peers=<',JSON.stringify(this.peers,undefined,2),'>');
+    //console.log('onPeerPong__ this.peers=<',JSON.stringify(this.peers,undefined,2),'>');
   }
 
 

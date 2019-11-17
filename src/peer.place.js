@@ -15,19 +15,27 @@ class PeerPlace {
     //console.log('PeerPlace::constructor this.address_=<',this.address_,'>');
     let maxDistance = 0.0;
     let nearPeer = '';
-    for(const peer in peers) {
+    let minDistance = 1.0;
+    let fastPeer = '';
+   for(const peer in peers) {
       //console.log('PeerPlace::constructor peer=<',peer,'>');
       const distance = this.calcDistance_(this.address_,peer);
-      if(distance > maxDistance) {
+      if(distance >= maxDistance) {
         nearPeer = peer;
         maxDistance = distance;
       }
+      if(distance <= minDistance) {
+        fastPeer = peer;
+        minDistance = distance;
+      }
     }
     this.near_ = nearPeer;
+    this.fast_ = fastPeer;
   }
   append(data) {
     console.log('PeerPlace::append data=<',data,'>');
   }
+  
   calcDistance_(address,peer) {
     //console.log('PeerPlace::calcDistance_ address=<',address,'>');
     //console.log('PeerPlace::calcDistance_ peer=<',peer,'>');
@@ -41,7 +49,7 @@ class PeerPlace {
       //console.log('PeerPlace::calcDistance_ distanceElem=<',distanceElem,'>');
       distance += distanceElem;
     }
-    //console.log('PeerPlace::calcDistance_ distance=<',distance,'>');
+    console.log('PeerPlace::calcDistance_ distance=<',distance,'>');
     return 1.0 / parseFloat(distance);
   }
 }
