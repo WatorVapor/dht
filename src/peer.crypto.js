@@ -84,6 +84,11 @@ class PeerCrypto {
     const topicBuffer = Buffer.from(topicRipemd,'hex');
     return bs58.encode(topicBuffer);
   }
+  calcResourceAddress(resourceKey) {
+    const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');
+    const resourceBuffer = Buffer.from(resourceRipemd,'hex');
+    return bs58.encode(resourceBuffer);
+  }
 
   
   

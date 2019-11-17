@@ -1,7 +1,21 @@
+'use strict';
+const jsrsasign = require('jsrsasign');
 const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+const bs58 = require('bs58');
+const RIPEMD160 = require('ripemd160');
 
+class ResourceStorage {
+  constructor(config) {
+    console.log('ResourceStorage::constructor: config.reps=<',config.reps,'>');
+    this._path = config.reps.path + '/restore';
+    if (!fs.existsSync(this._path)) {
+      fs.mkdirSync(this._path,{ recursive: true });
+    }
+  }
+}
+module.exports = ResourceStorage;
+
+/*
 module.exports = class LevelDFS {
   constructor(path) {
     this._path = path;
@@ -233,3 +247,4 @@ module.exports = class LevelDFS {
   }
 
 }
+*/

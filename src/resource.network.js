@@ -3,7 +3,7 @@ const os = require('os');
 const dgram = require("dgram");
 const PeerMachine = require('./peer.machine.js');
 
-class PeerNetWork {
+class ResourceNetWork {
   constructor(config) {
     this.config = config;
     this.serverData = dgram.createSocket("udp6");
@@ -58,4 +58,4 @@ class PeerNetWork {
   };
 }
 
-module.exports = PeerNetWork;
+module.exports = ResourceNetWork;

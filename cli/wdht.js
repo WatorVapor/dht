@@ -34,6 +34,7 @@ console.log(':: peer=<',peer,'>');
 
 const appendData = ()=> {
   dht.append('汉语','https://zh.wikipedia.org/wiki/汉语');
+  dht.append('航母','https://www.6parknews.com/newspark/view.php?app=news&act=view&nid=386668');
 };
 
-setTimeout(appendData,1000*10);
+setTimeout(appendData,1000*5);

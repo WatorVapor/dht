@@ -3,17 +3,20 @@ const os = require('os');
 const dgram = require("dgram");
 const PeerMachine = require('./peer.machine.js');
 const PeerCrypto = require('./peer.crypto.js');
+const PeerPlace = require('./peer.place.js');
 
+const ResourceNetWork = require('./resource.network.js');
+const ResourceStorage = require('./resource.storage.js');
 
 class PeerNetWork {
   constructor(config) {
     this.config = config;
     this.peers = {};
     this.crypto_ = new PeerCrypto(config);
-    this.serverCtrl = dgram.createSocket("udp6");
-    this.client = dgram.createSocket("udp6");
     this.machine_ = new PeerMachine(config);
 
+    this.serverCtrl = dgram.createSocket("udp6");
+    this.client = dgram.createSocket("udp6");
     let self = this;
     this.serverCtrl.on("listening", () => {
       self.onListenCtrlServer();
@@ -29,6 +32,13 @@ class PeerNetWork {
   port() {
     return this.config.listen.ctrl.port;
   }
+  
+  findPlace(key) {
+    console.log('PeerNetWork::findPlace key=<',key,'>');
+    const place = new PeerPlace(key,this.peers,this.crypto_);
+    return place;
+  }
+  
 
   onMessageCtrlServer__(msg, rinfo) {
     //console.log('onMessageCtrlServer__ msg=<',msg.toString('utf-8'),'>');
