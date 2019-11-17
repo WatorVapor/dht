@@ -26,5 +26,9 @@ class DHT {
   peerInfo() {
     return this.info_;
   }
+  append(key,data) {
+    console.log('DHT:: append key=<',key,'>');
+    console.log('DHT:: append data=<',data,'>');
+  }
 }
 module.exports = DHT;

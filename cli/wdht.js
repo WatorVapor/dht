@@ -25,9 +25,15 @@ const config = {
     path:repsPath
   }
 };
-console.log(':: config=<',config,'>');
+//console.log(':: config=<',config,'>');
 const DHT = require('../src/dht.js');
 const dht = new DHT(config);
 //console.log(':: dht=<',dht,'>');
 const peer = dht.peerInfo();
 console.log(':: peer=<',peer,'>');
+
+const appendData = ()=> {
+  dht.append('汉语','https://zh.wikipedia.org/wiki/汉语');
+};
+
+setTimeout(appendData,1000*10);
