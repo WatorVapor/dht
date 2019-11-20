@@ -62,15 +62,13 @@ class PeerPlace {
     //console.log('PeerPlace::calcDistance_ addressBuf=<',addressBuf,'>');
     //console.log('PeerPlace::calcDistance_ peerBuf=<',peerBuf,'>');
     const distanceBuf = Buffer.alloc(peerBuf.length);
-    let distance = 0;
     for (let i = 0; i < addressBuf.length,i < peerBuf.length,i < distanceBuf.length; i++) {
       const distanceElem = addressBuf[i] ^ peerBuf[i];
       //console.log('PeerPlace::calcDistance_ distanceElem=<',distanceElem,'>');
-      distance += distanceElem;
       distanceBuf[i] = distanceElem;
     }
     console.log('PeerPlace::calcDistance_ distanceBuf=<',distanceBuf,'>');
-    return 1.0 / parseFloat(distance);
+    return distanceBuf.toString('hex');
   }
 
 
