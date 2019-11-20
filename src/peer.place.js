@@ -27,11 +27,13 @@ class PeerPlace {
       //console.log('PeerPlace::constructor peer=<',peer,'>');
       const distance = this.calcDistance_(this.address_,peer);
       console.log('PeerPlace::constructor distance=<',distance,'>');
-      if(this.btBuff_(distance,maxDistance)) {
+      //if(this.btBuff_(distance,maxDistance)) {
+      if(distance > maxDistance) {
         nearPeer = peer;
         maxDistance = distance;
       }
-      if(this.ltBuff_(distance,maxDistance)) {
+      //if(this.ltBuff_(distance,minDistance)) {
+      if(distance < minDistance) {
         fastPeer = peer;
         minDistance = distance;
       }
