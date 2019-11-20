@@ -15,7 +15,7 @@ class PeerPlace {
     //console.log('PeerPlace::constructor this.address_=<',this.address_,'>');
     let maxDistance = Buffer.alloc(this.address_.length);
     maxDistance.fill(0x0);
-    let maxDistance = '';
+    //let maxDistance = '';
     let nearPeer = '';
     let minDistance = Buffer.alloc(this.address_.length);;
     minDistance.fill(0xff);
