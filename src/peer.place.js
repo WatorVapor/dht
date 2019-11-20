@@ -65,7 +65,7 @@ class PeerPlace {
     const addressBuf = bs58.decode(address);
     const peerBuf = bs58.decode(peer);
     //console.log('PeerPlace::calcDistance_ addressBuf=<',addressBuf,'>');
-    //console.log('PeerPlace::calcDistance_ peerBuf=<',peerBuf,'>');
+    console.log('PeerPlace::calcDistance_ peerBuf=<',peerBuf.toString('hex'),'>');
     const distanceBuf = Buffer.alloc(peerBuf.length);
     for (let i = 0; i < addressBuf.length,i < peerBuf.length,i < distanceBuf.length; i++) {
       const distanceElem = addressBuf[i] ^ peerBuf[i];
