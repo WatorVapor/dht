@@ -36,6 +36,7 @@ class PeerPlace {
     console.log('PeerPlace::append data=<',data,'>');
   }
   
+  /*
   calcDistance_(address,peer) {
     //console.log('PeerPlace::calcDistance_ address=<',address,'>');
     //console.log('PeerPlace::calcDistance_ peer=<',peer,'>');
@@ -52,6 +53,27 @@ class PeerPlace {
     console.log('PeerPlace::calcDistance_ distance=<',distance,'>');
     return 1.0 / parseFloat(distance);
   }
+  */
+  calcDistance_(address,peer) {
+    //console.log('PeerPlace::calcDistance_ address=<',address,'>');
+    //console.log('PeerPlace::calcDistance_ peer=<',peer,'>');
+    const addressBuf = bs58.decode(address);
+    const peerBuf = bs58.decode(peer);
+    //console.log('PeerPlace::calcDistance_ addressBuf=<',addressBuf,'>');
+    //console.log('PeerPlace::calcDistance_ peerBuf=<',peerBuf,'>');
+    const distanceBuf = Buffer.alloc(peerBuf.length);
+    let distance = 0;
+    for (let i = 0; i < addressBuf.length,i < peerBuf.length,i < distanceBuf.length; i++) {
+      const distanceElem = addressBuf[i] ^ peerBuf[i];
+      //console.log('PeerPlace::calcDistance_ distanceElem=<',distanceElem,'>');
+      distance += distanceElem;
+      distanceBuf[i] = distanceElem;
+    }
+    console.log('PeerPlace::calcDistance_ distanceBuf=<',distanceBuf,'>');
+    return 1.0 / parseFloat(distance);
+  }
+
+
 }
 
 module.exports = PeerPlace;
