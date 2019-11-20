@@ -16,9 +16,9 @@ class PeerPlace {
     let maxDistance = Buffer.alloc(this.address_.length);
     maxDistance.fill(0x0);
     let nearPeer = '';
-    let minDistance = 1.0;
-    let fastPeer = Buffer.alloc(this.address_.length);
-    maxDistance.fill(0xff);
+    let minDistance = Buffer.alloc(this.address_.length);;
+    let fastPeer = ''
+    minDistance.fill(0xff);
     const distanceZero = this.calcDistance_(this.address_,this.address_);
     console.log('PeerPlace::constructor distanceZero=<',distanceZero,'>');
     for(const peer in peers) {
