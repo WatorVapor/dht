@@ -13,12 +13,14 @@ class PeerPlace {
     //this.crypto_ = crypto;
     this.address_ = crypto.calcResourceAddress(key);
     //console.log('PeerPlace::constructor this.address_=<',this.address_,'>');
-    let maxDistance = Buffer.alloc(this.address_.length);
-    maxDistance.fill(0x0);
+    //let maxDistance = Buffer.alloc(this.address_.length);
+    //maxDistance.fill(0x0);
+    let maxDistance = '';
     let nearPeer = '';
-    let minDistance = Buffer.alloc(this.address_.length);;
+    //let minDistance = Buffer.alloc(this.address_.length);;
+    //minDistance.fill(0xff);
+    let minDistance = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz';
     let fastPeer = ''
-    minDistance.fill(0xff);
     const distanceZero = this.calcDistance_(this.address_,this.address_);
     console.log('PeerPlace::constructor distanceZero=<',distanceZero,'>');
     for(const peer in peers) {
@@ -64,8 +66,8 @@ class PeerPlace {
     //console.log('PeerPlace::calcDistance_ peer=<',peer,'>');
     const addressBuf = bs58.decode(address);
     const peerBuf = bs58.decode(peer);
-    console.log('PeerPlace::calcDistance_ addressBuf=<',addressBuf.toString('hex'),'>');
-    console.log('PeerPlace::calcDistance_ peerBuf=<',peerBuf.toString('hex'),'>');
+    //console.log('PeerPlace::calcDistance_ addressBuf=<',addressBuf.toString('hex'),'>');
+    //console.log('PeerPlace::calcDistance_ peerBuf=<',peerBuf.toString('hex'),'>');
     const distanceBuf = Buffer.alloc(peerBuf.length);
     for (let i = 0; i < addressBuf.length,i < peerBuf.length,i < distanceBuf.length; i++) {
       const distanceElem = addressBuf[i] ^ peerBuf[i];
@@ -73,8 +75,10 @@ class PeerPlace {
       distanceBuf[i] = distanceElem;
     }
     //console.log('PeerPlace::calcDistance_ distanceBuf=<',distanceBuf,'>');
+    return bs58.encode(distanceBuf);
     return distanceBuf.toString('hex');
   }
+  /*
   btBuff_(a,b) {
     for (let i = 0; i < a.length,i < a.length,i < b.length; i++) {
       if(a[i] < b[i]) {
@@ -91,6 +95,7 @@ class PeerPlace {
     }
     return true;
   }
+  */
 }
 
 module.exports = PeerPlace;
