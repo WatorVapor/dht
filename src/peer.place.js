@@ -17,6 +17,8 @@ class PeerPlace {
     let nearPeer = '';
     let minDistance = 1.0;
     let fastPeer = '';
+    const distanceZero = this.calcDistance_(this.address_,this.address_);
+    console.log('PeerPlace::constructor distanceZero=<',distanceZero,'>');
     for(const peer in peers) {
       //console.log('PeerPlace::constructor peer=<',peer,'>');
       const distance = this.calcDistance_(this.address_,peer);
@@ -68,7 +70,7 @@ class PeerPlace {
       //console.log('PeerPlace::calcDistance_ distanceElem=<',distanceElem,'>');
       distanceBuf[i] = distanceElem;
     }
-    console.log('PeerPlace::calcDistance_ distanceBuf=<',distanceBuf,'>');
+    //console.log('PeerPlace::calcDistance_ distanceBuf=<',distanceBuf,'>');
     return distanceBuf.toString('hex');
   }
 
