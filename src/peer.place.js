@@ -17,9 +17,10 @@ class PeerPlace {
     let nearPeer = '';
     let minDistance = 1.0;
     let fastPeer = '';
-   for(const peer in peers) {
+    for(const peer in peers) {
       //console.log('PeerPlace::constructor peer=<',peer,'>');
       const distance = this.calcDistance_(this.address_,peer);
+      console.log('PeerPlace::constructor distance=<',distance,'>');
       if(distance >= maxDistance) {
         nearPeer = peer;
         maxDistance = distance;
