@@ -13,13 +13,13 @@ class PeerPlace {
     //this.crypto_ = crypto;
     this.address_ = crypto.calcResourceAddress(key);
     //console.log('PeerPlace::constructor this.address_=<',this.address_,'>');
-    //let maxDistance = Buffer.alloc(this.address_.length);
-    //maxDistance.fill(0x0);
+    let maxDistance = Buffer.alloc(this.address_.length);
+    maxDistance.fill(0x0);
     let maxDistance = '';
     let nearPeer = '';
-    //let minDistance = Buffer.alloc(this.address_.length);;
-    //minDistance.fill(0xff);
-    let minDistance = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz';
+    let minDistance = Buffer.alloc(this.address_.length);;
+    minDistance.fill(0xff);
+    //let minDistance = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz';
     let fastPeer = ''
     const distanceZero = this.calcDistance_(this.address_,this.address_);
     console.log('PeerPlace::constructor distanceZero=<',distanceZero,'>');
@@ -77,10 +77,10 @@ class PeerPlace {
       distanceBuf[i] = distanceElem;
     }
     //console.log('PeerPlace::calcDistance_ distanceBuf=<',distanceBuf,'>');
-    return bs58.encode(distanceBuf);
+    //return bs58.encode(distanceBuf);
     return distanceBuf.toString('hex');
   }
-  /*
+  
   btBuff_(a,b) {
     for (let i = 0; i < a.length,i < a.length,i < b.length; i++) {
       if(a[i] < b[i]) {
@@ -97,7 +97,7 @@ class PeerPlace {
     }
     return true;
   }
-  */
+  
 }
 
 module.exports = PeerPlace;
