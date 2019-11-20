@@ -12,6 +12,7 @@ class PeerPlace {
     //this.peers_ = peers;
     //this.crypto_ = crypto;
     this.address_ = crypto.calcResourceAddress(key);
+    this.peers_ = [];
     //console.log('PeerPlace::constructor this.address_=<',this.address_,'>');
     let maxDistance = Buffer.alloc(this.address_.length);
     maxDistance.fill(0x0);
@@ -24,6 +25,7 @@ class PeerPlace {
     const distanceZero = this.calcDistance_(this.address_,this.address_);
     console.log('PeerPlace::constructor distanceZero=<',distanceZero,'>');
     for(const peer in peers) {
+      this.peers_.push(peer);
       //console.log('PeerPlace::constructor peer=<',peer,'>');
       const distance = this.calcDistance_(this.address_,peer);
       console.log('PeerPlace::constructor distance=<',distance,'>');
