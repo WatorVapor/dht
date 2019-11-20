@@ -13,21 +13,23 @@ class PeerPlace {
     //this.crypto_ = crypto;
     this.address_ = crypto.calcResourceAddress(key);
     //console.log('PeerPlace::constructor this.address_=<',this.address_,'>');
-    let maxDistance = 0.0;
+    let maxDistance = Buffer.alloc(this.address_.length);
+    maxDistance.fill(0x0);
     let nearPeer = '';
     let minDistance = 1.0;
-    let fastPeer = '';
+    let fastPeer = Buffer.alloc(this.address_.length);
+    maxDistance.fill(0xff);
     const distanceZero = this.calcDistance_(this.address_,this.address_);
     console.log('PeerPlace::constructor distanceZero=<',distanceZero,'>');
     for(const peer in peers) {
       //console.log('PeerPlace::constructor peer=<',peer,'>');
       const distance = this.calcDistance_(this.address_,peer);
       console.log('PeerPlace::constructor distance=<',distance,'>');
-      if(distance >= maxDistance) {
+      if(this.btBuff_(distance,maxDistance)) {
         nearPeer = peer;
         maxDistance = distance;
       }
-      if(distance <= minDistance) {
+      if(this.ltBuff_(distance,maxDistance)) {
         fastPeer = peer;
         minDistance = distance;
       }
@@ -73,8 +75,22 @@ class PeerPlace {
     //console.log('PeerPlace::calcDistance_ distanceBuf=<',distanceBuf,'>');
     return distanceBuf.toString('hex');
   }
-
-
+  btBuff_(a,b) {
+    for (let i = 0; i < a.length,i < a.length,i < b.length; i++) {
+      if(a[i] < b[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+  ltBuff_(a,b) {
+    for (let i = 0; i < a.length,i < a.length,i < b.length; i++) {
+      if(a[i] > b[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 module.exports = PeerPlace;
