@@ -12,6 +12,7 @@ class DHT {
     this.crypto_ = new PeerCrypto(config);
     this.peer_ = new PeerNetWork(config);
     this.resource_ = new ResourceNetWork(config);
+    this.storage_ = new ResourceStorage(config);
     this.info_ = {
       id:this.crypto_.idB58,
       peer:{
@@ -29,8 +30,9 @@ class DHT {
     return this.info_;
   }
   append(key,data) {
-    console.log('DHT::append key=<',key,'>');
-    console.log('DHT::append data=<',data,'>');
+    //console.log('DHT::append key=<',key,'>');
+    //console.log('DHT::append data=<',data,'>');
+    this.storage_.append(key,data);
     const place = this.peer_.findPlace(key);
     console.log('DHT::append place=<',place,'>');
     place.append(data);

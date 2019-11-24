@@ -1,7 +1,8 @@
 'use strict';
 const path = require('path');
 //console.log(':: __filename=<',__filename,'>');
-const repsPath = __dirname + '/node_data.' + path.parse(__filename).name;;
+const dhtPath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/peer';
+const dataPath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/datastore';
 const config = {
   listen:{
     ctrl:{
@@ -22,7 +23,8 @@ const config = {
     }
   ],
   reps: {
-    path:repsPath
+    dht:dhtPath,
+    data:dataPath
   }
 };
 //console.log(':: config=<',config,'>');

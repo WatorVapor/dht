@@ -1,16 +1,45 @@
 'use strict';
-const jsrsasign = require('jsrsasign');
 const fs = require('fs');
+const path = require('path');
+const jsrsasign = require('jsrsasign');
 const bs58 = require('bs58');
 const RIPEMD160 = require('ripemd160');
 
 class ResourceStorage {
   constructor(config) {
     console.log('ResourceStorage::constructor: config.reps=<',config.reps,'>');
-    this._path = config.reps.path + '/restore';
+    this._path = config.reps.data + '/ldfs';
     if (!fs.existsSync(this._path)) {
       fs.mkdirSync(this._path,{ recursive: true });
     }
+  }
+  append(key,content) {
+    let keyAddress = this.getContentAddress_(key);
+    console.log('ResourceStorage::append: keyAddress=<',keyAddress,'>');
+    let keyPath = this.getPath4Address_(keyAddress);
+    console.log('ResourceStorage::append: keyPath=<',keyPath,'>');
+    if (!fs.existsSync(keyPath)) {
+      fs.mkdirSync(keyPath,{ recursive: true });
+    }
+    const contentAddress = this.getContentAddress_(content);
+    const contentPath = keyPath + '/' + contentAddress;
+    console.log('ResourceStorage::append: contentPath=<',contentPath,'>');
+    fs.writeFileSync(contentPath,content);
+    return {content:keyAddress,url:keyPath};
+  }
+
+  getContentAddress_(resourceKey) {
+    const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');
+    const resourceBuffer = Buffer.from(resourceRipemd,'hex');
+    return bs58.encode(resourceBuffer);
+    return 
+  }
+  getPath4Address_(keyHex) {
+    let pathAddress = this._path;
+    pathAddress += '/' + keyHex.substring(0,2);
+    pathAddress += '/' + keyHex.substring(2,4);
+    pathAddress += '/' + keyHex;
+    return pathAddress;
   }
 }
 module.exports = ResourceStorage;

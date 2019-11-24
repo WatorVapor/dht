@@ -1,6 +1,6 @@
 'use strict';
-const jsrsasign = require('jsrsasign');
 const fs = require('fs');
+const jsrsasign = require('jsrsasign');
 const bs58 = require('bs58');
 const RIPEMD160 = require('ripemd160');
 
@@ -10,10 +10,10 @@ const iConstMessageOutDateInMs = 1000 * 60;
 class PeerCrypto {
   constructor(config) {
     //console.log('PeerCrypto::constructor config=<',config,'>');
-    if(!fs.existsSync(config.reps.path)) {
-      fs.mkdirSync(config.reps.path);
+    if(!fs.existsSync(config.reps.dht)) {
+      fs.mkdirSync(config.reps.dht,{ recursive: true });
     }
-    this.keyPath = config.reps.path + '/keyMaster.json';
+    this.keyPath = config.reps.dht + '/keyMaster.json';
     //console.log('PeerCrypto::constructor this.keyPath=<',this.keyPath,'>');
     if(fs.existsSync(this.keyPath)) {
       this.loadKey__();
