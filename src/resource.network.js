@@ -70,12 +70,12 @@ class ResourceNetWork {
     this.keyPath_ = this.config_.reps.dht + '/ssl.json';
     console.log('ResourceNetWork::createOrLoadSSLKey_ this.keyPath_=<',this.keyPath_,'>');
     if(fs.existsSync(this.keyPath_)) {
-      this.loadKey_();
+      this.loadKey__();
     } else {
-      this.createKey_();
+      this.createKey__();
     }
   }
-  loadKey_() {
+  loadKey__() {
   }
   createKey__() {
     const ec = new jsrsasign.KEYUTIL.generateKeypair("EC", "P-256");
