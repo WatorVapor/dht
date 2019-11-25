@@ -66,7 +66,23 @@ class ResourceNetWork {
     }
   };
   createOrLoadSSLKey_() {
-    console.log('ResourceNetWork::createOrLoadSSLKey_ this.config_=<', this.config_, '>');
+    //console.log('ResourceNetWork::createOrLoadSSLKey_ this.config_=<', this.config_, '>');
+    this.keyPath_ = this.config_.reps.dht + '/ssl.json';
+    console.log('ResourceNetWork::createOrLoadSSLKey_ this.keyPath_=<',this.keyPath_,'>');
+    if(fs.existsSync(this.keyPath_)) {
+      this.loadKey_();
+    } else {
+      this.createKey_();
+    }
+  }
+  loadKey_() {
+  }
+  createKey__() {
+    const ec = new jsrsasign.KEYUTIL.generateKeypair("EC", "P-256");
+    //console.log('PeerCrypto::createKey__ ec=<',ec,'>');
+    const jwkPrv1 = jsrsasign.KEYUTIL.getJWKFromKey(ec.prvKeyObj);
+    //console.log('PeerCrypto::createKey__ jwkPrv1=<',jwkPrv1,'>');
+    fs.writeFileSync(this.keyPath_,JSON.stringify(jwkPrv1,undefined,2));
   }
 }
 
