@@ -12,6 +12,7 @@ class ResourceStorage {
     if (!fs.existsSync(this._path)) {
       fs.mkdirSync(this._path,{ recursive: true });
     }
+    this._uri = 'ermu://[host]:[port]';
   }
   append(key,content) {
     let keyAddress = this.getContentAddress_(key);
@@ -25,7 +26,7 @@ class ResourceStorage {
     const contentPath = keyPath + '/' + contentAddress;
     console.log('ResourceStorage::append: contentPath=<',contentPath,'>');
     fs.writeFileSync(contentPath,content);
-    return {content:keyAddress,url:keyPath};
+    return {address:keyAddress,uri:this.getURI4Address_(keyAddress)};
   }
 
   getContentAddress_(resourceKey) {
@@ -34,13 +35,19 @@ class ResourceStorage {
     return bs58.encode(resourceBuffer);
     return 
   }
-  getPath4Address_(keyHex) {
+  getPath4Address_(address) {
     let pathAddress = this._path;
-    pathAddress += '/' + keyHex.substring(0,2);
-    pathAddress += '/' + keyHex.substring(2,4);
-    pathAddress += '/' + keyHex;
+    pathAddress += '/' + address.substring(0,2);
+    pathAddress += '/' + address.substring(2,4);
+    pathAddress += '/' + address;
     return pathAddress;
   }
+  getURI4Address_(address) {
+    let uriAddress = this._uri;
+    uriAddress += '/' + address;
+    return uriAddress;
+  }
+
 }
 module.exports = ResourceStorage;
 

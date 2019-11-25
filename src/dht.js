@@ -32,7 +32,8 @@ class DHT {
   append(key,data) {
     //console.log('DHT::append key=<',key,'>');
     //console.log('DHT::append data=<',data,'>');
-    this.storage_.append(key,data);
+    const dataStorage = this.storage_.append(key,data);
+    console.log('DHT::append dataStorage=<',dataStorage,'>');
     const place = this.peer_.findPlace(key);
     console.log('DHT::append place=<',place,'>');
     place.append(data);
