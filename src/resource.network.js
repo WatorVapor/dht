@@ -15,6 +15,7 @@ class ResourceNetWork {
       key: fs.readFileSync(this.keyPath_),
       cert: fs.readFileSync(this.csrPath_)
     };
+    console.log('ResourceNetWork::constructor options=<', options, '>');
     const self = this;
     this.serverHttps_= https.createServer(options,(req, res) => {
       self.onRequest_(req, res);
