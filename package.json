@@ -2,6 +2,7 @@
   "dependencies": {
     "bs58": "^4.0.1",
     "jsrsasign": "^8.0.12",
-    "ripemd160": "^2.0.2"
+    "ripemd160": "^2.0.2",
+    "selfsigned": "^1.10.7"
   }
 }
