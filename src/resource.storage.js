@@ -28,6 +28,17 @@ class ResourceStorage {
     fs.writeFileSync(contentPath,content);
     return {address:keyAddress,uri:this.getURI4Address_(keyAddress)};
   }
+  fetch(keyAddress) {
+    //console.log('ResourceStorage::fetch: keyAddress=<',keyAddress,'>');
+    let keyPath = this.getPath4Address_(keyAddress);
+    //console.log('ResourceStorage::fetch: keyPath=<',keyPath,'>');
+    if(fs.existsSync(keyPath)) {
+      console.log('ResourceStorage::fetch: keyPath=<',keyPath,'>');
+      const source = readdirSync(keyPath, { withFileTypes: true });
+      console.log('ResourceStorage::fetch: source=<',source,'>');
+    }
+    return '{}';
+ }
 
   getContentAddress_(resourceKey) {
     const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');

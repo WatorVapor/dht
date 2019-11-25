@@ -1,11 +1,13 @@
 'use strict';
 const os = require('os');
 const PeerMachine = require('./peer.machine.js');
+const ResourceStorage = require('./resource.storage.js');
 const https = require('https');
 const fs = require('fs');
 const execSync = require('child_process').execSync;
 const selfsigned = require('selfsigned');
 const createCert = require('create-cert');
+const url  = require('url');
 
 class ResourceNetWork {
   constructor(config) {
@@ -17,6 +19,7 @@ class ResourceNetWork {
       self.createHTTPSServer_(keys);
     });
     this.machine_ = new PeerMachine(config);
+    this.storage_ = new ResourceStorage(config);
   }
   host() {
     return this.machine_.readMachienIp();
@@ -34,8 +37,12 @@ class ResourceNetWork {
   }
   
   onRequest_(req, res) {
-    res.writeHead(200);
-    res.end('hello world\n');
+    res.writeHead(200,{'Content-Type': 'text/plain'});
+    console.log('ResourceNetWork::onRequest_ req.url=<',req.url,'>');
+    const url_parts = url.parse(req.url);
+    console.log('ResourceNetWork::onRequest_ url_parts.pathname=<',url_parts.pathname,'>');
+    const contents = this.storage_.fetch(url_parts.pathname);
+    res.end(contents);
   }
 }
 
