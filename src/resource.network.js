@@ -91,7 +91,7 @@ class ResourceNetWork {
     cmdCsr += this.keyPath_;
     cmdCsr += ' -out ';
     cmdCsr += this.csrPath_;
-    cmdCsr += ' -subj "/C=WT/ST=Earth/L=Universe Ship 1/O=wator xyz/OU=ermu./CN=***"'
+    cmdCsr += ' -subj "/C=WT/ST=Earth/L=Universe Ship 1/O=wator xyz/OU=ermu./CN=qermu.wator.xyz"'
     const resultCsr =  execSync(cmdCsr);
     console.log('PeerCrypto::createKey__ resultCsr=<',resultCsr.toString('utf-8'),'>');
 
