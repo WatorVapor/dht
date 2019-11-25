@@ -11,25 +11,16 @@ class ResourceNetWork {
   constructor(config) {
     this.config_ = config;
     this.createOrLoadSSLKey_();
-    /*
     const options = {
-      key: fs.readFileSync('test/fixtures/keys/agent2-key.pem'),
-      cert: fs.readFileSync('test/fixtures/keys/agent2-cert.pem')
+      key: fs.readFileSync(this.keyPath_),
+      cert: fs.readFileSync(this.csrPath_)
     };
-    */
-    this.serverHttps_= dgram.createSocket("udp6");
-    this.clientHttps_ = dgram.createSocket("udp6");
+    const self = this;
+    this.serverHttps_= https.createServer(options,(req, res) => {
+      self.onRequest_(req, res);
+    })
+    this.serverHttps_.listen(config.listen.data.port);
     this.machine_ = new PeerMachine(config);
-
-    let self = this;
-
-    this.serverData.on("listening", () => {
-      self.onListenDataServer();
-    });
-    this.serverData.on("message", (msg, rinfo) => {
-      self.onMessageDataServer__(msg, rinfo)
-    });
-    this.serverData.bind(config.listen.data.port);
   }
   host() {
     return this.machine_.readMachienIp();
@@ -38,6 +29,10 @@ class ResourceNetWork {
     return this.config.listen.data.port;
   }
   
+  onRequest_(req, res) {
+    res.writeHead(200);
+    res.end('hello world\n');
+  }
   
   onListenDataServer(evt) {
     const address = this.serverData.address();
