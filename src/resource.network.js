@@ -69,8 +69,10 @@ class ResourceNetWork {
   };
   createOrLoadSSLKey_() {
     //console.log('ResourceNetWork::createOrLoadSSLKey_ this.config_=<', this.config_, '>');
-    this.keyPath_ = this.config_.reps.dht + '/ssl.json';
+    this.keyPath_ = this.config_.reps.dht + '/ssl/key.pem';
     console.log('ResourceNetWork::createOrLoadSSLKey_ this.keyPath_=<',this.keyPath_,'>');
+    this.csrPath_ = this.config_.reps.dht + '/ssl/csr.pem';
+    console.log('ResourceNetWork::createOrLoadSSLKey_ this.csrPath_=<',this.csrPath_,'>');
     if(fs.existsSync(this.keyPath_)) {
       this.loadKey__();
     } else {
@@ -80,18 +82,23 @@ class ResourceNetWork {
   loadKey__() {
   }
   createKey__() {
+    let cmdDir = 'mkdir -p ';
+    cmdDir += this.config_.reps.dht + '/ssl';
+    const resultDir =  execSync(cmdDir);
+    console.log('PeerCrypto::createKey__ resultDir=<',resultDir.toString('utf-8'),'>');
+
     let cmdKey = 'openssl ecparam -out ';
-    cmdKey += this.config_.reps.dht + '/key.pem';
+    cmdKey += this.keyPath_;
     cmdKey += ' -name prime256v1 -genkey';
     const resultKey =  execSync(cmdKey);
-    console.log('PeerCrypto::createKey__ resultKey=<',resultKey,'>');
+    console.log('PeerCrypto::createKey__ resultKey=<',resultKey.toString('utf-8'),'>');
     let cmdCsr = 'openssl req -new -key ';
-    cmdCsr += this.config_.reps.dht + '/key.pem';
+    cmdCsr += this.keyPath_;
     cmdCsr += ' -out ';
-    cmdCsr += this.config_.reps.dht + '/csr.pem';
+    cmdCsr += this.csrPath_;
     cmdCsr += ' -subj "/C=WT/ST=Earth/L=Universe Ship 1/O=wator xyz/OU=ermu./CN=***"'
     const resultCsr =  execSync(cmdCsr);
-    console.log('PeerCrypto::createKey__ resultCsr=<',resultCsr,'>');
+    console.log('PeerCrypto::createKey__ resultCsr=<',resultCsr.toString('utf-8'),'>');
 
     /*
     const ec = new jsrsasign.KEYUTIL.generateKeypair("EC", "P-256");
