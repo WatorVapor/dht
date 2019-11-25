@@ -5,12 +5,13 @@ const https = require('https');
 const fs = require('fs');
 const execSync = require('child_process').execSync;
 const selfsigned = require('selfsigned');
-
+const createCert = require('create-cert');
 
 class ResourceNetWork {
   constructor(config) {
     this.config_ = config;
     this.createOrLoadSSLKey_();
+    /*
     const options = {
       key: fs.readFileSync(this.keyPath_),
       cert: fs.readFileSync(this.csrPath_)
@@ -21,13 +22,14 @@ class ResourceNetWork {
       self.onRequest_(req, res);
     })
     this.serverHttps_.listen(config.listen.data.port);
+    */
     this.machine_ = new PeerMachine(config);
   }
   host() {
     return this.machine_.readMachienIp();
   }
   port() {
-    return this.config.listen.data.port;
+    return this.config_.listen.data.port;
   }
   
   onRequest_(req, res) {
@@ -82,9 +84,14 @@ class ResourceNetWork {
     cmdDir += this.config_.reps.dht + '/ssl';
     const resultDir =  execSync(cmdDir);
     console.log('PeerCrypto::createKey__ resultDir=<',resultDir.toString('utf-8'),'>');
+    /*
     const attrs = [{ name: 'qermu', value: 'qermu.wator.xyz' }];
     const pems = selfsigned.generate(attrs, { days: 365 });
     console.log('ResourceNetWork::createKey__ pems=<',pems,'>');
+    */
+    createCert().then(keys => {
+      console.log('ResourceNetWork::createKey__ keys=<',keys,'>');
+    });
     /*
 
     let cmdKey = 'openssl ecparam -out ';
