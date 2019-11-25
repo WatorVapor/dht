@@ -44,6 +44,8 @@ class ResourceNetWork {
     const contents = this.storage_.fetch(url_parts.pathname);
     if(contents) {
       res.end(contents);
+    } else {
+      res.end('{}');
     }
   }
 }

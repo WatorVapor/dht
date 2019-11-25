@@ -34,7 +34,7 @@ class ResourceStorage {
     //console.log('ResourceStorage::fetch: keyPath=<',keyPath,'>');
     if(fs.existsSync(keyPath)) {
       console.log('ResourceStorage::fetch: keyPath=<',keyPath,'>');
-      const source = readdirSync(keyPath, { withFileTypes: true });
+      const source = fs.readdirSync(keyPath, { withFileTypes: true });
       console.log('ResourceStorage::fetch: source=<',source,'>');
     }
     return null;
