@@ -13,7 +13,7 @@ class ResourceNetWork {
     const keyOption = { days: 365, commonName: 'qermu.wator.xyz' };
     const self = this;
     createCert().then(keys => {
-      console.log('ResourceNetWork::createKey__ keys=<',keys,'>');
+      //console.log('ResourceNetWork::createKey__ keys=<',keys,'>');
       self.createHTTPSServer_(keys);
     });
     this.machine_ = new PeerMachine(config);
