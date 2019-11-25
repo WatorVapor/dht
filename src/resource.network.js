@@ -1,10 +1,10 @@
 'use strict';
 const os = require('os');
-const jsrsasign = require('jsrsasign');
 const PeerMachine = require('./peer.machine.js');
 const https = require('https');
 const fs = require('fs');
 const execSync = require('child_process').execSync;
+const selfsigned = require('selfsigned');
 
 
 class ResourceNetWork {
@@ -82,6 +82,8 @@ class ResourceNetWork {
     cmdDir += this.config_.reps.dht + '/ssl';
     const resultDir =  execSync(cmdDir);
     console.log('PeerCrypto::createKey__ resultDir=<',resultDir.toString('utf-8'),'>');
+    
+    /*
 
     let cmdKey = 'openssl ecparam -out ';
     cmdKey += this.keyPath_;
@@ -95,6 +97,7 @@ class ResourceNetWork {
     cmdCsr += ' -subj "/C=WT/ST=Earth/L=Universe Ship 1/O=wator xyz/OU=ermu./CN=qermu.wator.xyz"'
     const resultCsr =  execSync(cmdCsr);
     console.log('PeerCrypto::createKey__ resultCsr=<',resultCsr.toString('utf-8'),'>');
+    */
 
     /*
     const ec = new jsrsasign.KEYUTIL.generateKeypair("EC", "P-256");
