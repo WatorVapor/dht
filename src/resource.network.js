@@ -1,13 +1,22 @@
 'use strict';
 const os = require('os');
-const dgram = require("dgram");
 const PeerMachine = require('./peer.machine.js');
+const https = require('https');
+const fs = require('fs');
+
 
 class ResourceNetWork {
   constructor(config) {
-    this.config = config;
-    this.serverData = dgram.createSocket("udp6");
-    this.client = dgram.createSocket("udp6");
+    this.config_ = config;
+    this.createOrLoadSSLKey_();
+    /*
+    const options = {
+      key: fs.readFileSync('test/fixtures/keys/agent2-key.pem'),
+      cert: fs.readFileSync('test/fixtures/keys/agent2-cert.pem')
+    };
+    */
+    this.serverHttps_= dgram.createSocket("udp6");
+    this.clientHttps_ = dgram.createSocket("udp6");
     this.machine_ = new PeerMachine(config);
 
     let self = this;
@@ -56,6 +65,9 @@ class ResourceNetWork {
       console.log('onMessageDataServer__ e=<',e,'>');
     }
   };
+  createOrLoadSSLKey_() {
+    console.log('ResourceNetWork::createOrLoadSSLKey_ this.config_=<', this.config_, '>');
+  }
 }
 
 module.exports = ResourceNetWork;
