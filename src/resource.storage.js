@@ -37,7 +37,7 @@ class ResourceStorage {
       const source = readdirSync(keyPath, { withFileTypes: true });
       console.log('ResourceStorage::fetch: source=<',source,'>');
     }
-    return '{}';
+    return null;
  }
 
   getContentAddress_(resourceKey) {

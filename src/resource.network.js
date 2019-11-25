@@ -42,7 +42,9 @@ class ResourceNetWork {
     const url_parts = url.parse(req.url);
     console.log('ResourceNetWork::onRequest_ url_parts.pathname=<',url_parts.pathname,'>');
     const contents = this.storage_.fetch(url_parts.pathname);
-    res.end(contents);
+    if(contents) {
+      res.end(contents);
+    }
   }
 }
 
