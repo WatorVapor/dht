@@ -10,8 +10,15 @@ const createCert = require('create-cert');
 class ResourceNetWork {
   constructor(config) {
     this.config_ = config;
-    this.createOrLoadSSLKey_();
+    const keyOption = { days: 365, commonName: 'qermu.wator.xyz' };
+    const self = this;
+    createCert().then(keys => {
+      console.log('ResourceNetWork::createKey__ keys=<',keys,'>');
+      self.createHTTPSServer_(keys);
+    });
+    
     /*
+    this.createOrLoadSSLKey_();
     const options = {
       key: fs.readFileSync(this.keyPath_),
       cert: fs.readFileSync(this.csrPath_)
@@ -30,6 +37,14 @@ class ResourceNetWork {
   }
   port() {
     return this.config_.listen.data.port;
+  }
+
+  createHTTPSServer_(keys) {
+    const self = this;
+    this.serverHttps_= https.createServer(keys,(req, res) => {
+      self.onRequest_(req, res);
+    })
+    this.serverHttps_.listen(this.config_.listen.data.port);
   }
   
   onRequest_(req, res) {
