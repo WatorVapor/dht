@@ -1,5 +1,6 @@
 'use strict';
 const os = require('os');
+const jsrsasign = require('jsrsasign');
 const PeerMachine = require('./peer.machine.js');
 const https = require('https');
 const fs = require('fs');
