@@ -4,6 +4,7 @@ const jsrsasign = require('jsrsasign');
 const PeerMachine = require('./peer.machine.js');
 const https = require('https');
 const fs = require('fs');
+const execSync = require('child_process').execSync;
 
 
 class ResourceNetWork {
@@ -79,11 +80,26 @@ class ResourceNetWork {
   loadKey__() {
   }
   createKey__() {
+    let cmdKey = 'openssl ecparam -out ';
+    cmdKey += this.config_.reps.dht + '/key.pem';
+    cmdKey += ' -name prime256v1 -genkey';
+    const resultKey =  execSync(cmdKey);
+    console.log('PeerCrypto::createKey__ resultKey=<',resultKey,'>');
+    let cmdCsr = 'openssl req -new -key ';
+    cmdCsr += this.config_.reps.dht + '/key.pem';
+    cmdCsr += ' -out ';
+    cmdCsr += this.config_.reps.dht + '/csr.pem';
+    cmdCsr += ' -subj "/C=WT/ST=Earth/L=Universe Ship 1/O=wator xyz/OU=ermu./CN=***"'
+    const resultCsr =  execSync(cmdCsr);
+    console.log('PeerCrypto::createKey__ resultCsr=<',resultCsr,'>');
+
+    /*
     const ec = new jsrsasign.KEYUTIL.generateKeypair("EC", "P-256");
     //console.log('PeerCrypto::createKey__ ec=<',ec,'>');
     const jwkPrv1 = jsrsasign.KEYUTIL.getJWKFromKey(ec.prvKeyObj);
     //console.log('PeerCrypto::createKey__ jwkPrv1=<',jwkPrv1,'>');
     fs.writeFileSync(this.keyPath_,JSON.stringify(jwkPrv1,undefined,2));
+    */
   }
 }
 
