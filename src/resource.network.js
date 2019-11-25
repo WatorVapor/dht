@@ -83,7 +83,7 @@ class ResourceNetWork {
     const resultDir =  execSync(cmdDir);
     console.log('PeerCrypto::createKey__ resultDir=<',resultDir.toString('utf-8'),'>');
     const attrs = [{ name: 'qermu', value: 'qermu.wator.xyz' }];
-    const pems = selfsigned.generate(attrs, { days: 365*1000 });
+    const pems = selfsigned.generate(attrs, { days: 365 });
     console.log('ResourceNetWork::createKey__ pems=<',pems,'>');
     /*
 
