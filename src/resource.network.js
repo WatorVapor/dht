@@ -38,12 +38,25 @@ class ResourceNetWork {
   
   onRequest_(req, res) {
     res.writeHead(200,{'Content-Type': 'text/plain'});
-    console.log('ResourceNetWork::onRequest_ req.url=<',req.url,'>');
+    //console.log('ResourceNetWork::onRequest_ req.url=<',req.url,'>');
     const url_parts = url.parse(req.url);
-    console.log('ResourceNetWork::onRequest_ url_parts.pathname=<',url_parts.pathname,'>');
-    const contents = this.storage_.fetch(url_parts.pathname);
+    //console.log('ResourceNetWork::onRequest_ url_parts=<',url_parts,'>');
+    //console.log('ResourceNetWork::onRequest_ url_parts.pathname=<',url_parts.pathname,'>');
+    const address = url_parts.pathname.replace('/','');
+    const query = new url.URLSearchParams(url_parts.query);
+    //console.log('ResourceNetWork::onRequest_ query=<',query,'>');
+    let start = 0;
+    if(query.start) {
+      start = parseInt(query.start);
+    }
+    let count = 20;
+    if(query.count) {
+      count = parseInt(query.count);
+    }
+    const contents = this.storage_.fetch(address,start,count);
+    console.log('ResourceNetWork::onRequest_ contents=<',contents,'>');
     if(contents) {
-      res.end(contents);
+      res.end(JSON.stringify(contents,undefined,2));
     } else {
       res.end('{}');
     }
