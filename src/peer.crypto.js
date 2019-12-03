@@ -1,8 +1,9 @@
 'use strict';
 const fs = require('fs');
 const jsrsasign = require('jsrsasign');
-const bs58 = require('bs58');
+//const bs58 = require('bs58');
 const RIPEMD160 = require('ripemd160');
+const base32 = require('base32');
 
 
 
@@ -65,7 +66,7 @@ class PeerCrypto {
     if(msgHash !== msgJson.signed.hash) {
       return false;
     }
-    let pubKeyHex = bs58.decode(msgJson.sign.pubKey).toString('hex');
+    let pubKeyHex = base32.decode(msgJson.sign.pubKey).toString('hex');
     //console.log('PeerCrypto::verify pubKeyHex=<',pubKeyHex,'>');
     
     const ec = new jsrsasign.KJUR.crypto.ECDSA({'curve': 'secp256r1'});
@@ -74,20 +75,20 @@ class PeerCrypto {
     return verifyResult;
   }
   calcID(msgJson) {
-    const pubKeyHex = bs58.decode(msgJson.sign.pubKey).toString('hex');
+    const pubKeyHex = base32.decode(msgJson.sign.pubKey).toString('hex');
     const keyRipemd = new RIPEMD160().update(pubKeyHex).digest('hex');
     const keyBuffer = Buffer.from(keyRipemd,'hex');
-    return bs58.encode(keyBuffer);
+    return base32.encode(keyBuffer);
   }
   calcTopic(topic) {
     const topicRipemd = new RIPEMD160().update(topic).digest('hex');
     const topicBuffer = Buffer.from(topicRipemd,'hex');
-    return bs58.encode(topicBuffer);
+    return base32.encode(topicBuffer);
   }
   calcResourceAddress(resourceKey) {
     const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');
     const resourceBuffer = Buffer.from(resourceRipemd,'hex');
-    return bs58.encode(resourceBuffer);
+    return base32.encode(resourceBuffer);
   }
 
   
@@ -109,12 +110,12 @@ class PeerCrypto {
   }
   calcKeyB58__() {
     const pubKeyBuff = Buffer.from(this.keyMaster.pubKeyHex, 'hex');
-    this.pubB58 = bs58.encode(pubKeyBuff);
+    this.pubB58 = base32.encode(pubKeyBuff);
     //console.log('PeerCrypto::calcKeyB58__ this.id =<',this.id ,'>');
     const keyRipemd = new RIPEMD160().update(this.keyMaster.pubKeyHex).digest('hex');
     const keyBuffer = Buffer.from(keyRipemd,'hex');
     //console.log('PeerCrypto::calcKeyB58__ keyBuffer =<',keyBuffer ,'>');
-    this.idB58 = bs58.encode(keyBuffer);
+    this.idB58 = base32.encode(keyBuffer);
     this.address = keyBuffer;
   }
 }

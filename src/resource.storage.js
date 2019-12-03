@@ -2,8 +2,13 @@
 const fs = require('fs');
 const path = require('path');
 const jsrsasign = require('jsrsasign');
-const bs58 = require('bs58');
+//const bs58 = require('bs58');
 const RIPEMD160 = require('ripemd160');
+const base32 = require('base32');
+const PeerMachine = require('./peer.machine.js');
+
+
+
 
 class ResourceStorage {
   constructor(config) {
@@ -12,7 +17,11 @@ class ResourceStorage {
     if (!fs.existsSync(this._path)) {
       fs.mkdirSync(this._path,{ recursive: true });
     }
-    this._uri = 'ermu://[host]:[port]';
+    console.log('ResourceStorage::constructor: config=<',config,'>');
+    this.machine_ = new PeerMachine(config);
+    const host = this.machine_.readMachienIp();
+    const port = config.listen.data.port;
+    this._uri = `https://[${host}]:${port}`;
   }
   append(key,content) {
     let keyAddress = this.getContentAddress_(key);
@@ -51,13 +60,12 @@ class ResourceStorage {
   getContentAddress_(resourceKey) {
     const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');
     const resourceBuffer = Buffer.from(resourceRipemd,'hex');
-    return bs58.encode(resourceBuffer);
+    return base32.encode(resourceBuffer);
     return 
   }
   getPath4Address_(address) {
     let pathAddress = this._path;
-    pathAddress += '/' + address.substring(0,2);
-    pathAddress += '/' + address.substring(2,4);
+    pathAddress += '/' + address.substring(0,3);
     pathAddress += '/' + address;
     return pathAddress;
   }

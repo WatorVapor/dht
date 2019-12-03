@@ -1,7 +1,7 @@
 'use strict';
-//const ResourceNetWork = require('./resource.network.js');
-//const ResourceStorage = require('./resource.storage.js');
-const bs58 = require('bs58');
+//const bs58 = require('bs58');
+const base32 = require('base32');
+
 
 class PeerPlace {
   constructor(key,peers,crypto) {
@@ -47,29 +47,12 @@ class PeerPlace {
     console.log('PeerPlace::append data=<',data,'>');
   }
   
-  /*
+
   calcDistance_(address,peer) {
     //console.log('PeerPlace::calcDistance_ address=<',address,'>');
     //console.log('PeerPlace::calcDistance_ peer=<',peer,'>');
-    const addressBuf = bs58.decode(address);
-    const peerBuf = bs58.decode(peer);
-    //console.log('PeerPlace::calcDistance_ addressBuf=<',addressBuf,'>');
-    //console.log('PeerPlace::calcDistance_ peerBuf=<',peerBuf,'>');
-    let distance = 0;
-    for (let i = 0; i < addressBuf.length,i < peerBuf.length; i++) {
-      const distanceElem = addressBuf[i] ^ peerBuf[i];
-      //console.log('PeerPlace::calcDistance_ distanceElem=<',distanceElem,'>');
-      distance += distanceElem;
-    }
-    console.log('PeerPlace::calcDistance_ distance=<',distance,'>');
-    return 1.0 / parseFloat(distance);
-  }
-  */
-  calcDistance_(address,peer) {
-    //console.log('PeerPlace::calcDistance_ address=<',address,'>');
-    //console.log('PeerPlace::calcDistance_ peer=<',peer,'>');
-    const addressBuf = bs58.decode(address);
-    const peerBuf = bs58.decode(peer);
+    const addressBuf = base32.decode(address);
+    const peerBuf = base32.decode(peer);
     //console.log('PeerPlace::calcDistance_ addressBuf=<',addressBuf.toString('hex'),'>');
     //console.log('PeerPlace::calcDistance_ peerBuf=<',peerBuf.toString('hex'),'>');
     const distanceBuf = Buffer.alloc(peerBuf.length);
@@ -79,7 +62,7 @@ class PeerPlace {
       distanceBuf[i] = distanceElem;
     }
     //console.log('PeerPlace::calcDistance_ distanceBuf=<',distanceBuf,'>');
-    //return bs58.encode(distanceBuf);
+    //return base32.encode(distanceBuf);
     return distanceBuf.toString('hex');
   }
   
