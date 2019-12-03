@@ -32,10 +32,11 @@ class PeerNetWork {
   port() {
     return this.config.listen.ctrl.port;
   }
-  
-  findPlace(key) {
-    console.log('PeerNetWork::findPlace key=<',key,'>');
-    const place = new PeerPlace(key,this.peers,this.crypto_);
+
+  publish(resource) {
+    console.log('PeerNetWork::publish resource=<',resource,'>');
+    const place = new PeerPlace(resource.address,this.peers,this.crypto_);
+    console.log('PeerNetWork::publish place=<',place,'>');
     return place;
   }
   
@@ -208,7 +209,7 @@ class PeerNetWork {
       //console.log('eachRemotePeer__ peer=<',peer,'>');
       let peerInfo = this.peers[peer];
       //console.log('eachRemotePeer__ peerInfo=<',peerInfo,'>');
-      if (peer !== this.crypto_.idB58) {
+      if (peer !== this.crypto_.idBS32) {
         fn(peer, peerInfo);
       }
     }
@@ -224,7 +225,7 @@ class PeerNetWork {
     setTimeout(()=>{
       self.doClientPing__();
     },1000*1);
-    this.peers[this.crypto_.idB58] = {
+    this.peers[this.crypto_.idBS32] = {
       host: this.machine_.readMachienIp(),
       ports: this.config.listen
     };

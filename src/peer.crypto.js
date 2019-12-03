@@ -1,13 +1,13 @@
 'use strict';
 const fs = require('fs');
 const jsrsasign = require('jsrsasign');
-//const bs58 = require('bs58');
 const RIPEMD160 = require('ripemd160');
-const base32 = require('base32');
+const base32 = require("base32.js");
 
 
 
 const iConstMessageOutDateInMs = 1000 * 60;
+const bs32Option = { type: "crockford", lc: true };
 class PeerCrypto {
   constructor(config) {
     //console.log('PeerCrypto::constructor config=<',config,'>');
@@ -22,16 +22,16 @@ class PeerCrypto {
       this.createKey__();
     }
     //console.log('PeerCrypto::loadKey this.keyMaster=<',this.keyMaster,'>');
-    this.calcKeyB58__();
-    //console.log('PeerCrypto::constructor this.pubB58=<',this.pubB58,'>');
-    //console.log('PeerCrypto::constructor this.idB58=<',this.idB58,'>');
+    this.calcKeyBS32__();
+    //console.log('PeerCrypto::constructor this.pubBS32=<',this.pubBS32,'>');
+    //console.log('PeerCrypto::constructor this.idBS32=<',this.idBS32,'>');
   }
   sign(msg) {
     let now = new Date();
     msg.sign = {};
     msg.sign.ts = now.toGMTString();
     msg.sign.ms = now.getMilliseconds();
-    msg.sign.pubKey = this.pubB58;
+    msg.sign.pubKey = this.pubBS32;
     
     let msgStr = JSON.stringify(msg);
     let msgHash = new RIPEMD160().update(msgStr).digest('hex');
@@ -64,9 +64,13 @@ class PeerCrypto {
     let msgHash = new RIPEMD160().update(msgStr).digest('hex');
     //console.log('PeerCrypto::verify msgHash=<',msgHash,'>');
     if(msgHash !== msgJson.signed.hash) {
+      console.log('PeerCrypto::verify msgJson=<',msgJson,'>');
       return false;
     }
-    let pubKeyHex = base32.decode(msgJson.sign.pubKey).toString('hex');
+    //console.log('PeerCrypto::verify msgJson.sign.pubKey=<',msgJson.sign.pubKey,'>');
+    const pubKey = base32.decode(msgJson.sign.pubKey,bs32Option);
+    //console.log('PeerCrypto::verify pubKey=<',pubKey,'>');
+    let pubKeyHex = base32.decode(msgJson.sign.pubKey,bs32Option).toString('hex');
     //console.log('PeerCrypto::verify pubKeyHex=<',pubKeyHex,'>');
     
     const ec = new jsrsasign.KJUR.crypto.ECDSA({'curve': 'secp256r1'});
@@ -75,20 +79,20 @@ class PeerCrypto {
     return verifyResult;
   }
   calcID(msgJson) {
-    const pubKeyHex = base32.decode(msgJson.sign.pubKey).toString('hex');
+    const pubKeyHex = base32.decode(msgJson.sign.pubKey,bs32Option).toString('hex');
     const keyRipemd = new RIPEMD160().update(pubKeyHex).digest('hex');
     const keyBuffer = Buffer.from(keyRipemd,'hex');
-    return base32.encode(keyBuffer);
+    return base32.encode(keyBuffer,bs32Option);
   }
   calcTopic(topic) {
     const topicRipemd = new RIPEMD160().update(topic).digest('hex');
     const topicBuffer = Buffer.from(topicRipemd,'hex');
-    return base32.encode(topicBuffer);
+    return base32.encode(topicBuffer,bs32Option);
   }
   calcResourceAddress(resourceKey) {
     const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');
     const resourceBuffer = Buffer.from(resourceRipemd,'hex');
-    return base32.encode(resourceBuffer);
+    return base32.encode(resourceBuffer,bs32Option);
   }
 
   
@@ -108,14 +112,14 @@ class PeerCrypto {
     fs.writeFileSync(this.keyPath,JSON.stringify(jwkPrv1,undefined,2));
     this.keyMaster = ec.prvKeyObj;
   }
-  calcKeyB58__() {
+  calcKeyBS32__() {
     const pubKeyBuff = Buffer.from(this.keyMaster.pubKeyHex, 'hex');
-    this.pubB58 = base32.encode(pubKeyBuff);
-    //console.log('PeerCrypto::calcKeyB58__ this.id =<',this.id ,'>');
+    this.pubBS32 = base32.encode(pubKeyBuff,bs32Option);
+    //console.log('PeerCrypto::calcKeyBS32__ this.id =<',this.id ,'>');
     const keyRipemd = new RIPEMD160().update(this.keyMaster.pubKeyHex).digest('hex');
     const keyBuffer = Buffer.from(keyRipemd,'hex');
-    //console.log('PeerCrypto::calcKeyB58__ keyBuffer =<',keyBuffer ,'>');
-    this.idB58 = base32.encode(keyBuffer);
+    //console.log('PeerCrypto::calcKeyBS32__ keyBuffer =<',keyBuffer ,'>');
+    this.idBS32 = base32.encode(keyBuffer,bs32Option);
     this.address = keyBuffer;
   }
 }

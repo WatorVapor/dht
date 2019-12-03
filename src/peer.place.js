@@ -1,6 +1,6 @@
 'use strict';
 //const bs58 = require('bs58');
-const base32 = require('base32');
+const base32 = require("base32.js");
 
 
 class PeerPlace {
@@ -23,7 +23,7 @@ class PeerPlace {
     //let minDistance = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz';
     let fastPeer = ''
     const distanceZero = this.calcDistance_(this.address_,this.address_);
-    console.log('PeerPlace::constructor distanceZero=<',distanceZero,'>');
+    //console.log('PeerPlace::constructor distanceZero=<',distanceZero,'>');
     for(const peer in peers) {
       this.peers_.push(peer);
       //console.log('PeerPlace::constructor peer=<',peer,'>');

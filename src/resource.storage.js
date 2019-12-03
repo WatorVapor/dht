@@ -3,11 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const jsrsasign = require('jsrsasign');
 const RIPEMD160 = require('ripemd160');
-const base32 = require('base32');
+const base32 = require("base32.js");
 const PeerMachine = require('./peer.machine.js');
 
 
-
+const bs32Option = { type: "crockford", lc: true };
 
 class ResourceStorage {
   constructor(config) {
@@ -47,7 +47,7 @@ class ResourceStorage {
     }
     fs.writeFileSync(contentPathFlat,content);
     
-    return {address:keyAddress,uri:this.getURI4Address_(keyAddress)};
+    return {address:keyAddress,uri:this._uri};
   }
   
   fetch(keyAddress,start,count) {
@@ -82,7 +82,7 @@ class ResourceStorage {
   getAddress_(resourceKey) {
     const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');
     const resourceBuffer = Buffer.from(resourceRipemd,'hex');
-    return base32.encode(resourceBuffer);
+    return base32.encode(resourceBuffer,bs32Option);
     return 
   }
   getPath4KeyAddress_(address) {

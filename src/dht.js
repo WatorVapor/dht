@@ -34,9 +34,7 @@ class DHT {
     //console.log('DHT::append data=<',data,'>');
     const dataStorage = this.storage_.append(key,data);
     console.log('DHT::append dataStorage=<',dataStorage,'>');
-    const place = this.peer_.findPlace(key);
-    console.log('DHT::append place=<',place,'>');
-    place.append(data);
+    this.peer_.publish(dataStorage);
   }
   
   
