@@ -38,6 +38,7 @@ class ResourceNetWork {
   
   onRequest_(req, res) {
     res.writeHead(200,{'Content-Type': 'text/plain'});
+    res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
     //console.log('ResourceNetWork::onRequest_ req.url=<',req.url,'>');
     const url_parts = url.parse(req.url);
     //console.log('ResourceNetWork::onRequest_ url_parts=<',url_parts,'>');
@@ -56,7 +57,7 @@ class ResourceNetWork {
     const contents = this.storage_.fetch(address,start,count);
     console.log('ResourceNetWork::onRequest_ contents=<',contents,'>');
     if(contents) {
-      res.end(JSON.stringify(contents,undefined,2));
+      res.end(JSON.stringify(contents,undefined,2),'utf-8');
     } else {
       res.end('{}');
     }
