@@ -6,7 +6,7 @@ const base32 = require('base32');
 class PeerPlace {
   constructor(key,peers,crypto) {
     //console.log('PeerPlace::constructor key=<',key,'>');
-    //console.log('PeerPlace::constructor peers=<',peers,'>');
+    console.log('PeerPlace::constructor peers=<',peers,'>');
     //console.log('PeerPlace::constructor crypto=<',crypto,'>');
     //this.key_ = key;
     //this.peers_ = peers;

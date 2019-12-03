@@ -224,6 +224,10 @@ class PeerNetWork {
     setTimeout(()=>{
       self.doClientPing__();
     },1000*1);
+    this.peers[this.crypto_.idB58] = {
+      host: this.machine_.readMachienIp(),
+      ports: this.config.listen
+    };
   };
 
 }
