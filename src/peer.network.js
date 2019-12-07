@@ -4,9 +4,7 @@ const dgram = require("dgram");
 const PeerMachine = require('./peer.machine.js');
 const PeerCrypto = require('./peer.crypto.js');
 const PeerPlace = require('./peer.place.js');
-
-const ResourceNetWork = require('./resource.network.js');
-const ResourceStorage = require('./resource.storage.js');
+const PeerStorage = require('./peer.storage.js');
 
 class PeerNetWork {
   constructor(config) {
@@ -14,6 +12,7 @@ class PeerNetWork {
     this.peers = {};
     this.crypto_ = new PeerCrypto(config);
     this.machine_ = new PeerMachine(config);
+    this.storage_ = new PeerStorage(config);
 
     this.serverCtrl = dgram.createSocket("udp6");
     this.client = dgram.createSocket("udp6");
@@ -37,6 +36,9 @@ class PeerNetWork {
     console.log('PeerNetWork::publish resource=<',resource,'>');
     const place = new PeerPlace(resource.address,this.peers,this.crypto_);
     console.log('PeerNetWork::publish place=<',place,'>');
+    if(place.isFinal()) {
+      this.storage_.save(resource);
+    }
     return place;
   }
   

@@ -46,6 +46,9 @@ class PeerPlace {
   append(data) {
     console.log('PeerPlace::append data=<',data,'>');
   }
+  isFinal() {
+    return true;
+  }
   
 
   calcDistance_(address,peer) {

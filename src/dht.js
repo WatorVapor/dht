@@ -33,7 +33,7 @@ class DHT {
     //console.log('DHT::append key=<',key,'>');
     //console.log('DHT::append data=<',data,'>');
     const dataStorage = this.storage_.append(key,data);
-    console.log('DHT::append dataStorage=<',dataStorage,'>');
+    //console.log('DHT::append dataStorage=<',dataStorage,'>');
     this.peer_.publish(dataStorage);
   }
   
