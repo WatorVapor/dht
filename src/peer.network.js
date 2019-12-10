@@ -36,7 +36,8 @@ class PeerNetWork {
     console.log('PeerNetWork::publish resource=<',resource,'>');
     const place = new PeerPlace(resource.address,this.peers,this.crypto_);
     console.log('PeerNetWork::publish place=<',place,'>');
-    if(place.isFinal()) {
+    console.log('PeerNetWork::publish this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
+    if(place.isFinal(this.crypto_.idBS32)) {
       this.storage_.append(resource);
     }
     if(place.nearest !== this.crypto_.idBS32) {
@@ -48,8 +49,20 @@ class PeerNetWork {
   }
   fetch4KeyWord(keyWord) {
     console.log('PeerNetWork::fetch4KeyWord keyWord=<',keyWord,'>');
-    const place = new PeerPlace(keyWord,this.peers,this.crypto_);
-    console.log('PeerNetWork::publish place=<',place,'>');
+    const address = this.crypto_.calcResourceAddress(keyWord);
+    console.log('PeerNetWork::fetch4KeyWord address=<',address,'>');
+    const place = new PeerPlace(address,this.peers,this.crypto_);
+    console.log('PeerNetWork::fetch4KeyWord place=<',place,'>');
+    console.log('PeerNetWork::fetch4KeyWord this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
+    if(place.isFinal(this.crypto_.idBS32)) {
+      this.storage_.fetch(address);
+    }
+    if(place.nearest !== this.crypto_.idBS32) {
+      this.relayFetchMessage_(place.nearest,address);
+    }
+    if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest) {
+      this.relayFetchMessage_(place.farthest,address);
+    }
   }
   
 
@@ -242,10 +255,18 @@ class PeerNetWork {
       ports: this.config.listen
     };
   };
+  
+  
   relayStoreMessage_(dst,resource) {
     console.log('relayStoreMessage_ dst=<', dst, '>');
     console.log('relayStoreMessage_ resource=<', resource, '>');
   }
+  relayFetchMessage_(dst,resource) {
+    console.log('relayFetchMessage_ dst=<', dst, '>');
+    console.log('relayFetchMessage_ resource=<', resource, '>');
+  }
+
+
 }
 
 module.exports = PeerNetWork;

@@ -30,6 +30,12 @@ class PeerStorage {
     console.log('PeerStorage::append: contentPlacePath=<',contentPlacePath,'>');
     fs.writeFileSync(contentPlacePath,resource.uri);
   }
+  fetch(keyAddress) {
+    console.log('PeerStorage::fetch: keyAddress=<',keyAddress,'>');    
+    const keyPath = this.getPath4KeyAddress_(keyAddress);
+    console.log('PeerStorage::fetch: keyPath=<',keyPath,'>');
+  }
+  
   getAddress_(resourceKey) {
     const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');
     const resourceBuffer = Buffer.from(resourceRipemd,'hex');

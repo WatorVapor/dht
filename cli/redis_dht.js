@@ -56,8 +56,8 @@ const onRedisMsg = (channel, message) => {
   try {
     const jsonMsg = JSON.parse(message);
     if(jsonMsg && jsonMsg.words) {
-      const results = dht.fetch4KeyWord(jsonMsg.words);
-      console.log('onRedisMsg::results=<',results,'>');
+      const responseToken = dht.fetch4KeyWord(jsonMsg.words);
+      console.log('onRedisMsg::responseToken=<',responseToken,'>');
     }
   } catch(e) {
     console.log('onRedisMsg::e=<',e,'>');

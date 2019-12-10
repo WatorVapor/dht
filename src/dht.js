@@ -38,10 +38,9 @@ class DHT {
   }
   fetch4KeyWord(keyWord) {
     console.log('DHT::fetch4KeyWord keyWord=<',keyWord,'>');
-    const uriSet = this.peer_.fetch4KeyWord(keyWord);
-    console.log('DHT::fetch4KeyWord uriSet=<',uriSet,'>');
-    const hints = [];
-    return  hints;
+    const responseToken = this.peer_.fetch4KeyWord(keyWord);
+    console.log('DHT::fetch4KeyWord responseToken=<',responseToken,'>');
+    return  responseToken;
   }
   
   

@@ -3,14 +3,12 @@
 const base32 = require("base32.js");
 
 class PeerPlace {
-  constructor(key,peers,crypto) {
-    //console.log('PeerPlace::constructor key=<',key,'>');
+  constructor(address,peers) {
     console.log('PeerPlace::constructor peers=<',peers,'>');
-    //console.log('PeerPlace::constructor crypto=<',crypto,'>');
     //this.key_ = key;
     //this.peers_ = peers;
     //this.crypto_ = crypto;
-    this.address_ = crypto.calcResourceAddress(key);
+    this.address_ = address
     this.peers_ = [];
     //console.log('PeerPlace::constructor this.address_=<',this.address_,'>');
     let maxDistance = Buffer.alloc(this.address_.length);
@@ -42,11 +40,11 @@ class PeerPlace {
     this.nearest = nearPeer;
     this.farthest = fastPeer;
   }
-  isFinal() {
-    if(this.nearest === this.address_) {
+  isFinal(peer) {
+    if(this.nearest === peer) {
       return true;
     }
-    if(this.farthest === this.address_) {
+    if(this.farthest === peer) {
       return true;
     }
     return false;
