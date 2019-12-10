@@ -40,11 +40,11 @@ class PeerNetWork {
       this.storage_.append(resource);
     }
     const peer1 =  place.nearest();
-    if(this.isRemote_(peer1)) {
+    if(peer1 !== this.crypto_.idBS32) {
       this.relayMessage_(peer1,resource);
     }
     const peer2 =  place.farthest();
-    if(this.isRemote_(peer2) && peer1 !== peer2) {
+    if(peer1 !== this.crypto_.idBS32 && peer1 !== peer2) {
       this.relayMessage_(peer2,resource);
     }
   }
