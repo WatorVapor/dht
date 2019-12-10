@@ -1,7 +1,7 @@
 'use strict';
 const path = require('path');
 //console.log(':: __filename=<',__filename,'>');
-const dhtPath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/peer';
+const dhtPath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/peerstore';
 const dataPath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/datastore';
 const config = {
   listen:{
