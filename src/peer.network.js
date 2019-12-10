@@ -40,10 +40,10 @@ class PeerNetWork {
       this.storage_.append(resource);
     }
     if(place.nearest !== this.crypto_.idBS32) {
-      this.relayMessage_(place.nearest,resource);
+      this.relayStoreMessage_(place.nearest,resource);
     }
     if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest) {
-      this.relayMessage_(place.farthest,resource);
+      this.relayStoreMessage_(place.farthest,resource);
     }
   }
   
@@ -237,7 +237,10 @@ class PeerNetWork {
       ports: this.config.listen
     };
   };
-
+  relayStoreMessage_(dst,resource) {
+    console.log('relayStoreMessage_ dst=<', dst, '>');
+    console.log('relayStoreMessage_ resource=<', resource, '>');
+  }
 }
 
 module.exports = PeerNetWork;
