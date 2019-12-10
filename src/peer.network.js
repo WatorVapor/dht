@@ -37,7 +37,7 @@ class PeerNetWork {
     const place = new PeerPlace(resource.address,this.peers,this.crypto_);
     console.log('PeerNetWork::publish place=<',place,'>');
     if(place.isFinal()) {
-      this.storage_.save(resource);
+      this.storage_.append(resource);
     }
     return place;
   }
