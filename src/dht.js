@@ -36,6 +36,13 @@ class DHT {
     //console.log('DHT::append dataStorage=<',dataStorage,'>');
     this.peer_.publish(dataStorage);
   }
+  fetch4KeyWord(keyWord) {
+    console.log('DHT::fetch4KeyWord keyWord=<',keyWord,'>');
+    const uriSet = this.peer_.fetch4KeyWord(keyWord);
+    console.log('DHT::fetch4KeyWord uriSet=<',uriSet,'>');
+    const hints = [];
+    return  hints;
+  }
   
   
   // inside method.

@@ -46,6 +46,11 @@ class PeerNetWork {
       this.relayStoreMessage_(place.farthest,resource);
     }
   }
+  fetch4KeyWord(keyWord) {
+    console.log('PeerNetWork::fetch4KeyWord keyWord=<',keyWord,'>');
+    const place = new PeerPlace(keyWord,this.peers,this.crypto_);
+    console.log('PeerNetWork::publish place=<',place,'>');
+  }
   
 
   onMessageCtrlServer__(msg, rinfo) {
