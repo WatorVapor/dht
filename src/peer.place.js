@@ -2,7 +2,6 @@
 //const bs58 = require('bs58');
 const base32 = require("base32.js");
 
-
 class PeerPlace {
   constructor(key,peers,crypto) {
     //console.log('PeerPlace::constructor key=<',key,'>');
@@ -43,20 +42,15 @@ class PeerPlace {
     this.nearest = nearPeer;
     this.farthest = fastPeer;
   }
-  append(data) {
-    console.log('PeerPlace::append data=<',data,'>');
-  }
   isFinal() {
-    if(this.near_ === this.address_) {
+    if(this.nearest === this.address_) {
       return true;
     }
-    if(this.fast_ === this.address_) {
+    if(this.farthest === this.address_) {
       return true;
     }
     return false;
   }
-  
-
   calcDistance_(address,peer) {
     //console.log('PeerPlace::calcDistance_ address=<',address,'>');
     //console.log('PeerPlace::calcDistance_ peer=<',peer,'>');
@@ -74,7 +68,6 @@ class PeerPlace {
     //return base32.encode(distanceBuf);
     return distanceBuf.toString('hex');
   }
-  
   btBuff_(a,b) {
     for (let i = 0; i < a.length,i < a.length,i < b.length; i++) {
       if(a[i] < b[i]) {
@@ -91,7 +84,6 @@ class PeerPlace {
     }
     return true;
   }
-  
 }
 
 module.exports = PeerPlace;
