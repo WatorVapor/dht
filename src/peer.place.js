@@ -47,7 +47,13 @@ class PeerPlace {
     console.log('PeerPlace::append data=<',data,'>');
   }
   isFinal() {
-    return true;
+    if(this.near_ === this.address_) {
+      return true;
+    }
+    if(this.fast_ === this.address_) {
+      return true;
+    }
+    return false;
   }
   
 
