@@ -38,15 +38,15 @@ class PeerNetWork {
     console.log('PeerNetWork::publish place=<',place,'>');
     if(place.isFinal()) {
       this.storage_.append(resource);
-    } else {
-      const peer1 =  place.nearest();
-      this.relayMessage_(peer1,resource);
-      const peer2 =  place.farthest();
-      if(far !== near) {
-        this.relayMessage_(peer2,resource);
-      }
     }
-    //return place;
+    const peer1 =  place.nearest();
+    if(place.isRemote(peer1)) {
+      this.relayMessage_(peer1,resource);
+    }
+    const peer2 =  place.farthest();
+    if(place.isRemote(peer2) && peer1 !== peer2) {
+      this.relayMessage_(peer2,resource);
+    }
   }
   
 
