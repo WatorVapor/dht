@@ -40,8 +40,8 @@ class PeerPlace {
         minDistance = distance;
       }
     }
-    this.near_ = nearPeer;
-    this.fast_ = fastPeer;
+    this.nearest = nearPeer;
+    this.farthest = fastPeer;
   }
   append(data) {
     console.log('PeerPlace::append data=<',data,'>');
