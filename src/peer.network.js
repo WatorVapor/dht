@@ -40,11 +40,11 @@ class PeerNetWork {
       this.storage_.append(resource);
     }
     const peer1 =  place.nearest();
-    if(place.isRemote(peer1)) {
+    if(this.isRemote_(peer1)) {
       this.relayMessage_(peer1,resource);
     }
     const peer2 =  place.farthest();
-    if(place.isRemote(peer2) && peer1 !== peer2) {
+    if(this.isRemote_(peer2) && peer1 !== peer2) {
       this.relayMessage_(peer2,resource);
     }
   }
