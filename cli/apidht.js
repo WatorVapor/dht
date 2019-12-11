@@ -3,8 +3,9 @@ const path = require('path');
 const DHT = require('../api/dht.js');
 const dht = new DHT();
 //console.log(':: dht=<',dht,'>');
-const peer = dht.peerInfo();
-console.log(':: peer=<',peer,'>');
+dht.peerInfo((peer)=>{
+  console.log(':: peer=<',peer,'>');
+});
 
 const appendData = ()=> {
   dht.append('汉语','https://zh.wikipedia.org/wiki/汉语');

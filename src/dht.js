@@ -14,7 +14,7 @@ class DHT {
     this.resource_ = new ResourceNetWork(config);
     this.storage_ = new ResourceStorage(config);
     this.info_ = {
-      id:this.crypto_.idB58,
+      id:this.crypto_.idBS32,
       peer:{
         host:this.peer_.host(),
         port:this.peer_.port()
