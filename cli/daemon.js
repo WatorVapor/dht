@@ -34,21 +34,6 @@ const dht = new DHT(config);
 const peer = dht.peerInfo();
 console.log(':: peer=<',peer,'>');
 
-/*
-const UnixDomainUdp = require('unix-dgram');
-const API_DOMAIN_PATH = '/tmp/dht_ermu_api_unix_dgram';
-
-const server = UnixDomainUdp.createSocket('unix_dgram',(buf,rinfo) => {
-  onApiMessage(buf,rinfo);
-});
-execSync(`rm -rf ${API_DOMAIN_PATH}`);
-server.bind(API_DOMAIN_PATH);
-
-const onApiMessage = (buf,rinfo) => {
-  console.log('onApiMessage::buf=<',buf,'>');
-  console.log('onApiMessage::rinfo=<',rinfo,'>');
-};
-*/
 const net = require('net');
 const API_DOMAIN_PATH = '/tmp/dht_ermu_api_unix_dgram';
 
@@ -59,19 +44,36 @@ const { execSync } = require('child_process');
 execSync(`rm -rf ${API_DOMAIN_PATH}`);
 server.listen(API_DOMAIN_PATH);
 
+const StreamJson = require('../api/StreamJson.js');
+const sjson_ = new StreamJson();
+
 const onConnection = (connection) => {
   //console.log('onConnection::connection=<',connection,'>');
+  connection.setNoDelay();
   connection.on('data', (data) => {
     onData(data,connection);
   });
 };
+
+
 const onData = (data,connection) => {
   //console.log('onData::data=<',data.toString(),'>');  
   //console.log('onData::connection=<',connection,'>');
-  const jMsg = JSON.parse(data.toString());
-  console.log('onData::jMsg=<',jMsg,'>');
-  if(jMsg && jMsg.peerInfo) {
-    onPeerInfo(connection);
+  //const jMsg = JSON.parse(data.toString());
+  const jMsgs = sjson_.parse(data.toString());
+  //console.log('onData::jMsg=<',jMsg,'>');
+  for(const jMsg of jMsgs) {
+    if(jMsg) {
+      if(jMsg.peerInfo) {
+        onPeerInfo(connection);
+      } else if(jMsg.store) {
+        onStoreData(jMsg,connection);
+      } else {
+        console.log('onData::jMsg=<',jMsg,'>');
+      }
+    } else {
+      console.log('onData::data=<',data.toString(),'>');
+    }
   }
 };
 
@@ -83,3 +85,26 @@ const onPeerInfo = (connection)=> {
   const msgBuff = Buffer.from(JSON.stringify(peerInfo),'utf-8');
   connection.write(msgBuff);
 };
+
+const onStoreData = (jMsg,connection)=> {
+  //console.log('onStoreData::jMsg=<',jMsg,'>');
+  if(jMsg.store === 'append') {
+    onAppendData(jMsg.key,jMsg.data,connection);
+  } else if(jMsg.store === 'delete') {
+    onDeleteData(jMsg.key,connection);
+  } else {
+    console.log('onStoreData::jMsg=<',jMsg,'>');
+  }
+};
+
+const onAppendData = (key,data,connection)=> {
+  console.log('onAppendData::key=<',key,'>');
+  console.log('onAppendData::data=<',data,'>');
+  dht.append(key,data);
+}
+
+const onDeleteData = (key,connection)=> {
+  console.log('onDeleteData::jMsg=<',jMsg,'>');
+}
+
+
