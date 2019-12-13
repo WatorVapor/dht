@@ -65,7 +65,7 @@ const onData = (data,connection) => {
   for(const jMsg of jMsgs) {
     if(jMsg) {
       if(jMsg.peerInfo) {
-        onPeerInfo(connection);
+        onPeerInfo(jMsg,connection);
       } else if(jMsg.store) {
         onStoreData(jMsg,connection);
       } else {
@@ -77,24 +77,35 @@ const onData = (data,connection) => {
   }
 };
 
-const onPeerInfo = (connection)=> {
+const onPeerInfo = (jMsg,connection)=> {
   //console.log('onPeerInfo::connection=<',connection,'>');
   const peer = dht.peerInfo();
   //console.log(':: peer=<',peer,'>');
-  const peerInfo = {peerInfo:peer};
-  const msgBuff = Buffer.from(JSON.stringify(peerInfo),'utf-8');
-  connection.write(msgBuff);
+  const peerInfoResp = {
+    peerInfo:peer,
+    cb:jMsg.cb
+  };
+  const RespBuff = Buffer.from(JSON.stringify(peerInfoResp),'utf-8');
+  connection.write(RespBuff);
 };
 
 const onStoreData = (jMsg,connection)=> {
   //console.log('onStoreData::jMsg=<',jMsg,'>');
+  const storeResp = {
+    cb:jMsg.cb
+  };
   if(jMsg.store === 'append') {
+    storeResp.store = 'append',
     onAppendData(jMsg.key,jMsg.data,connection);
   } else if(jMsg.store === 'delete') {
+    storeResp.store = 'delete',
     onDeleteData(jMsg.key,connection);
   } else {
     console.log('onStoreData::jMsg=<',jMsg,'>');
   }
+  const respBuff = Buffer.from(JSON.stringify(storeResp),'utf-8');
+  connection.write(respBuff);
+
 };
 
 const onAppendData = (key,data,connection)=> {
