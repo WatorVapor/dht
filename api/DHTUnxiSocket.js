@@ -61,6 +61,7 @@ class DHTUnixSocket {
     const jMsgArray = this.sjson_.parse(msg.toString());
     //console.log('DHTUnixSocket::onMsg_ jMsgArray=<',jMsgArray,'>');
     for(const jMsg of jMsgArray ) {
+      console.log('DHTUnixSocket::onMsg_ jMsg_=<',jMsg,'>');
       if(jMsg && jMsg.cb) {
         if( typeof this.cb_[jMsg.cb] === 'function') {
           this.cb_[jMsg.cb](jMsg);
