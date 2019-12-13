@@ -28,7 +28,7 @@ class DHTUnixSocket {
   peerInfo(cb) {
     console.log('DHTUnixSocket::peerInfo');
     const msg = {peerInfo:'get'};
-    auto cb = this.writeData_(msg);
+    const cb = this.writeData_(msg);
     this.cb_[cb] = cb;
   }
   append(key,data,cb) {
@@ -39,7 +39,7 @@ class DHTUnixSocket {
       key:key,
       data:data
     };
-    auto cb = this.writeData_(msg);
+    const cb = this.writeData_(msg);
     this.cb_[cb] = cb;
   }
   fetch4KeyWord(keyWord) {
@@ -48,7 +48,7 @@ class DHTUnixSocket {
       fetch:'keyWord',
       keyWord:keyWord
     };
-    auto cb = this.writeData_(msg);
+    const cb = this.writeData_(msg);
     this.cb_[cb] = cb;    
   }
   
