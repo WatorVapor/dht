@@ -1,7 +1,10 @@
 'use strict';
 const net = require('net');
+const RIPEMD160 = require('ripemd160');
+const base32 = require("base32.js");
 const API_DOMAIN_PATH = '/tmp/dht_ermu_api_unix_dgram';
 const StreamJson = require('./StreamJson.js');
+const bs32Option = { type: "crockford", lc: true };
 
 class DHTUnixSocket {
   constructor() {
@@ -25,8 +28,8 @@ class DHTUnixSocket {
   peerInfo(cb) {
     console.log('DHTUnixSocket::peerInfo');
     const msg = {peerInfo:'get'};
-    this.writeData_(msg);
-    this.cb_['peerInfo'] = cb;
+    auto cb = this.writeData_(msg);
+    this.cb_[cb] = cb;
   }
   append(key,data,cb) {
     console.log('DHTUnixSocket::append key=<',key,'>');
@@ -36,8 +39,8 @@ class DHTUnixSocket {
       key:key,
       data:data
     };
-    this.writeData_(msg);
-    this.cb_['store'] = cb;
+    auto cb = this.writeData_(msg);
+    this.cb_[cb] = cb;
   }
   fetch4KeyWord(keyWord) {
     console.log('DHTUnixSocket::fetch4KeyWord keyWord=<',keyWord,'>');
@@ -45,8 +48,8 @@ class DHTUnixSocket {
       fetch:'keyWord',
       keyWord:keyWord
     };
-    this.writeData_(msg);
-    this.cb_['fetch'] = cb;
+    auto cb = this.writeData_(msg);
+    this.cb_[cb] = cb;    
   }
   
   onError_(err) {
@@ -58,9 +61,9 @@ class DHTUnixSocket {
     const jMsgs = this.sjson_.parse(msg.toString());
     //console.log('DHTUnixSocket::onMsg_ jMsg=<',jMsg,'>');
     for(const jMsg of jMsgs ) {
-      if(jMsg && jMsg.peerInfo) {
-        if( typeof this.cb_['peerInfo'] === 'function') {
-          this.cb_['peerInfo'](jMsg.peerInfo);
+      if(jMsg && jMsgs.cb) {
+        if( typeof this.cb_[jMsgs.cb] === 'function' && jMsgs.cb) {
+          this.cb_[jMsgs.cb](jMsg);
         }
       }
     }
@@ -69,12 +72,22 @@ class DHTUnixSocket {
     if(this.sending_) {
     }
     this.sending_ = true;
+    const cbtag = this.calcCallBackHash_(msg);
+    msg.cb = cbtag;
     const msgBuff = Buffer.from(JSON.stringify(msg),'utf-8');
     try {
       this.client_.write(msgBuff);
     } catch (e) {
       console.log('writeData_::fetch e=<',e,'>');
     }
+    return cbtag;
+  }
+  calcCallBackHash_(msg) {
+    let now = new Date();
+    const cbHash = JSON.stringify(msg) + now.toGMTString() + now.getMilliseconds();
+    const Ripemd = new RIPEMD160().update(cbHash).digest('hex');
+    const cbBuffer = Buffer.from(topicRipemd,'hex');
+    return base32.encode(cbBuffer,bs32Option);
   }
 }
 
