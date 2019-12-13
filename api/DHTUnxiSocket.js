@@ -64,7 +64,11 @@ class DHTUnixSocket {
       if(jMsg && jMsgs.cb) {
         if( typeof this.cb_[jMsgs.cb] === 'function') {
           this.cb_[jMsgs.cb](jMsg);
+        } else {
+          console.log('DHTUnixSocket::onMsg_ jMsg=<',jMsg,'>');
         }
+      } else {
+        console.log('DHTUnixSocket::onMsg_ jMsg=<',jMsg,'>');
       }
     }
   }
