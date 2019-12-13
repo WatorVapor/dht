@@ -58,12 +58,12 @@ class DHTUnixSocket {
   onMsg_(msg) {
     //console.log('DHTUnixSocket::onMsg_ msg=<',msg.toString('utf-8'),'>');
     //const jMsg = JSON.parse(msg.toString());
-    const jMsgs = this.sjson_.parse(msg.toString());
-    //console.log('DHTUnixSocket::onMsg_ jMsg=<',jMsg,'>');
-    for(const jMsg of jMsgs ) {
-      if(jMsg && jMsgs.cb) {
-        if( typeof this.cb_[jMsgs.cb] === 'function') {
-          this.cb_[jMsgs.cb](jMsg);
+    const jMsgArray = this.sjson_.parse(msg.toString());
+    //console.log('DHTUnixSocket::onMsg_ jMsgArray=<',jMsgArray,'>');
+    for(const jMsg of jMsgArray ) {
+      if(jMsg && jMsg.cb) {
+        if( typeof this.cb_[jMsg.cb] === 'function') {
+          this.cb_[jMsg.cb](jMsg);
         } else {
           console.log('DHTUnixSocket::onMsg_ jMsg=<',jMsg,'>');
           console.log('DHTUnixSocket::onMsg_ this.cb_=<',this.cb_,'>');
