@@ -85,8 +85,8 @@ class DHTUnixSocket {
   calcCallBackHash_(msg) {
     let now = new Date();
     const cbHash = JSON.stringify(msg) + now.toGMTString() + now.getMilliseconds();
-    const Ripemd = new RIPEMD160().update(cbHash).digest('hex');
-    const cbBuffer = Buffer.from(topicRipemd,'hex');
+    const cbRipemd = new RIPEMD160().update(cbHash).digest('hex');
+    const cbBuffer = Buffer.from(cbRipemd,'hex');
     return base32.encode(cbBuffer,bs32Option);
   }
 }
