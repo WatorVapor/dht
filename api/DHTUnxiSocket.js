@@ -28,8 +28,8 @@ class DHTUnixSocket {
   peerInfo(cb) {
     console.log('DHTUnixSocket::peerInfo');
     const msg = {peerInfo:'get'};
-    const cb = this.writeData_(msg);
-    this.cb_[cb] = cb;
+    const cbTag = this.writeData_(msg);
+    this.cb_[cbTag] = cb;
   }
   append(key,data,cb) {
     console.log('DHTUnixSocket::append key=<',key,'>');
@@ -39,8 +39,8 @@ class DHTUnixSocket {
       key:key,
       data:data
     };
-    const cb = this.writeData_(msg);
-    this.cb_[cb] = cb;
+    const cbTag = this.writeData_(msg);
+    this.cb_[cbTag] = cb;
   }
   fetch4KeyWord(keyWord) {
     console.log('DHTUnixSocket::fetch4KeyWord keyWord=<',keyWord,'>');
@@ -48,8 +48,8 @@ class DHTUnixSocket {
       fetch:'keyWord',
       keyWord:keyWord
     };
-    const cb = this.writeData_(msg);
-    this.cb_[cb] = cb;    
+    const cbTag = this.writeData_(msg);
+    this.cb_[cbTag] = cb;    
   }
   
   onError_(err) {
@@ -62,7 +62,7 @@ class DHTUnixSocket {
     //console.log('DHTUnixSocket::onMsg_ jMsg=<',jMsg,'>');
     for(const jMsg of jMsgs ) {
       if(jMsg && jMsgs.cb) {
-        if( typeof this.cb_[jMsgs.cb] === 'function' && jMsgs.cb) {
+        if( typeof this.cb_[jMsgs.cb] === 'function') {
           this.cb_[jMsgs.cb](jMsg);
         }
       }
