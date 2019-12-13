@@ -96,10 +96,8 @@ const onStoreData = (jMsg,connection)=> {
     store:jMsg.store
   };
   if(jMsg.store === 'append') {
-    storeResp.store = 'append',
     onAppendData(jMsg.key,jMsg.data,connection);
   } else if(jMsg.store === 'delete') {
-    storeResp.store = 'delete',
     onDeleteData(jMsg.key,connection);
   } else {
     console.log('onStoreData::jMsg=<',jMsg,'>');
