@@ -4,7 +4,7 @@ const DHT = require('../api/DHTUnxiSocket.js');
 const dht = new DHT();
 //console.log(':: dht=<',dht,'>');
 dht.peerInfo((peer)=>{
-  console.log('dht.peerInfo:: peer=<',peer,'>');
+  console.log('dht.peerInfo:: peer.peerInfo=<',peer.peerInfo,'>');
 });
 
 const appendData = ()=> {
