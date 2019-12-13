@@ -66,6 +66,7 @@ class DHTUnixSocket {
           this.cb_[jMsgs.cb](jMsg);
         } else {
           console.log('DHTUnixSocket::onMsg_ jMsg=<',jMsg,'>');
+          console.log('DHTUnixSocket::onMsg_ this.cb_=<',this.cb_,'>');
         }
       } else {
         console.log('DHTUnixSocket::onMsg_ jMsg=<',jMsg,'>');
