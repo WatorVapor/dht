@@ -92,7 +92,8 @@ const onPeerInfo = (jMsg,connection)=> {
 const onStoreData = (jMsg,connection)=> {
   //console.log('onStoreData::jMsg=<',jMsg,'>');
   const storeResp = {
-    cb:jMsg.cb
+    cb:jMsg.cb,
+    store:jMsg.store
   };
   if(jMsg.store === 'append') {
     storeResp.store = 'append',
