@@ -33,10 +33,10 @@ class PeerNetWork {
   }
 
   publish(resource) {
-    console.log('PeerNetWork::publish resource=<',resource,'>');
+    //console.log('PeerNetWork::publish resource=<',resource,'>');
     const place = new PeerPlace(resource.address,this.peers,this.crypto_);
-    console.log('PeerNetWork::publish place=<',place,'>');
-    console.log('PeerNetWork::publish this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
+    //console.log('PeerNetWork::publish place=<',place,'>');
+    //console.log('PeerNetWork::publish this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
     if(place.isFinal(this.crypto_.idBS32)) {
       this.storage_.append(resource);
     }
@@ -93,6 +93,9 @@ class PeerNetWork {
         } else {
           console.log('onMessageCtrlServer__ msgJson=<', msgJson, '>');
         }
+      } else if (msgJson.store) {
+          //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
+          this.onStore4Remote__(rPeerId, msgJson.store);
       } else {
         console.log('onMessageCtrlServer__ msgJson=<', msgJson, '>');
       }
@@ -258,14 +261,34 @@ class PeerNetWork {
   
   
   relayStoreMessage_(dst,resource) {
-    console.log('relayStoreMessage_ dst=<', dst, '>');
-    console.log('relayStoreMessage_ resource=<', resource, '>');
+    //console.log('relayStoreMessage_ dst=<', dst, '>');
+    //console.log('relayStoreMessage_ resource=<', resource, '>');
+    const msg = {store:resource}
+    this.sendMessage_(dst,msg);
   }
   relayFetchMessage_(dst,resource) {
-    console.log('relayFetchMessage_ dst=<', dst, '>');
-    console.log('relayFetchMessage_ resource=<', resource, '>');
+    //console.log('relayFetchMessage_ dst=<', dst, '>');
+    //console.log('relayFetchMessage_ resource=<', resource, '>');
+    const msg = {fetch:resource}
+    this.sendMessage_(dst,resource);
   }
-
+  
+  sendMessage_(dst,msg) {
+    const dstPeer = this.peers[dst];
+    //console.log('sendMessage_ dstPeer=<', dstPeer, '>');
+    const dstHost = dstPeer.host;
+    const dstPort = dstPeer.ports.ctrl.port;
+    let msgSign = this.crypto_.sign(msg);
+    console.log('sendMessage_ msgSign=<', msgSign, '>');
+    const msgBuff = Buffer.from(JSON.stringify(msgSign));
+    this.client.send(msgBuff, dstPort, dstHost, (err) => {
+      //console.log('sendMessage_ err=<',err,'>');
+    });
+  }
+  onStore4Remote__(fromId, store) {
+    console.log('onStore4Remote__ fromId=<', fromId, '>');
+    console.log('onStore4Remote__ store=<', store, '>');
+  }
 
 }
 

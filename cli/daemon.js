@@ -96,9 +96,9 @@ const onStoreData = (jMsg,connection)=> {
     store:jMsg.store
   };
   if(jMsg.store === 'append') {
-    onAppendData(jMsg.key,jMsg.data,connection);
+    onAppendData(jMsg.key,jMsg.data,jMsg.cb,connection);
   } else if(jMsg.store === 'delete') {
-    onDeleteData(jMsg.key,connection);
+    onDeleteData(jMsg.key,jMsg.cb,connection);
   } else {
     console.log('onStoreData::jMsg=<',jMsg,'>');
   }
@@ -107,13 +107,13 @@ const onStoreData = (jMsg,connection)=> {
 
 };
 
-const onAppendData = (key,data,connection)=> {
+const onAppendData = (key,data,cb,connection)=> {
   console.log('onAppendData::key=<',key,'>');
   console.log('onAppendData::data=<',data,'>');
-  dht.append(key,data);
+  dht.append(key,data,cb);
 }
 
-const onDeleteData = (key,connection)=> {
+const onDeleteData = (key,cb,connection)=> {
   console.log('onDeleteData::jMsg=<',jMsg,'>');
 }
 

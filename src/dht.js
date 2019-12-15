@@ -29,17 +29,19 @@ class DHT {
   peerInfo() {
     return this.info_;
   }
-  append(key,data) {
+  append(key,data,cb) {
     //console.log('DHT::append key=<',key,'>');
     //console.log('DHT::append data=<',data,'>');
     const dataStorage = this.storage_.append(key,data);
     //console.log('DHT::append dataStorage=<',dataStorage,'>');
+    dataStorage.cb = cb;
     this.peer_.publish(dataStorage);
   }
-  fetch4KeyWord(keyWord) {
+  fetch4KeyWord(keyWord,cb) {
     console.log('DHT::fetch4KeyWord keyWord=<',keyWord,'>');
     const responseToken = this.peer_.fetch4KeyWord(keyWord);
     console.log('DHT::fetch4KeyWord responseToken=<',responseToken,'>');
+    dataStorage.cb = cb;
     return  responseToken;
   }
   
