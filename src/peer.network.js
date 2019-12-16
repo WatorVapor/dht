@@ -33,7 +33,7 @@ class PeerNetWork {
   }
 
   publish(resource) {
-    //console.log('PeerNetWork::publish resource=<',resource,'>');
+    console.log('PeerNetWork::publish resource=<',resource,'>');
     const place = new PeerPlace(resource.address,this.peers,this.crypto_);
     //console.log('PeerNetWork::publish place=<',place,'>');
     //console.log('PeerNetWork::publish this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
@@ -279,15 +279,27 @@ class PeerNetWork {
     const dstHost = dstPeer.host;
     const dstPort = dstPeer.ports.ctrl.port;
     let msgSign = this.crypto_.sign(msg);
-    console.log('sendMessage_ msgSign=<', msgSign, '>');
+    //console.log('sendMessage_ msgSign=<', msgSign, '>');
     const msgBuff = Buffer.from(JSON.stringify(msgSign));
     this.client.send(msgBuff, dstPort, dstHost, (err) => {
       //console.log('sendMessage_ err=<',err,'>');
     });
   }
   onStore4Remote__(fromId, store) {
-    console.log('onStore4Remote__ fromId=<', fromId, '>');
-    console.log('onStore4Remote__ store=<', store, '>');
+    //console.log('PeerNetWork::onStore4Remote__ fromId=<', fromId, '>');
+    //console.log('PeerNetWork::onStore4Remote__ store=<', store, '>');
+    const place = new PeerPlace(store.address,this.peers,this.crypto_);
+    //console.log('PeerNetWork::onStore4Remote__ place=<',place,'>');
+    //console.log('PeerNetWork::onStore4Remote__:: this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
+    if(place.isFinal(this.crypto_.idBS32)) {
+      this.storage_.append(store);
+    }
+    if(place.nearest !== this.crypto_.idBS32 && place.nearest !== fromId) {
+      this.relayStoreMessage_(place.nearest,store);
+    }
+    if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest && place.farthest !== fromId) {
+      this.relayStoreMessage_(place.farthest,store);
+    }
   }
 
 }
