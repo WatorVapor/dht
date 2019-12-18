@@ -22,4 +22,21 @@ const appendData = ()=> {
   });
 };
 
-setTimeout(appendData,1000);
+//setTimeout(appendData,1000);
+
+const fetchData = ()=> {
+  dht.fetch4KeyWord('汉语',(info) => {
+    console.log('dht.fetch4KeyWord:: info.fetch=<',info.fetch,'>');
+  });  
+  dht.fetch4KeyWord('航母',(info) => {
+    console.log('dht.fetch4KeyWord:: info.fetch=<',info.fetch,'>');
+  });
+  dht.fetch4KeyWord('航母',(info) => {
+    console.log('dht.fetch4KeyWord:: info.fetch=<',info.fetch,'>');
+  });
+  dht.fetch4KeyWord('海试',(info)=> {
+    console.log('dht.fetch4KeyWord:: info.fetch=<',info.fetch,'>');
+  });
+};
+
+setTimeout(fetchData,1000);

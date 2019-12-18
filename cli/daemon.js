@@ -59,15 +59,16 @@ const onConnection = (connection) => {
 const onData = (data,connection) => {
   //console.log('onData::data=<',data.toString(),'>');  
   //console.log('onData::connection=<',connection,'>');
-  //const jMsg = JSON.parse(data.toString());
   const jMsgs = sjson_.parse(data.toString());
-  //console.log('onData::jMsg=<',jMsg,'>');
+  //console.log('onData::jMsgs=<',jMsgs,'>');
   for(const jMsg of jMsgs) {
     if(jMsg) {
       if(jMsg.peerInfo) {
         onPeerInfo(jMsg,connection);
       } else if(jMsg.store) {
         onStoreData(jMsg,connection);
+      } else if(jMsg.fetch) {
+        onFetchData(jMsg,connection);
       } else {
         console.log('onData::jMsg=<',jMsg,'>');
       }
@@ -118,3 +119,25 @@ const onDeleteData = (key,cb,connection)=> {
 }
 
 
+const onFetchData = (jMsg,connection)=> {
+  //console.log('onFetchData::jMsg=<',jMsg,'>');
+  if(jMsg.fetch === 'keyWord') {
+    onFetchDataByKeyWord(jMsg.keyWord,jMsg.cb,connection);
+  } else if(jMsg.fetch === 'address') {
+    onFetchDataByAddress(jMsg.address,jMsg.cb,connection);
+  } else {
+    console.log('onFetchData::jMsg=<',jMsg,'>');
+  }
+};
+
+const onFetchDataByKeyWord = (keyWord,cb,connection)=> {
+  console.log('onFetchDataByKeyWord::keyWord=<',keyWord,'>');
+  dht.fetch4KeyWord(keyWord,(resouce)=> {
+    const fetchResp = {
+      cb:jMsg.cb,
+      fetch:jMsg.store
+    };
+    const respBuff = Buffer.from(JSON.stringify(fetchResp),'utf-8');
+    connection.write(respBuff);
+  });
+}

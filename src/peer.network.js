@@ -47,7 +47,7 @@ class PeerNetWork {
       this.relayStoreMessage_(place.farthest,resource);
     }
   }
-  fetch4KeyWord(keyWord) {
+  fetch4KeyWord(keyWord,cb) {
     console.log('PeerNetWork::fetch4KeyWord keyWord=<',keyWord,'>');
     const address = this.crypto_.calcResourceAddress(keyWord);
     console.log('PeerNetWork::fetch4KeyWord address=<',address,'>');
@@ -55,7 +55,8 @@ class PeerNetWork {
     console.log('PeerNetWork::fetch4KeyWord place=<',place,'>');
     console.log('PeerNetWork::fetch4KeyWord this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
     if(place.isFinal(this.crypto_.idBS32)) {
-      this.storage_.fetch(address);
+      const localResource = this.storage_.fetch(address);
+      console.log('PeerNetWork::fetch4KeyWord localResource=<',localResource,'>');
     }
     if(place.nearest !== this.crypto_.idBS32) {
       this.relayFetchMessage_(place.nearest,address);

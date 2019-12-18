@@ -42,7 +42,7 @@ class DHTUnixSocket {
     const cbTag = this.writeData_(msg);
     this.cb_[cbTag] = cb;
   }
-  fetch4KeyWord(keyWord) {
+  fetch4KeyWord(keyWord,cb) {
     console.log('DHTUnixSocket::fetch4KeyWord keyWord=<',keyWord,'>');
     const msg = {
       fetch:'keyWord',
