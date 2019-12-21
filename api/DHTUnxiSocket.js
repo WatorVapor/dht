@@ -57,7 +57,6 @@ class DHTUnixSocket {
   }
   onMsg_(msg) {
     //console.log('DHTUnixSocket::onMsg_ msg=<',msg.toString('utf-8'),'>');
-    //const jMsg = JSON.parse(msg.toString());
     const jMsgArray = this.sjson_.parse(msg.toString());
     //console.log('DHTUnixSocket::onMsg_ jMsgArray=<',jMsgArray,'>');
     for(const jMsg of jMsgArray ) {

@@ -26,16 +26,16 @@ const appendData = ()=> {
 
 const fetchData = ()=> {
   dht.fetch4KeyWord('汉语',(info) => {
-    console.log('dht.fetch4KeyWord:: info.fetch=<',info.fetch,'>');
+    console.log('dht.fetch4KeyWord:: info.fetchResp=<',info.fetchResp,'>');
   });  
   dht.fetch4KeyWord('航母',(info) => {
-    console.log('dht.fetch4KeyWord:: info.fetch=<',info.fetch,'>');
+    console.log('dht.fetch4KeyWord:: info.fetchResp=<',info.fetchResp,'>');
   });
   dht.fetch4KeyWord('航母',(info) => {
-    console.log('dht.fetch4KeyWord:: info.fetch=<',info.fetch,'>');
+    console.log('dht.fetch4KeyWord:: info.fetchResp=<',info.fetchResp,'>');
   });
   dht.fetch4KeyWord('海试',(info)=> {
-    console.log('dht.fetch4KeyWord:: info.fetch=<',info.fetch,'>');
+    console.log('dht.fetch4KeyWord:: info.fetchResp=<',info.fetchResp,'>');
   });
 };
 

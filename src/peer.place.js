@@ -4,7 +4,7 @@ const base32 = require("base32.js");
 
 class PeerPlace {
   constructor(address,peers) {
-    console.log('PeerPlace::constructor peers=<',peers,'>');
+    //console.log('PeerPlace::constructor peers=<',peers,'>');
     //this.key_ = key;
     //this.peers_ = peers;
     //this.crypto_ = crypto;
@@ -25,7 +25,7 @@ class PeerPlace {
       this.peers_.push(peer);
       //console.log('PeerPlace::constructor peer=<',peer,'>');
       const distance = this.calcDistance_(this.address_,peer);
-      console.log('PeerPlace::constructor distance=<',distance,'>');
+      //console.log('PeerPlace::constructor distance=<',distance,'>');
       //if(this.btBuff_(distance,maxDistance)) {
       if(distance > maxDistance) {
         nearPeer = peer;

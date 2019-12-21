@@ -14,11 +14,11 @@ const config = {
   },
   entrance:[
     {
-      host:'2400:2412:13e0:9d00:2ce:39ff:fece:132',
+      host:'ermu3.wator.xyz',
       port:8890
     },
     {
-      host:'2400:2412:13e0:9d00:8639:beff:fe67:dcc9',
+      host:'ermu4.wator.xyz',
       port:8890
     }
   ],
@@ -132,12 +132,9 @@ const onFetchData = (jMsg,connection)=> {
 
 const onFetchDataByKeyWord = (keyWord,cb,connection)=> {
   console.log('onFetchDataByKeyWord::keyWord=<',keyWord,'>');
-  dht.fetch4KeyWord(keyWord,(resouce)=> {
-    const fetchResp = {
-      cb:jMsg.cb,
-      fetch:jMsg.store
-    };
-    const respBuff = Buffer.from(JSON.stringify(fetchResp),'utf-8');
+  dht.fetch4KeyWord(keyWord,cb,(resouce)=> {
+    console.log('onFetchDataByKeyWord::resouce=<',resouce,'>');
+    const respBuff = Buffer.from(JSON.stringify(resouce),'utf-8');
     connection.write(respBuff);
   });
 }

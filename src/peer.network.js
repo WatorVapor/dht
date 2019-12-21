@@ -24,6 +24,8 @@ class PeerNetWork {
       self.onMessageCtrlServer__(msg, rinfo)
     });
     this.serverCtrl.bind(config.listen.ctrl.port);
+    
+    this.replays_ = {};
   }
   host() {
     return this.machine_.readMachienIp();
@@ -47,22 +49,33 @@ class PeerNetWork {
       this.relayStoreMessage_(place.farthest,resource);
     }
   }
-  fetch4KeyWord(keyWord,cb) {
+  fetch4KeyWord(keyWord,cb,reply) {
     console.log('PeerNetWork::fetch4KeyWord keyWord=<',keyWord,'>');
     const address = this.crypto_.calcResourceAddress(keyWord);
     console.log('PeerNetWork::fetch4KeyWord address=<',address,'>');
     const place = new PeerPlace(address,this.peers,this.crypto_);
     console.log('PeerNetWork::fetch4KeyWord place=<',place,'>');
     console.log('PeerNetWork::fetch4KeyWord this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
+    const fetchMessge = {
+      address:address,
+      cb:cb
+    };
     if(place.isFinal(this.crypto_.idBS32)) {
-      const localResource = this.storage_.fetch(address);
+      const localResource = this.storage_.fetch(fetchMessge);
       console.log('PeerNetWork::fetch4KeyWord localResource=<',localResource,'>');
+      const fetchResp = {
+        fetchResp:localResource,
+        local:true,
+        cb:cb
+      };
+      reply(fetchResp);
     }
+    this.replays_[cb] = reply;    
     if(place.nearest !== this.crypto_.idBS32) {
-      this.relayFetchMessage_(place.nearest,address);
+      this.relayFetchMessage_(place.nearest,fetchMessge);
     }
     if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest) {
-      this.relayFetchMessage_(place.farthest,address);
+      this.relayFetchMessage_(place.farthest,fetchMessge);
     }
   }
   
@@ -97,6 +110,12 @@ class PeerNetWork {
       } else if (msgJson.store) {
           //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
           this.onStore4Remote__(rPeerId, msgJson.store);
+      } else if (msgJson.fetch) {
+          //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
+          this.onFetch4Remote__(rPeerId, msgJson.fetch);
+      } else if (msgJson.fetchResp) {
+          //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
+          this.onFetchResponse__(rPeerId, msgJson.fetchResp);
       } else {
         console.log('onMessageCtrlServer__ msgJson=<', msgJson, '>');
       }
@@ -271,7 +290,7 @@ class PeerNetWork {
     //console.log('relayFetchMessage_ dst=<', dst, '>');
     //console.log('relayFetchMessage_ resource=<', resource, '>');
     const msg = {fetch:resource}
-    this.sendMessage_(dst,resource);
+    this.sendMessage_(dst,msg);
   }
   
   sendMessage_(dst,msg) {
@@ -300,6 +319,35 @@ class PeerNetWork {
     }
     if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest && place.farthest !== fromId) {
       this.relayStoreMessage_(place.farthest,store);
+    }
+  }
+  onFetch4Remote__(fromId, fetch) {
+    //console.log('PeerNetWork::onFetch4Remote__ fromId=<', fromId, '>');
+    //console.log('PeerNetWork::onFetch4Remote__ fetch=<', fetch, '>');
+    const place = new PeerPlace(fetch.address,this.peers,this.crypto_);
+    //console.log('PeerNetWork::onFetch4Remote__ place=<',place,'>');
+    //console.log('PeerNetWork::onFetch4Remote__:: this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
+    if(place.isFinal(this.crypto_.idBS32)) {
+      const localResource = this.storage_.fetch(fetch);
+      console.log('PeerNetWork::onFetch4Remote__:: localResource=<',localResource,'>');
+      const fetchRespMsg = {
+        fetchResp:localResource
+      };
+      fetchRespMsg.fetchResp.cb = fetch.cb;
+      this.sendMessage_(fromId,fetchRespMsg);
+    }
+    if(place.nearest !== this.crypto_.idBS32 && place.nearest !== fromId) {
+      this.relayFetchMessage_(place.nearest,fetch);
+    }
+    if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest && place.farthest !== fromId) {
+      this.relayFetchMessage_(place.farthest,fetch);
+    }
+  }
+  onFetchResponse__(fromId, fetchResp) {
+    console.log('PeerNetWork::onFetchResponse__ fromId=<', fromId, '>');
+    console.log('PeerNetWork::onFetchResponse__ fetchResp=<', fetchResp, '>');
+    if(typeof this.replays_[fetchResp.cb] === 'function') {
+      this.replays_[fetchResp.cb](fetchResp);
     }
   }
 
