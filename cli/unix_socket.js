@@ -25,18 +25,35 @@ const appendData = ()=> {
 //setTimeout(appendData,1000);
 
 const fetchData = ()=> {
-  dht.fetch4KeyWord('汉语',(info) => {
-    console.log('dht.fetch4KeyWord:: info.fetchResp=<',info.fetchResp,'>');
+  dht.fetch4KeyWord('汉语',(resource) => {
+    //console.log('dht.fetch4KeyWord:: resource.fetchResp=<',resource.fetchResp,'>');
+    onFetchResource(resource.fetchResp);
   });  
-  dht.fetch4KeyWord('航母',(info) => {
-    console.log('dht.fetch4KeyWord:: info.fetchResp=<',info.fetchResp,'>');
+  dht.fetch4KeyWord('航母',(resource) => {
+    //console.log('dht.fetch4KeyWord:: resource.fetchResp=<',resource.fetchResp,'>');
+    onFetchResource(resource.fetchResp);
   });
-  dht.fetch4KeyWord('航母',(info) => {
-    console.log('dht.fetch4KeyWord:: info.fetchResp=<',info.fetchResp,'>');
+  dht.fetch4KeyWord('航母',(resource) => {
+    //console.log('dht.fetch4KeyWord:: resource.fetchResp=<',resource.fetchResp,'>');
+    onFetchResource(resource.fetchResp);
   });
-  dht.fetch4KeyWord('海试',(info)=> {
-    console.log('dht.fetch4KeyWord:: info.fetchResp=<',info.fetchResp,'>');
+  dht.fetch4KeyWord('海试',(resource)=> {
+    console.log('dht.fetch4KeyWord:: resource.fetchResp=<',resource.fetchResp,'>');
+    onFetchResource(resource.fetchResp);
   });
 };
-
 setTimeout(fetchData,1000);
+
+const onFetchResource = (resourceOrig) => {
+  //console.log('dht.onFetchResource:: resourceOrig=<',resourceOrig,'>');
+  const resource = Object.assign({},resourceOrig);
+  if(resource.cb) {
+    delete resource.cb;
+  }
+  console.log('dht.onFetchResource:: resource=<',resource,'>');
+  for(const keyAddress in resource) {
+    console.log('dht.onFetchResource:: keyAddress=<',keyAddress,'>');
+    const uri = resource[keyAddress] + '/' + keyAddress;
+    console.log('dht.onFetchResource:: uri=<',uri,'>');
+  }
+}

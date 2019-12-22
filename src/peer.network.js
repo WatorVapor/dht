@@ -347,10 +347,14 @@ class PeerNetWork {
     console.log('PeerNetWork::onFetchResponse__ fromId=<', fromId, '>');
     console.log('PeerNetWork::onFetchResponse__ fetchResp=<', fetchResp, '>');
     if(typeof this.replays_[fetchResp.cb] === 'function') {
-      this.replays_[fetchResp.cb](fetchResp);
+      const respMsg = {
+        fetchResp:fetchResp,
+        cb:fetchResp.cb,
+        remote:true
+      };
+      this.replays_[fetchResp.cb](respMsg);
     }
   }
-
 }
 
 module.exports = PeerNetWork;

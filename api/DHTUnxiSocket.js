@@ -70,6 +70,7 @@ class DHTUnixSocket {
         }
       } else {
         console.log('DHTUnixSocket::onMsg_ jMsg=<',jMsg,'>');
+        console.log('DHTUnixSocket::onMsg_ this.cb_=<',this.cb_,'>');
       }
     }
   }

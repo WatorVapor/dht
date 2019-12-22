@@ -6,7 +6,7 @@ class StreamJson {
   parse(msg) {
     const jMsgs = [];
     this.buffered_ += msg;
-    console.log('StreamJson::parse this.buffered_=<',this.buffered_,'>');
+    //console.log('StreamJson::parse this.buffered_=<',this.buffered_,'>');
     const res = this.buffered_.split('}');
     //console.log('StreamJson::parse res=<',res,'>');
     let incStart = '';
@@ -19,7 +19,7 @@ class StreamJson {
           jMsgs.push(jMsg);
           incStart = '';
           parseOkIndex = index;
-          console.log('parseStreamJson_::parse index=<',index,'>');
+          //console.log('parseStreamJson_::parse index=<',index,'>');
         }
       } catch (e) {
         //console.log('parseStreamJson_::parse e=<',e,'>');
