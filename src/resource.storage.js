@@ -36,12 +36,12 @@ class ResourceStorage {
     }
     const contentAddress = this.getAddress_(content);
     const contentPlacePath = keyPath + '/' + contentAddress;
-    //console.log('ResourceStorage::append: contentPlacePath=<',contentPlacePath,'>');
+    console.log('ResourceStorage::append: contentPlacePath=<',contentPlacePath,'>');
     fs.writeFileSync(contentPlacePath,'');
     
     const contentPathFlat = this.getPath4ContentAddress_(contentAddress);
     const contentPathFlatDir = path.dirname(contentPathFlat);
-    //console.log('ResourceStorage::append: contentPathFlatDir=<',contentPathFlatDir,'>');
+    console.log('ResourceStorage::append: contentPathFlatDir=<',contentPathFlatDir,'>');
     if (!fs.existsSync(contentPathFlatDir)) {
       fs.mkdirSync(contentPathFlatDir,{ recursive: true });
     }
@@ -76,6 +76,32 @@ class ResourceStorage {
       }
     }
     return null;
+ }
+ 
+ fetchFlat(keyAddress,start,count) {
+    const keyPath = this.getPath4KeyAddress_(keyAddress);
+    console.log('ResourceStorage::fetchFlat: keyPath=<',keyPath,'>');
+    if(fs.existsSync(keyPath)) {
+      console.log('ResourceStorage::fetchFlat: keyPath=<',keyPath,'>');
+      const stat = fs.lstatSync(keyPath);
+      //console.log('ResourceStorage::fetchFlat: stat=<',stat,'>');
+      if(stat.isDirectory()) {
+        return this.fetchDir_(keyPath,start,count);
+      }
+      if(stat.isFile()) {
+        return this.fetchFile_(keyPath);
+      }
+    } else {
+      const contentPath = this.getPath4ContentAddress_(keyAddress);
+      if(fs.existsSync(contentPath)) {
+        //console.log('ResourceStorage::fetchFlat: contentPath=<',contentPath,'>');
+        const stat = fs.lstatSync(contentPath);
+        //console.log('ResourceStorage::fetchFlat: stat=<',stat,'>');
+        if(stat.isFile()) {
+          return this.fetchFile_(contentPath);
+        }
+      }
+    }
  }
 
 

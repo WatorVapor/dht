@@ -65,6 +65,7 @@ class PeerNetWork {
       console.log('PeerNetWork::fetch4KeyWord localResource=<',localResource,'>');
       const fetchResp = {
         fetchResp:localResource,
+        address:address,
         local:true,
         cb:cb
       };
@@ -331,7 +332,8 @@ class PeerNetWork {
       const localResource = this.storage_.fetch(fetch);
       console.log('PeerNetWork::onFetch4Remote__:: localResource=<',localResource,'>');
       const fetchRespMsg = {
-        fetchResp:localResource
+        fetchResp:localResource,
+        address:fetch.address,
       };
       fetchRespMsg.fetchResp.cb = fetch.cb;
       this.sendMessage_(fromId,fetchRespMsg);

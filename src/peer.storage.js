@@ -37,7 +37,7 @@ class PeerStorage {
     const keyPath = this.getPath4KeyAddress_(keyAddress);
     //console.log('PeerStorage::fetch: keyPath=<',keyPath,'>');
     const response = this.fetchDirAndContents_(keyPath,0,200);
-    //console.log('PeerStorage::fetch: response=<',response,'>');
+    console.log('PeerStorage::fetch: response=<',response,'>');
     return response;
   }
   
@@ -56,25 +56,28 @@ class PeerStorage {
   }
 
   fetchDirAndContents_(dirPath,start,count) {
-    //console.log('ResourceStorage::fetchDirAndContents_: dirPath=<',dirPath,'>');
-    const files = fs.readdirSync(dirPath);
-    //console.log('ResourceStorage::fetchDirAndContents_: files=<',files,'>');
-    const rangeS = start;
-    let rangeE = rangeS+count;
-    if(rangeE > files.length) {
-      rangeE = files.length
-    }
-    //console.log('ResourceStorage::fetchDirAndContents_: rangeS=<',rangeS,'>');
-    //console.log('ResourceStorage::fetchDirAndContents_: rangeE=<',rangeE,'>');
-    const fileRange = files.slice(rangeS,rangeE);
     const content = {};
-    for(const file of fileRange) {
-      //console.log('ResourceStorage::fetchDirAndContents_: file=<',file,'>');
-      const pathContents = dirPath + '/' + file;
-      //console.log('ResourceStorage::fetchDirAndContents_: pathContents=<',pathContents,'>');
-      const uri = fs.readFileSync(pathContents);
-      content[file] = uri.toString('utf-8');
+    //console.log('ResourceStorage::fetchDirAndContents_: dirPath=<',dirPath,'>');
+    if (fs.existsSync(dirPath)) {
+      const files = fs.readdirSync(dirPath);
+      //console.log('ResourceStorage::fetchDirAndContents_: files=<',files,'>');
+      const rangeS = start;
+      let rangeE = rangeS+count;
+      if(rangeE > files.length) {
+        rangeE = files.length
+      }
+      //console.log('ResourceStorage::fetchDirAndContents_: rangeS=<',rangeS,'>');
+      //console.log('ResourceStorage::fetchDirAndContents_: rangeE=<',rangeE,'>');
+      const fileRange = files.slice(rangeS,rangeE);
+      for(const file of fileRange) {
+        //console.log('ResourceStorage::fetchDirAndContents_: file=<',file,'>');
+        const pathContents = dirPath + '/' + file;
+        //console.log('ResourceStorage::fetchDirAndContents_: pathContents=<',pathContents,'>');
+        const uri = fs.readFileSync(pathContents);
+        content[file] = uri.toString('utf-8');
+      }
     }
+    console.log('ResourceStorage::fetchDirAndContents_: content=<',content,'>');
     return content;
   }
 

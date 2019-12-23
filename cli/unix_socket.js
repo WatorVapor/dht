@@ -26,34 +26,37 @@ const appendData = ()=> {
 
 const fetchData = ()=> {
   dht.fetch4KeyWord('汉语',(resource) => {
-    //console.log('dht.fetch4KeyWord:: resource.fetchResp=<',resource.fetchResp,'>');
-    onFetchResource(resource.fetchResp);
+    //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
+    onFetchResource(resource.address,resource.fetchResp);
   });  
   dht.fetch4KeyWord('航母',(resource) => {
-    //console.log('dht.fetch4KeyWord:: resource.fetchResp=<',resource.fetchResp,'>');
-    onFetchResource(resource.fetchResp);
+    //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
+    onFetchResource(resource.address,resource.fetchResp);
   });
   dht.fetch4KeyWord('航母',(resource) => {
-    //console.log('dht.fetch4KeyWord:: resource.fetchResp=<',resource.fetchResp,'>');
-    onFetchResource(resource.fetchResp);
+    //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
+    onFetchResource(resource.address,resource.fetchResp);
   });
   dht.fetch4KeyWord('海试',(resource)=> {
-    console.log('dht.fetch4KeyWord:: resource.fetchResp=<',resource.fetchResp,'>');
-    onFetchResource(resource.fetchResp);
+    //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
+    onFetchResource(resource.address,resource.fetchResp);
   });
 };
+
+
 setTimeout(fetchData,1000);
 
-const onFetchResource = (resourceOrig) => {
+const onFetchResource = (address,resourceOrig) => {
   //console.log('dht.onFetchResource:: resourceOrig=<',resourceOrig,'>');
   const resource = Object.assign({},resourceOrig);
   if(resource.cb) {
     delete resource.cb;
   }
-  console.log('dht.onFetchResource:: resource=<',resource,'>');
+  //console.log('dht.onFetchResource:: address=<',address,'>');
+  //console.log('dht.onFetchResource:: resource=<',resource,'>');
   for(const keyAddress in resource) {
     console.log('dht.onFetchResource:: keyAddress=<',keyAddress,'>');
-    const uri = resource[keyAddress] + '/' + keyAddress;
+    const uri = resource[keyAddress] + '/' + address;
     console.log('dht.onFetchResource:: uri=<',uri,'>');
   }
 }
