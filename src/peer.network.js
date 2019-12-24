@@ -332,10 +332,10 @@ class PeerNetWork {
       const localResource = this.storage_.fetch(fetch);
       console.log('PeerNetWork::onFetch4Remote__:: localResource=<',localResource,'>');
       const fetchRespMsg = {
-        fetchResp:localResource,
-        address:fetch.address,
+        fetchResp:localResource
       };
       fetchRespMsg.fetchResp.cb = fetch.cb;
+      fetchRespMsg.fetchResp.address = fetch.address;
       this.sendMessage_(fromId,fetchRespMsg);
     }
     if(place.nearest !== this.crypto_.idBS32 && place.nearest !== fromId) {
@@ -352,9 +352,12 @@ class PeerNetWork {
       const respMsg = {
         fetchResp:fetchResp,
         cb:fetchResp.cb,
-        remote:true
+        remote:true,
+        address:fetchResp.address
       };
-      this.replays_[fetchResp.cb](respMsg);
+      delete respMsg.fetchResp.cb;
+      delete respMsg.fetchResp.address;
+      this.replays_[respMsg.cb](respMsg);
     }
   }
 }

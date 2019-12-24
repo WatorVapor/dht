@@ -3,8 +3,8 @@ const path = require('path');
 const DHT = require('../api/DHTUnxiSocket.js');
 const dht = new DHT();
 //console.log(':: dht=<',dht,'>');
-dht.peerInfo((peer)=>{
-  console.log('dht.peerInfo:: peer.peerInfo=<',peer.peerInfo,'>');
+dht.peerInfo((peerInfo)=>{
+  console.log('dht.peerInfo:: peerInfo=<',peerInfo,'>');
 });
 
 const appendData = ()=> {
@@ -27,36 +27,25 @@ const appendData = ()=> {
 const fetchData = ()=> {
   dht.fetch4KeyWord('汉语',(resource) => {
     //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
-    onFetchResource(resource.address,resource.fetchResp);
+    onFetchResult(resource);
   });  
   dht.fetch4KeyWord('航母',(resource) => {
     //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
-    onFetchResource(resource.address,resource.fetchResp);
+    onFetchResult(resource);
   });
   dht.fetch4KeyWord('航母',(resource) => {
     //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
-    onFetchResource(resource.address,resource.fetchResp);
+    onFetchResult(resource);
   });
   dht.fetch4KeyWord('海试',(resource)=> {
     //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
-    onFetchResource(resource.address,resource.fetchResp);
+    onFetchResult(resource);
   });
 };
 
 
 setTimeout(fetchData,1000);
 
-const onFetchResource = (address,resourceOrig) => {
-  //console.log('dht.onFetchResource:: resourceOrig=<',resourceOrig,'>');
-  const resource = Object.assign({},resourceOrig);
-  if(resource.cb) {
-    delete resource.cb;
-  }
-  //console.log('dht.onFetchResource:: address=<',address,'>');
-  //console.log('dht.onFetchResource:: resource=<',resource,'>');
-  for(const keyAddress in resource) {
-    console.log('dht.onFetchResource:: keyAddress=<',keyAddress,'>');
-    const uri = resource[keyAddress] + '/' + address;
-    console.log('dht.onFetchResource:: uri=<',uri,'>');
-  }
+const onFetchResult = (result) => {
+  console.log('dht.onFetchResult:: result=<',result,'>');
 }

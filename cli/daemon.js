@@ -38,7 +38,11 @@ const net = require('net');
 const API_DOMAIN_PATH = '/tmp/dht_ermu_api_unix_dgram';
 
 const server = net.createServer((socket) => {
-  onConnection(socket);
+  try {
+    onConnection(socket);
+  } catch(e) {
+    console.log('onData::e=<',e,'>');
+  }
 });
 const { execSync } = require('child_process');
 execSync(`rm -rf ${API_DOMAIN_PATH}`);
@@ -59,22 +63,26 @@ const onConnection = (connection) => {
 const onData = (data,connection) => {
   //console.log('onData::data=<',data.toString(),'>');  
   //console.log('onData::connection=<',connection,'>');
-  const jMsgs = sjson_.parse(data.toString());
-  //console.log('onData::jMsgs=<',jMsgs,'>');
-  for(const jMsg of jMsgs) {
-    if(jMsg) {
-      if(jMsg.peerInfo) {
-        onPeerInfo(jMsg,connection);
-      } else if(jMsg.store) {
-        onStoreData(jMsg,connection);
-      } else if(jMsg.fetch) {
-        onFetchData(jMsg,connection);
+  try {
+    const jMsgs = sjson_.parse(data.toString());
+    //console.log('onData::jMsgs=<',jMsgs,'>');
+    for(const jMsg of jMsgs) {
+      if(jMsg) {
+        if(jMsg.peerInfo) {
+          onPeerInfo(jMsg,connection);
+        } else if(jMsg.store) {
+          onStoreData(jMsg,connection);
+        } else if(jMsg.fetch) {
+          onFetchData(jMsg,connection);
+        } else {
+          console.log('onData::jMsg=<',jMsg,'>');
+        }
       } else {
-        console.log('onData::jMsg=<',jMsg,'>');
+        console.log('onData::data=<',data.toString(),'>');
       }
-    } else {
-      console.log('onData::data=<',data.toString(),'>');
     }
+  } catch(e) {
+    console.log('onData::e=<',e,'>');
   }
 };
 
