@@ -46,3 +46,4 @@ const appendData = ()=> {
 };
 
 setTimeout(appendData,1000);
+

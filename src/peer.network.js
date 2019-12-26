@@ -86,7 +86,7 @@ class PeerNetWork {
     //console.log('onMessageCtrlServer__ rinfo=<',rinfo,'>');
     try {
       const msgJson = JSON.parse(msg.toString('utf-8'));
-      //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
+      console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
       //console.log('onMessageCtrlServer__ this.config=<',this.config,'>');
       const good = this.crypto_.verify(msgJson);
       //console.log('onMessageCtrlServer__ good=<',good,'>');
@@ -95,19 +95,15 @@ class PeerNetWork {
         return;
       }
       const rPeerId = this.crypto_.calcID(msgJson);
-      if (msgJson.ctrl) {
-        if (msgJson.ctrl.entry) {
-          this.onNewNodeEntry__(rPeerId, rinfo.address, msgJson.listen);
-        } else if (msgJson.ctrl.entrance) {
-          this.onEntranceNode__(msgJson.ctrl.entrance);
-        } else if (msgJson.ctrl.ping) {
-          this.onPeerPing__(rPeerId,msgJson);
-        } else if (msgJson.ctrl.pong) {
-          //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
-          this.onPeerPong__(rPeerId, msgJson.ctrl.pong);
-        } else {
-          console.log('onMessageCtrlServer__ msgJson=<', msgJson, '>');
-        }
+      if (msgJson.entry) {
+        this.onNewNodeEntry__(rPeerId, rinfo.address, msgJson.listen);
+      } else if (msgJson.entrance) {
+        this.onEntranceNode__(msgJson.entrance);
+      } else if (msgJson.ping) {
+        this.onPeerPing__(rPeerId,msgJson);
+      } else if (msgJson.pong) {
+        //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
+        this.onPeerPong__(rPeerId, msgJson.pong);
       } else if (msgJson.store) {
           //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
           this.onStore4Remote__(rPeerId, msgJson.store);
@@ -138,9 +134,7 @@ class PeerNetWork {
     //console.log('onNewNodeEntry__ this.peers=<', this.peers, '>');
 
     let msg = {
-      ctrl: {
-        entrance: this.peers
-      }
+      entrance: this.peers
     };
     let msgSign = this.crypto_.sign(msg);
     const bufMsg = Buffer.from(JSON.stringify(msgSign));
@@ -173,16 +167,14 @@ class PeerNetWork {
       const peerInfo = this.peers[id];
       const now = new Date();
       let msg = {
-        ctrl: {
+        pong: {
+          ping: {
+            ts: sentTp.toGMTString(),
+            ms: sentTp.getMilliseconds()
+          },
           pong: {
-            ping: {
-              ts: sentTp.toGMTString(),
-              ms: sentTp.getMilliseconds()
-            },
-            pong: {
-              ts: now.toGMTString(),
-              ms: now.getMilliseconds()
-            }
+            ts: now.toGMTString(),
+            ms: now.getMilliseconds()
           }
         }
       };
@@ -218,9 +210,7 @@ class PeerNetWork {
     for (let address of entrance) {
       console.log('doClientEntry__ address=<', address, '>');
       let msg = {
-        ctrl: {
-          entry: true
-        },
+        entry: true,
         listen: listen
       };
       let msgSign = this.crypto_.sign(msg);
@@ -237,9 +227,7 @@ class PeerNetWork {
       //console.log('doClientPing__ peer=<',peer,'>');
       //console.log('doClientPing__ peerInfo=<',peerInfo,'>');
       let msg = {
-        ctrl: {
-          ping: true
-        }
+        ping: true
       };
       let msgSign = this.crypto_.sign(msg);
       const bufMsg = Buffer.from(JSON.stringify(msgSign));
