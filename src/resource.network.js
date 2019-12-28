@@ -59,7 +59,7 @@ class ResourceNetWork {
     if(contents) {
       res.end(JSON.stringify(contents,undefined,2),'utf-8');
     } else {
-      res.end('{}');
+      res.end('[]');
     }
   }
 }
