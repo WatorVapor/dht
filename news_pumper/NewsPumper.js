@@ -133,7 +133,12 @@ module.exports = class NewsPumper {
     this.linkDB_.get(href, (err, value) => {
       //console.log('onWatchLink_::err=<',err,'>');
       if (err && err.notFound) {
-        let contents = JSON.stringify({href:href,discover:true});
+        const contentObj = {
+          href:href,
+          discover:true,
+          lang:this.lang_
+        };
+        const contents = JSON.stringify(contentObj);
         self.linkDB_.put(href,contents);
         self.onWathNewLink_(href);
         return;
