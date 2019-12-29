@@ -1,0 +1,22 @@
+module.exports.seeds = [
+/*
+  'https://www.toutiao.com/',
+  'https://www.toutiao.com/ch/news_tech/',
+  'https://www.toutiao.com/ch/news_entertainment/',
+  'https://www.toutiao.com/ch/news_game/',
+  'https://www.toutiao.com/ch/news_sports/',
+  'https://www.toutiao.com/ch/news_car/',
+  'https://www.toutiao.com/ch/news_finance/',
+  'https://www.toutiao.com/ch/funny/',
+  'https://www.toutiao.com/ch/news_military/',
+  'https://www.toutiao.com/ch/news_world/',
+  'https://www.toutiao.com/ch/news_fashion/',
+  'https://www.toutiao.com/ch/news_travel/',
+  'https://www.toutiao.com/ch/news_discovery/',
+  'https://www.toutiao.com/ch/news_baby/',
+  'https://www.toutiao.com/ch/news_regimen/',
+  'https://www.toutiao.com/ch/news_essay/',
+  'https://www.toutiao.com/ch/news_history/',
+  'https://www.toutiao.com/ch/news_food/',
+*/
+];

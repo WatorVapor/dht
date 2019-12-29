@@ -1,0 +1,15 @@
+module.exports.seeds = [
+  'https://news.baidu.com',
+  'https://news.baidu.com/guonei',
+  'https://news.baidu.com/guoji',
+  'https://news.baidu.com/mil',
+  'https://news.baidu.com/finance',
+  'https://news.baidu.com/ent',
+  'https://news.baidu.com/sports',
+  'https://news.baidu.com/internet',
+  'https://news.baidu.com/tech',
+  'https://news.baidu.com/game',
+  'https://news.baidu.com/lady',
+  'https://news.baidu.com/auto',
+  'https://news.baidu.com/house',
+];
