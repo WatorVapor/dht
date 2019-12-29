@@ -1,0 +1,17 @@
+{
+  "name": "wordtag",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "base64-url": "^2.2.2",
+    "cheerio": "^1.0.0-rc.3",
+    "redis": "^2.8.0",
+    "ripemd160": "^2.0.2"
+  }
+}

@@ -3,6 +3,8 @@ const path = require('path');
 const base32 = require("base32.js");
 const crypto = require('crypto');
 const RIPEMD160 = require('ripemd160');
+const bs32Option = { type: "crockford", lc: true };
+
 
 module.exports = class LevelDFS {
   constructor(path) {
@@ -50,11 +52,11 @@ module.exports = class LevelDFS {
     const keyRipemd = new RIPEMD160().update(keyHash).digest('hex');
     //console.log('LevelDFS::getKeyAddress_: keyRipemd=<',keyRipemd,'>');
     const keyBuffer = Buffer.from(keyRipemd,'hex');
-    const keyB32 = base32.encode(keyBuffer);    
+    const keyB32 = base32.encode(keyBuffer,bs32Option);    
     //console.log('LevelDFS::getKeyAddress_: keyB32=<',keyB32,'>');
     let pathAddress = this._path 
     pathAddress += '/' + keyB32.substring(0,3);
-    pathAddress += '/' + keyB32.substring(4,6);
+    pathAddress += '/' + keyB32.substring(3,6);
     pathAddress += '/' + keyB32;
     //console.log('LevelDFS::get: pathAddress=<',pathAddress,'>');
     return pathAddress;

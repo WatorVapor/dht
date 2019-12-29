@@ -55,6 +55,10 @@ module.exports = class NewsPumper {
     this.lastReadTime_ = new Date();
     let self = this;
     const newsURLStr = this.seed_[this.globalLoopIndex_];
+    if(!newsURLStr) {
+      return;
+    }
+    console.log('readNews_::newsURLStr=<',newsURLStr,'>');
     const seedURL = url.parse(newsURLStr);
     const rootPath = seedURL.protocol + '//' + seedURL.hostname;
     console.log('readNews_::rootPath=<',rootPath,'>');
