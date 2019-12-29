@@ -38,7 +38,7 @@ module.exports = class LevelDFS {
     } else {
       let err = {notFound:true};
       if(typeof cb === 'function') {
-        cb(err);
+        cb(err,keyAddress);
       }
     }
   }
