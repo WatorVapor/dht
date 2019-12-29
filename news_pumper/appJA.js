@@ -23,7 +23,7 @@ for(let url of google.seeds) {
 
 console.log('requestList=<',requestList,'>');
 const NewsPumper = require('./NewsPumper.js');
-const dbLink = '/watorvapor/ldfs/tagbot/ja/news_discovery_db';
-const dbTextContent = '/watorvapor/ldfs/tagbot/ja/news_text_contents_db';
+const dbLink = '/storage/dhtfs/cluster/news_pumper/ja/news_discovery_db';
+const dbTextContent = '/storage/dhtfs/cluster/news_pumper/ja/news_text_contents_db';
 const pumper = new NewsPumper(requestList,dbLink,dbTextContent,'ja');
 pumper.turn();
