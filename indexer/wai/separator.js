@@ -1,5 +1,7 @@
 const Separator_Table = 
 {
+ "<": true,
+ ">": true,
  ".": true,
  "。": true,
  

@@ -2,116 +2,122 @@ const WaiBase = require('./wai.base.js');
 const WaiGraph = require('./wai.graph.js');
 const fs = require('fs');
 
+const iConstWordFilterOutStageOne = 2;
+const iConstWordRepeatMin = 1;
+const iFactorialBaseOfRerank = 1;
+
+
 class WaiIndexBot extends WaiBase {
-  constructor(lang) {
+  constructor() {
     super();
-
     this.graph_ = new WaiGraph();
-    this.lang_ = lang;
-
     this.parrotPath_ = __dirname + '/cnwiki/indexer.float.words.json';
     console.log('WaiPhoenix::this.parrotPath_=<',this.parrotPath_,'>');
     let content = fs.readFileSync(this.parrotPath_, 'utf8');
     this.parrot_ = JSON.parse(content);
-    
-    /*
-    
-    this.cutter_ = new WaiCutter(this)
-    
-    console.log('WaiIndexBot::constructor start read...>');
-    let content = fs.readFileSync('./wai.phrase.cn.json', 'utf8');
-    console.log('WaiIndexBot::constructor content.length=<',content.length,'>');
-    
-    this.phrase_ = {};
-    this.phrase_['cn'] = JSON.parse(content);
-    
-    content = fs.readFileSync('./wai.phrase.ja.json', 'utf8');
-    console.log('WaiIndexBot::constructor content.length=<',content.length,'>');
-    this.phrase_['ja'] = JSON.parse(content);
-    
-    */
     setTimeout(()=> {
       if(typeof this.onReady === 'function') {
         this.onReady();
       }      
     },1000);
   }
+  entryBlock() {
+    super.entryBlock();
+  }
+  leaveBlock() {
+    super.leaveBlock();
+  }
+  
   article(doc,lang) {
-    this.wordFreqs_ = {};
-    this.tbdWords_ = {};
+    this.words_ = {};
+    this.wordsRC_ = {};
     //console.log('WaiIndexBot::article lang=<',lang,'>');
-    this.cutter_.article(doc,lang);
-    //console.log('WaiIndexBot::article this.tbdWords_=<',this.tbdWords_,'>');
-    //console.log('WaiIndexBot::article this.wordFreqs_=<',this.wordFreqs_,'>');
-    const pureCollect = this.cutter_.FilterOutInside_(this.wordFreqs_);
-    //console.log('WaiIndexBot::article pureCollect=<',pureCollect,'>');
-    const goodCollect = this.FilterOutKeyWord_(pureCollect);
-    return this.calcWeight_(goodCollect,lang);
+    super.article(doc,lang);
+    //console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
+    //console.log('WaiIndexBot::article this.wordsRC_=<',this.wordsRC_,'>');
+    const highCollect = super.FilterOutLowFreq_(this.wordsRC_,iConstWordFilterOutStageOne);
+    //console.log('WaiIndexBot::article highCollect=<',highCollect,'>');
+    this.statsWords_ = super.FilterOutInside_(highCollect);
+    console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
+    console.log('WaiIndexBot::article this.statsWords_=<',this.statsWords_,'>');
+    return this.words_;
   }
-  //
+
+  onSentenceIn_(sentence) {
+    //console.log('WaiPhoenix::onSentenceIn_ sentence=<',sentence,'>');
+    this.sentenceRange_ = [];
+  }
+  onSentenceOut_(sentence) {
+    //console.log('WaiPhoenix::onSentenceOut_ sentence=<',sentence,'>');
+    //console.log('WaiPhoenix::onSentenceOut_ this.sentenceRange_=<',this.sentenceRange_,'>');
+    this.onReRankSentence_();
+    //console.log('WaiPhoenix::onSentenceOut_ this.sentenceReRange_=<',this.sentenceReRange_,'>');
+    const shortPath = this.graph_.shortPath(this.sentenceReRange_);
+    //console.log('WaiPhoenix::onSentenceOut_ shortPath=<',shortPath,'>');
+    for(let wordRank of shortPath) {
+      //console.log('WaiPhoenix::onSentenceOut_ wordRank=<',wordRank,'>');
+      const word = wordRank.word;
+      if(this.words_[word]) {
+        this.words_[word]++;
+      } else {
+        this.words_[word] = 1;
+      }
+    }
+  }
+  onReRankSentence_() {
+    this.sentenceReRange_ = [];
+    for(let sentence of this.sentenceRange_) {
+      //console.log('WaiPhoenix::onReRankSentence_ sentence=<',sentence,'>');
+      const reSentence = {...sentence};
+      reSentence.freqOrig = reSentence.freq;
+      let factorial = 1.0;
+      for(let i = 1;i < reSentence.word.length;i++) {
+        factorial *= (iFactorialBaseOfRerank + i);
+      }
+      reSentence.freq = reSentence.freq * factorial;
+      this.sentenceReRange_.push(reSentence);
+    }
+  }
+
   onSeparator_(sep) {
-    //console.log('WaiIndexBot::onSeparator_ sep=<',sep,'>');
-  }
-  //
-  onFinishSentence_() {
-    
+    //console.log('WaiPhoenix::onSeparator_ sep=<',sep,'>');
   }
   onNoCJKWord_(word,lang) {
-    //console.log('WaiIndexBot::onNoCJKWord_ word=<',word,'>');
+    //console.log('WaiPhoenix::onNoCJKWord_ word=<',word,'>');
+    //console.log('WaiPhoenix::onNoCJKWord_ lang=<',lang,'>');
   }
-
-  onCJKWordRC_(word,lang) {
-    //console.log('WaiIndexBot::onCJKWordRC_ word=<',word,'>');
-    //console.log('WaiIndexBot::onCJKWordRC_ lang=<',lang,'>');
-    try {
-      if(this.phrase_[lang][word]) {
-        this.tbdWords_[word] = this.phrase_[lang][word];
-        if(this.wordFreqs_[word]) {
-          this.wordFreqs_[word]++;
-        } else {
-          this.wordFreqs_[word] = 1;
-        }
-      }
-    } catch(e) {
-      console.log('WaiIndexBot::onCJKWordRC_ e=<',e,'>');
+  onCJKWordRC_(word,start,lang) {
+    //console.log('WaiPhoenix::onCJKWordRC_ word=<',word,'>');
+    //console.log('WaiPhoenix::onCJKWordRC_ start=<',start,'>');
+    //console.log('WaiPhoenix::onCJKWordRC_ lang=<',lang,'>');
+    const freq = this.parrot_[word];
+    //console.log('WaiPhoenix::onCJKWordRC_ freq=<',freq,'>');
+    if(freq) {
+      //console.log('WaiPhoenix::onCJKWordRC_ freq=<',freq,'>');
+      //console.log('WaiPhoenix::onCJKWordRC_ word=<',word,'>');
+      //console.log('WaiPhoenix::onCJKWordRC_ start=<',start,'>');
+      this.sentenceRange_.push({begin:start,end:start+word.length,word:word,freq:freq});
+    }
+    if(this.wordsRC_.hasOwnProperty(word)) {
+      this.wordsRC_[word]++;
+    } else {
+      this.wordsRC_[word] = 1;
     }
   }
-
-  calcWeight_(collect,lang) {
-    let weights = [];
-    for(let word in collect) {
-      //console.log('WaiIndexBot::calcWeight_ word=<',word.length,'>');
-      let probability = this.phrase_[lang][word];
-      let freq = collect[word];
-      //console.log('WaiIndexBot::calcWeight_ freq=<',freq,'>');
-      //sortedCollect.push({w:word,freq:collect[word]})
-      weights.push({word:word,freq:freq});
+  onCJKSingleRC_(word,start,lang) {
+    //console.log('WaiPhoenix::onCJKSingleRC_ word=<',word,'>');
+    //console.log('WaiPhoenix::onCJKSingleRC_ start=<',start,'>');
+    //console.log('WaiPhoenix::onCJKSingleRC_ lang=<',lang,'>');
+    const freq = this.parrot_[word];
+    //console.log('WaiPhoenix::onCJKSingleRC_ freq=<',freq,'>');
+    if(freq) {
+      //console.log('WaiPhoenix::onCJKSingleRC_ freq=<',freq,'>');
+      //console.log('WaiPhoenix::onCJKSingleRC_ word=<',word,'>');
+      //console.log('WaiPhoenix::onCJKSingleRC_ start=<',start,'>');
+      this.sentenceRange_.push({begin:start,end:start+word.length,word:word,freq});
     }
-    //console.log('WaiIndexBot::calcWeight_ weights=<',weights,'>');
-    weights.sort((a,b) => {
-      //console.log('WaiIndexBot::calcWeight_ a=<',a,'>');
-      //console.log('WaiIndexBot::calcWeight_ b=<',b,'>');
-      if(a.freq > b.freq) return -1;
-      if(a.freq < b.freq) return 1;
-      return 0;
-    });
-    //console.log('WaiIndexBot::calcWeight_ weights=<',weights,'>');
-    return weights.slice(0, 21);
   }
-
-  FilterOutKeyWord_ (collect) {
-    let outCollect = JSON.parse(JSON.stringify(collect));
-    let keys = Object.keys(outCollect);
-    for(let i = 0 ;i < keys.length;i++) {
-      let key = keys[i];
-      //console.log('FilterOutInside_ key=<',key,'>');
-      if(gFilterKeyWords.indexOf(key) !== -1) {
-        delete outCollect[key];
-      }
-    }
-    return outCollect;
-  }
-
+  
 }
 
 module.exports = WaiIndexBot;

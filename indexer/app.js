@@ -16,11 +16,11 @@ gSubscriber.on('message', (channel, message) => {
 gSubscriber.subscribe(redisNewsChannelDiscovery);
 
 
-const NewsTextReader = require('./wai2/news.text.reader.js');
+const NewsTextReader = require('./wai/news.text.reader.js');
 const constTextDBPath = '/storage/dhtfs/cluster/indexer/news_text_db';
 
 
-const WaiIndexBot = require('./wai2/wai.indexbot.js');
+const WaiIndexBot = require('./wai/wai.indexbot.js');
 
 const wai = new WaiIndexBot();
 
@@ -72,26 +72,35 @@ const onLearnNewLink = () => {
     }
     const txtReader = new NewsTextReader(constTextDBPath);
     console.log('onLearnNewLink::jsValue=<',jsValue,'>');
-    txtReader.fetch(href,(txt,myhref)=>{
-      onNewsText(txt,myhref,jsValue.lang);
+    txtReader.fetch(href,(txt,title,myhref)=>{
+      onNewsText(txt,title,myhref,jsValue.lang);
     });
   });
 }
 
 
 
-const onNewsText = (txt,myhref,lang) => {
+const onNewsText = (txt,title,myhref,lang) => {
   //console.log('onNewsText::txt=<',txt,'>');
   //console.log('onNewsText::myhref=<',myhref,'>');
-  let tags = wai.article(txt,lang);
-  //console.log('onNewsText::tags=<',tags,'>');
-  onSaveIndex(myhref,tags);  
+  let wordIndex = wai.article(txt,lang);
+  //console.log('onNewsText::wordIndex=<',wordIndex,'>');
+  onSaveIndex(myhref,wordIndex,txt,title);  
+
+/*
+  let wordTitleIndex = wai.article(title,lang);
+  console.log('onNewsText::wordTitleIndex=<',wordTitleIndex,'>');
+*/
   setTimeout(onLearnNewLink,0);
 }
 
-const onSaveIndex = (txt,myhref) => {
-  console.log('onSaveIndex::txt=<',txt,'>');
+const onSaveIndex = (myhref,wordIndex,txt,title) => {
+/*
   console.log('onSaveIndex::myhref=<',myhref,'>');
+  console.log('onSaveIndex::wordIndex=<',wordIndex,'>');
+  console.log('onSaveIndex::txt=<',txt,'>');
+  console.log('onSaveIndex::title=<',title,'>');
+*/
 }
 
 /**

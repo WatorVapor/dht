@@ -33,7 +33,7 @@ class WaiBase {
     return outCollect;
   }
 
-  FilterOutInside_ (collect) {
+  FilterOutInside_ (collect,cut) {
     let outCollect = Object.assign({},collect);
     let keys = Object.keys(outCollect);
     for(let i = 0 ;i < keys.length;i++) {
@@ -46,9 +46,11 @@ class WaiBase {
           if(outCollect[keyFound] === outCollect[key]) {
             delete outCollect[key];
           }
-          if(outCollect[keyFound] < outCollect[key]) {
-            outCollect[key] -= outCollect[keyFound];
-          }          
+          if(cut) {
+            if(outCollect[keyFound] < outCollect[key]) {
+              outCollect[key] -= outCollect[keyFound];
+            }
+          }
         }
       }
     }
