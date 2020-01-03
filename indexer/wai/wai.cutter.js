@@ -37,10 +37,12 @@ class WaiCutter {
           this.delegate_.onSeparator_(utf8);
           if(cjkBuffer.length > 0) {
             allCollect.push({cjk:cjkBuffer});
+            allCollect.push({stop:i});
           }
           cjkBuffer = [];
           if(notCJKBuffer.length > 0) {
             allCollect.push({noCjk:notCJKBuffer});
+            allCollect.push({stop:i});
           }
           notCJKBuffer = [];
           continue;
@@ -56,21 +58,25 @@ class WaiCutter {
         cjkBuffer.push(utf8);
         if(notCJKBuffer.length >0) {
           allCollect.push({noCjk:notCJKBuffer});
+          allCollect.push({stop:i});
         }
         notCJKBuffer = [];
       } else {
         notCJKBuffer.push(utf8);
         if(cjkBuffer.length > 0) {
           allCollect.push({cjk:cjkBuffer});
+          allCollect.push({stop:i});
         }
         cjkBuffer = [];
       }
     }
     if(cjkBuffer.length > 0) {
       allCollect.push({cjk:cjkBuffer});
+      allCollect.push({stop:doc.length-1});
     }
     if(notCJKBuffer.length > 0) {
       allCollect.push({noCjk:notCJKBuffer});
+      allCollect.push({stop:doc.length-1});
     }
     //console.log('article allCollect=<',allCollect,'>');
     for(let sentence of allCollect) {
@@ -84,6 +90,9 @@ class WaiCutter {
         //onSentence(cjkCollect[i],lang,aDocumentStatistics);
         //console.log('WaiCutter article sentence=<',sentence,'>');
         this.onNoCJK_(sentence.noCjk,lang);
+      }
+      if(sentence.stop) {
+        this.delegate_.onSentenceStop_(sentence.stop);
       }
     }
   }
