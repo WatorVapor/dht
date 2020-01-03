@@ -3,9 +3,9 @@ services:
   daemon:
     image: node:lts
     volumes:
-      - ../:/opt/app
+      - ./:/opt/app
       - /storage/dhtfs/cluster:/storage/dhtfs/cluster
-      - /tmp/dht_ermu_api_unix_dgram:/tmp/dht_ermu_api_unix_dgram
+      - /dev/shm:/dev/shm
     working_dir: "/opt/app/cli"
     command: node ./daemon.js
     networks:
@@ -13,18 +13,35 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '3.00'
-          memory: 3G
+          cpus: '1.00'
+          memory: 256M
         reservations:
           cpus: '0.1'
-          memory: 256M
+          memory: 128M
   redis_dht:
     image: node:lts
     volumes:
-      - ../:/opt/app
-      - /tmp/dht_ermu_api_unix_dgram:/tmp/dht_ermu_api_unix_dgram
+      - ./:/opt/app
+      - /dev/shm:/dev/shm
     working_dir: "/opt/app/cli"
     command: node ./redis_dht.js
+    networks:
+      - outside
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 32M
+        reservations:
+          cpus: '0.1'
+          memory: 16M
+  news_pumper_cn:
+    image: node:lts
+    volumes:
+      - ./:/opt/app
+      - /storage/dhtfs/cluster/news_pumper:/storage/dhtfs/cluster/news_pumper
+    working_dir: "/opt/app/news_pumper"
+    command: node ./appCN.js
     networks:
       - outside
     deploy:

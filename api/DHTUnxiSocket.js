@@ -2,7 +2,7 @@
 const net = require('net');
 const RIPEMD160 = require('ripemd160');
 const base32 = require("base32.js");
-const API_DOMAIN_PATH = '/tmp/dht_ermu_api_unix_dgram';
+const API_DOMAIN_PATH = '/dev/shm/dht_ermu_api_unix_dgram.sock';
 const StreamJson = require('./StreamJson.js');
 const bs32Option = { type: "crockford", lc: true };
 const https = require('https');

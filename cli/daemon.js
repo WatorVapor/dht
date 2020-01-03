@@ -35,7 +35,7 @@ const peer = dht.peerInfo();
 console.log(':: peer=<',peer,'>');
 
 const net = require('net');
-const API_DOMAIN_PATH = '/tmp/dht_ermu_api_unix_dgram';
+const API_DOMAIN_PATH = '/dev/shm/dht_ermu_api_unix_dgram.sock';
 
 const server = net.createServer((socket) => {
   try {
