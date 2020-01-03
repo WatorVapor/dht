@@ -55,12 +55,10 @@ const onLearnNewLink = () => {
     let jsValue;
     try {
       jsValue = JSON.parse(value);
-      /*
       if(jsValue.indexer) {
         setTimeout(onLearnNewLink,1000);
         return;
       }
-      */
       jsValue.indexer = true;
       let contents = JSON.stringify(jsValue);
       db.put(href,contents);
@@ -101,7 +99,7 @@ const onSaveIndex = (myhref,wordIndex,lang,title,txt) => {
   //console.log('onSaveIndex::title=<',title,'>');
   //console.log('onSaveIndex::txt=<',txt,'>');
   for(const word in wordIndex) {
-    console.log('onSaveIndex::word=<',word,'>');
+    //console.log('onSaveIndex::word=<',word,'>');
     const saveIndex = Object.assign({word:word},wordIndex[word]);
     saveIndex.lang = lang;
     saveIndex.title = title;
