@@ -85,7 +85,7 @@ const onNewsText = (txt,title,myhref,lang) => {
   //console.log('onNewsText::myhref=<',myhref,'>');
   let wordIndex = wai.article(txt,lang);
   //console.log('onNewsText::wordIndex=<',wordIndex,'>');
-  onSaveIndex(myhref,wordIndex,txt,title);  
+  onSaveIndex(myhref,wordIndex,lang,title,txt);  
 
 /*
   let wordTitleIndex = wai.article(title,lang);
@@ -94,13 +94,20 @@ const onNewsText = (txt,title,myhref,lang) => {
   setTimeout(onLearnNewLink,0);
 }
 
-const onSaveIndex = (myhref,wordIndex,txt,title) => {
-/*
-  console.log('onSaveIndex::myhref=<',myhref,'>');
-  console.log('onSaveIndex::wordIndex=<',wordIndex,'>');
-  console.log('onSaveIndex::txt=<',txt,'>');
-  console.log('onSaveIndex::title=<',title,'>');
-*/
+const onSaveIndex = (myhref,wordIndex,lang,title,txt) => {
+  //console.log('onSaveIndex::myhref=<',myhref,'>');
+  //console.log('onSaveIndex::wordIndex=<',wordIndex,'>');
+  //console.log('onSaveIndex::lang=<',lang,'>');
+  //console.log('onSaveIndex::title=<',title,'>');
+  //console.log('onSaveIndex::txt=<',txt,'>');
+  for(const word in wordIndex) {
+    console.log('onSaveIndex::word=<',word,'>');
+    const saveIndex = Object.assign({word:word},wordIndex[word]);
+    saveIndex.lang = lang;
+    saveIndex.title = title;
+    saveIndex.href = myhref;
+    console.log('onSaveIndex::saveIndex=<',saveIndex,'>');
+  }
 }
 
 /**

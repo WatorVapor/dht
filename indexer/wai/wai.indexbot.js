@@ -42,10 +42,10 @@ class WaiIndexBot extends WaiBase {
     const highCollect = super.FilterOutLowFreq_(this.wordsRC_,iConstWordFilterOutStageOne);
     //console.log('WaiIndexBot::article highCollect=<',highCollect,'>');
     this.statsWords_ = super.FilterOutInside_(highCollect);
-    console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
-    console.log('WaiIndexBot::article this.statsWords_=<',this.statsWords_,'>');
+    //console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
+    //console.log('WaiIndexBot::article this.statsWords_=<',this.statsWords_,'>');
     const indexOfWords = this.reduce2Index_();
-    console.log('WaiIndexBot::article indexOfWords=<',indexOfWords,'>');
+    //console.log('WaiIndexBot::article indexOfWords=<',indexOfWords,'>');
     return indexOfWords;
   }
 
@@ -171,7 +171,6 @@ class WaiIndexBot extends WaiBase {
   
   indexSummary4Word_(word) {
     const wordIndex = {summary:''};
-    
     //console.log('WaiIndexBot::indexSummary4Word_ word=<',word,'>');
     const sentencePos = this.wordsAtSentence_[word];
     //console.log('WaiIndexBot::indexSummary4Word_ sentencePos=<',sentencePos,'>');
