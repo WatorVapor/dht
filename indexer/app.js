@@ -1,8 +1,9 @@
 const redis = require('redis');
 const redisOption = {
   host:'node2.ceph.wator.xyz',
-  port:6379,
-  family:'IPv6'
+  port:16379,
+  family:'IPv6',
+  password:'QfIvXWQCxnTZlEpT',
 };
 const redisNewsChannelDiscovery = 'redis.channel.news.discover.multi.lang';
 const gSubscriber = redis.createClient(redisOption);
@@ -85,7 +86,7 @@ const onNewsText = (txt,myhref,lang) => {
   let tags = wai.article(txt,lang);
   //console.log('onNewsText::tags=<',tags,'>');
   onSaveIndex(myhref,tags);  
-  setTimeout(onLearnNewLink,1000);
+  setTimeout(onLearnNewLink,0);
 }
 
 const onSaveIndex = (txt,myhref) => {
