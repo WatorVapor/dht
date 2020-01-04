@@ -112,8 +112,11 @@ const onSaveIndex = (myhref,wordIndex,lang,title,txt) => {
  test
 **/
 wai.onReady = () => {
+  const href = 'http://baijiahao.baidu.com/s?id=1654086080000570017';
+  let contents = JSON.stringify({href:href,discover:true,indexer:false});
+  db.put(href,contents);
   setTimeout(()=>{
-    onDiscoveryNewLink('http://baijiahao.baidu.com/s?id=1654086080000570017');
+    onDiscoveryNewLink(href);
   },1000);
 }
 
