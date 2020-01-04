@@ -10,6 +10,9 @@ class PeerNetWork {
   constructor(config) {
     this.config = config;
     this.peers = {};
+    this.storePeers_ = {};
+    this.peekPeers_ = {};
+
     this.crypto_ = new PeerCrypto(config);
     this.machine_ = new PeerMachine(config);
     this.storage_ = new PeerStorage(config);
@@ -36,7 +39,7 @@ class PeerNetWork {
 
   publish(resource) {
     console.log('PeerNetWork::publish resource=<',resource,'>');
-    const place = new PeerPlace(resource.address,this.peers,this.crypto_);
+    const place = new PeerPlace(resource.address,this.storePeers_,this.crypto_);
     //console.log('PeerNetWork::publish place=<',place,'>');
     //console.log('PeerNetWork::publish this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
     if(place.isFinal(this.crypto_.idBS32)) {
@@ -53,7 +56,7 @@ class PeerNetWork {
     console.log('PeerNetWork::fetch4KeyWord keyWord=<',keyWord,'>');
     const address = this.crypto_.calcResourceAddress(keyWord);
     console.log('PeerNetWork::fetch4KeyWord address=<',address,'>');
-    const place = new PeerPlace(address,this.peers,this.crypto_);
+    const place = new PeerPlace(address,this.storePeers_,this.crypto_);
     console.log('PeerNetWork::fetch4KeyWord place=<',place,'>');
     console.log('PeerNetWork::fetch4KeyWord this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
     const fetchMessge = {
@@ -86,7 +89,7 @@ class PeerNetWork {
     //console.log('onMessageCtrlServer__ rinfo=<',rinfo,'>');
     try {
       const msgJson = JSON.parse(msg.toString('utf-8'));
-      console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
+      //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
       //console.log('onMessageCtrlServer__ this.config=<',this.config,'>');
       const good = this.crypto_.verify(msgJson);
       //console.log('onMessageCtrlServer__ good=<',good,'>');
@@ -95,10 +98,10 @@ class PeerNetWork {
         return;
       }
       const rPeerId = this.crypto_.calcID(msgJson);
-      if (msgJson.entry) {
-        this.onNewNodeEntry__(rPeerId, rinfo.address, msgJson.listen);
-      } else if (msgJson.entrance) {
-        this.onEntranceNode__(msgJson.entrance);
+      if (msgJson.entrance) {
+        this.onNewNodeEntry__(rPeerId, rinfo.address, msgJson.listen, msgJson.storage);
+      } else if (msgJson.welcome) {
+        this.onWelcomeNode__(msgJson.welcome);
       } else if (msgJson.ping) {
         this.onPeerPing__(rPeerId,msgJson);
       } else if (msgJson.pong) {
@@ -122,19 +125,31 @@ class PeerNetWork {
     }
   };
 
-  onNewNodeEntry__(id, rAddress, ports) {
+  onNewNodeEntry__(id, rAddress, ports,storage) {
     //console.log('onNewNodeEntry__ id=<',id,'>');
     //console.log('onNewNodeEntry__ rAddress=<',rAddress,'>');
     //console.log('onNewNodeEntry__ ports=<',ports,'>');
     //console.log('onNewNodeEntry__ this.peers=<',this.peers,'>');
     this.peers[id] = {
       host: rAddress,
-      ports: ports
+      ports: ports,
+      storage:storage
     };
+    if(storage) {
+      this.storePeers_[id] = {
+        host: rAddress,
+        ports: ports        
+      }
+    } else {
+      this.peekPeers_[id] = {
+        host: rAddress,
+        ports: ports        
+      }      
+    }
     //console.log('onNewNodeEntry__ this.peers=<', this.peers, '>');
 
     let msg = {
-      entrance: this.peers
+      welcome: this.peers
     };
     let msgSign = this.crypto_.sign(msg);
     const bufMsg = Buffer.from(JSON.stringify(msgSign));
@@ -142,13 +157,24 @@ class PeerNetWork {
       //console.log('onNewNodeEntry__ err=<',err,'>');
     });
   }
-  onEntranceNode__(entrance) {
-    //console.log('onEntranceNode__ entrance=<',entrance,'>');
-    this.peers = Object.assign(this.peers, entrance);
-    console.log('onEntranceNode__ this.peers=<',this.peers,'>');
+  onWelcomeNode__(welcome) {
+    //console.log('onWelcomeNode__ welcome=<',welcome,'>');
+    this.peers = Object.assign(this.peers, welcome);
+    //console.log('onWelcomeNode__ this.peers=<',this.peers,'>');
     try {
     } catch (e) {
-      console.log('onEntranceNode__ e=<', e, '>');
+      console.log('onWelcomeNode__ e=<', e, '>');
+    }
+    for(const peerid in this.peers) {
+      //console.log('onWelcomeNode__ peerid=<',peerid,'>');
+      const peerNew = Object.assign({},this.peers[peerid]);
+      if(peerNew.storage) {
+        delete peerNew.storage;
+        this.storePeers_[peerid] = peerNew;
+      } else {
+        delete peerNew.storage;
+        this.peekPeers_[peerid] = peerNew;
+      }
     }
   }
 
@@ -205,13 +231,14 @@ class PeerNetWork {
 
 
 
-  doClientEntry__(entrance, listen) {
+  doClientEntry__(entrance, listen ,storage) {
     console.log('doClientEntry__ entrance=<', entrance, '>');
     for (let address of entrance) {
       console.log('doClientEntry__ address=<', address, '>');
       let msg = {
-        entry: true,
-        listen: listen
+        entrance: true,
+        listen: listen,
+        storage:storage
       };
       let msgSign = this.crypto_.sign(msg);
       const bufMsg = Buffer.from(JSON.stringify(msgSign));
@@ -257,14 +284,15 @@ class PeerNetWork {
     console.log('onListenCtrlServer address=<', address, '>');
     const self = this;
     setTimeout(()=>{
-      self.doClientEntry__(self.config.entrance, self.config.listen);
+      self.doClientEntry__(self.config.entrance,self.config.listen,self.config.storage);
     },0);
     setTimeout(()=>{
       self.doClientPing__();
     },1000*1);
     this.peers[this.crypto_.idBS32] = {
       host: this.machine_.readMachienIp(),
-      ports: this.config.listen
+      ports: this.config.listen,
+      storage:this.config.storage
     };
   };
   
@@ -297,7 +325,7 @@ class PeerNetWork {
   onStore4Remote__(fromId, store) {
     //console.log('PeerNetWork::onStore4Remote__ fromId=<', fromId, '>');
     //console.log('PeerNetWork::onStore4Remote__ store=<', store, '>');
-    const place = new PeerPlace(store.address,this.peers,this.crypto_);
+    const place = new PeerPlace(store.address,this.storePeers_,this.crypto_);
     //console.log('PeerNetWork::onStore4Remote__ place=<',place,'>');
     //console.log('PeerNetWork::onStore4Remote__:: this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
     if(place.isFinal(this.crypto_.idBS32)) {
@@ -313,7 +341,7 @@ class PeerNetWork {
   onFetch4Remote__(fromId, fetch) {
     //console.log('PeerNetWork::onFetch4Remote__ fromId=<', fromId, '>');
     //console.log('PeerNetWork::onFetch4Remote__ fetch=<', fetch, '>');
-    const place = new PeerPlace(fetch.address,this.peers,this.crypto_);
+    const place = new PeerPlace(fetch.address,this.storePeers_,this.crypto_);
     //console.log('PeerNetWork::onFetch4Remote__ place=<',place,'>');
     //console.log('PeerNetWork::onFetch4Remote__:: this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
     if(place.isFinal(this.crypto_.idBS32)) {
