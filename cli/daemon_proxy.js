@@ -25,7 +25,8 @@ const config = {
   reps: {
     dht:dhtPath,
     data:dataPath
-  }
+  },
+  storage:false
 };
 //console.log(':: config=<',config,'>');
 const DHT = require('../src/dht.js');
