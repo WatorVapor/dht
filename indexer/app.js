@@ -92,6 +92,9 @@ const onNewsText = (txt,title,myhref,lang) => {
   setTimeout(onLearnNewLink,0);
 }
 
+
+
+
 const onSaveIndex = (myhref,wordIndex,lang,title,txt) => {
   //console.log('onSaveIndex::myhref=<',myhref,'>');
   //console.log('onSaveIndex::wordIndex=<',wordIndex,'>');
@@ -100,20 +103,40 @@ const onSaveIndex = (myhref,wordIndex,lang,title,txt) => {
   //console.log('onSaveIndex::txt=<',txt,'>');
   for(const word in wordIndex) {
     //console.log('onSaveIndex::word=<',word,'>');
-    const saveIndex = Object.assign({word:word},wordIndex[word]);
-    saveIndex.lang = lang;
-    saveIndex.title = title;
-    saveIndex.href = myhref;
-    console.log('onSaveIndex::saveIndex=<',saveIndex,'>');
+    const searchIndex = Object.assign({word:word},wordIndex[word]);
+    searchIndex.lang = lang;
+    searchIndex.title = title;
+    searchIndex.href = myhref;
+    //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
+    onSaveIndex2DHT(searchIndex);
   }
 }
+
+
+const DHT = require('../api/DHTUnxiSocket.js');
+const dht = new DHT();
+//console.log(':: dht=<',dht,'>');
+dht.peerInfo((peerInfo)=>{
+  console.log('dht.peerInfo:: peerInfo=<',peerInfo,'>');
+});
+
+const onSaveIndex2DHT = (searchIndex) => {
+  console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
+  dht.append(searchIndex.word,JSON.stringify(searchIndex,undefined,'  '),(info) => {
+    onAppend2DHTResult(info);
+  });
+}
+
+const onAppend2DHTResult = (info) => {
+  console.log('onAppend2DHTResult:: info.store=<',info.store,'>');
+};
 
 /**
  test
 **/
 wai.onReady = () => {
   const href = 'http://baijiahao.baidu.com/s?id=1654086080000570017';
-  let contents = JSON.stringify({href:href,discover:true,indexer:false});
+  let contents = JSON.stringify({href:href,discover:true,indexer:false,lang:'cn'});
   db.put(href,contents);
   setTimeout(()=>{
     onDiscoveryNewLink(href);

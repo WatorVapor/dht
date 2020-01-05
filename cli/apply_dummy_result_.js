@@ -1,5 +1,4 @@
 'use strict';
-const path = require('path');
 const DHT = require('../api/DHTUnxiSocket.js');
 const dht = new DHT();
 //console.log(':: dht=<',dht,'>');

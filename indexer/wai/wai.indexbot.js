@@ -182,7 +182,8 @@ class WaiIndexBot extends WaiBase {
       wordIndex.summary += cutFromDoc;
       wordIndex.summary += '...';
     }
-    wordIndex.summary = wordIndex.summary.replace('<>','');
+    const summaryArray = wordIndex.summary.split('<>');
+    wordIndex.summary = summaryArray.concat('');
     return wordIndex;
   }
 }
