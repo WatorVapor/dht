@@ -2,19 +2,18 @@ const WaiBase = require('./wai.base.js');
 const WaiGraph = require('./wai.graph.js');
 const fs = require('fs');
 
-const iConstWordFilterOutStageOne = 3;
-const iConstWordRepeatMin = 1;
-const iFactorialBaseOfRerank = 1;
+const iFactorialBaseOfRerank = 2;
+const iFactorialBaseOfHint = 2;
 
 
 class WaiIndexBot extends WaiBase {
   constructor() {
     super();
     this.graph_ = new WaiGraph();
-    this.parrotPath_ = __dirname + '/cnwiki/indexer.float.words.json';
-    console.log('WaiIndexBot::this.parrotPath_=<',this.parrotPath_,'>');
-    let content = fs.readFileSync(this.parrotPath_, 'utf8');
-    this.parrot_ = JSON.parse(content);
+    this.indexWordPath_ = __dirname + '/cnwiki/indexer.float.words.min.manx.json';
+    console.log('WaiIndexBot::this.indexWordPath_=<',this.indexWordPath_,'>');
+    let content = fs.readFileSync(this.indexWordPath_, 'utf8');
+    this.indexerDict_ = JSON.parse(content);
     setTimeout(()=> {
       if(typeof this.onReady === 'function') {
         this.onReady();
@@ -38,6 +37,8 @@ class WaiIndexBot extends WaiBase {
     super.article(doc,lang);
     this.hintWords_ = super.hintWords(lang);
     console.log('WaiIndexBot::article this.hintWords_=<',this.hintWords_,'>');
+    this.hintWordsFreq_ = this.adjustHintFreq_(this.hintWords_);
+    console.log('WaiIndexBot::article this.hintWordsFreq_=<',this.hintWordsFreq_,'>');
     super.outWords(lang);
     console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
     const indexOfWords = this.reduce2Index_();
@@ -58,7 +59,7 @@ class WaiIndexBot extends WaiBase {
     this.onReRankSentence_();
     //console.log('WaiIndexBot::onSentenceOut_ this.sentenceReRange_=<',this.sentenceReRange_,'>');
     const shortPath = this.graph_.shortPath(this.sentenceReRange_);
-    console.log('WaiIndexBot::onSentenceOut_ shortPath=<',shortPath,'>');
+    //console.log('WaiIndexBot::onSentenceOut_ shortPath=<',shortPath,'>');
     for(let wordRank of shortPath) {
       //console.log('WaiIndexBot::onSentenceOut_ wordRank=<',wordRank,'>');
       const word = wordRank.word;
@@ -106,14 +107,28 @@ class WaiIndexBot extends WaiBase {
     //console.log('WaiIndexBot::onCJKWordRC_ word=<',word,'>');
     //console.log('WaiIndexBot::onCJKWordRC_ start=<',start,'>');
     //console.log('WaiIndexBot::onCJKWordRC_ lang=<',lang,'>');
-    const freq = this.parrot_[word];
+    const freq = this.indexerDict_[word];
     //console.log('WaiIndexBot::onCJKWordRC_ freq=<',freq,'>');
+    const hintFreq = this.hintWordsFreq_[word];
+    //console.log('WaiIndexBot::onCJKWordRC_ hintFreq=<',hintFreq,'>');
     if(freq) {
       //console.log('WaiIndexBot::onCJKWordRC_ freq=<',freq,'>');
       //console.log('WaiIndexBot::onCJKWordRC_ word=<',word,'>');
       //console.log('WaiIndexBot::onCJKWordRC_ start=<',start,'>');
-      this.sentenceRange_.push({begin:start,end:start+word.length,word:word,freq:freq});
+      if(hintFreq) {
+        const totalFeq = freq + hintFreq.freq;
+        this.sentenceRange_.push({begin:start,end:start+word.length,word:word,freq:totalFeq});
+      } else {
+        this.sentenceRange_.push({begin:start,end:start+word.length,word:word,freq:freq});
+      }
+    } else {
+      if(hintFreq) {
+        //console.log('WaiIndexBot::onCJKWordRC_ hintFreq=<',hintFreq,'>');
+        //console.log('WaiIndexBot::onCJKWordRC_ word=<',word,'>');
+        this.sentenceRange_.push({begin:start,end:start+word.length,word:word,freq:hintFreq.freq});
+      }
     }
+    
     if(this.wordsAtSentence_.hasOwnProperty(word)) {
       this.wordsAtSentence_[word].push(this.seqNumOfSentence_);
     } else {
@@ -124,7 +139,7 @@ class WaiIndexBot extends WaiBase {
     //console.log('WaiIndexBot::onCJKSingleRC_ word=<',word,'>');
     //console.log('WaiIndexBot::onCJKSingleRC_ start=<',start,'>');
     //console.log('WaiIndexBot::onCJKSingleRC_ lang=<',lang,'>');
-    const freq = this.parrot_[word];
+    const freq = this.indexerDict_[word];
     //console.log('WaiIndexBot::onCJKSingleRC_ freq=<',freq,'>');
     if(freq) {
       //console.log('WaiIndexBot::onCJKSingleRC_ freq=<',freq,'>');
@@ -176,6 +191,29 @@ class WaiIndexBot extends WaiBase {
     const summaryArray = wordIndex.summary.split('<>');
     wordIndex.summary = summaryArray.join('');
     return wordIndex;
+  }
+  
+  adjustHintFreq_(words) {
+    const wordFreq = {};
+    const minOfIndex = this.indexerDict_.min;
+    const maxOfIndex = this.indexerDict_.max;
+    console.log('WaiIndexBot::adjustHintFreq_ minOfIndex=<',minOfIndex,'>');
+    for(const word in words) {
+      //console.log('WaiIndexBot::adjustHintFreq_ word=<',word,'>');
+      let factorial = 1.0;
+      for(let i = 1;i < words[word];i++) {
+        factorial *= (iFactorialBaseOfHint + i);
+      }
+      let newFreq = minOfIndex * factorial;
+      if(newFreq > maxOfIndex) {
+        newFreq = maxOfIndex;
+      }
+      wordFreq[word] = {
+        freq:newFreq,
+        origFreq:words[word]
+      };
+    }
+    return wordFreq;
   }
 }
 
