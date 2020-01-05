@@ -183,7 +183,7 @@ class WaiIndexBot extends WaiBase {
       wordIndex.summary += '...';
     }
     const summaryArray = wordIndex.summary.split('<>');
-    wordIndex.summary = summaryArray.concat('');
+    wordIndex.summary = summaryArray.join('');
     return wordIndex;
   }
 }
