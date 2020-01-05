@@ -58,7 +58,7 @@ class WaiIndexBot extends WaiBase {
     this.onReRankSentence_();
     //console.log('WaiIndexBot::onSentenceOut_ this.sentenceReRange_=<',this.sentenceReRange_,'>');
     const shortPath = this.graph_.shortPath(this.sentenceReRange_);
-    //console.log('WaiIndexBot::onSentenceOut_ shortPath=<',shortPath,'>');
+    console.log('WaiIndexBot::onSentenceOut_ shortPath=<',shortPath,'>');
     for(let wordRank of shortPath) {
       //console.log('WaiIndexBot::onSentenceOut_ wordRank=<',wordRank,'>');
       const word = wordRank.word;
