@@ -36,11 +36,11 @@ class WaiIndexBot extends WaiBase {
     //console.log('WaiIndexBot::article lang=<',lang,'>');
     super.article(doc,lang);
     this.hintWords_ = super.hintWords(lang);
-    console.log('WaiIndexBot::article this.hintWords_=<',this.hintWords_,'>');
+    //console.log('WaiIndexBot::article this.hintWords_=<',this.hintWords_,'>');
     this.hintWordsFreq_ = this.adjustHintFreq_(this.hintWords_);
-    console.log('WaiIndexBot::article this.hintWordsFreq_=<',this.hintWordsFreq_,'>');
+    //console.log('WaiIndexBot::article this.hintWordsFreq_=<',this.hintWordsFreq_,'>');
     super.outWords(lang);
-    console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
+    //console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
     const indexOfWords = this.reduce2Index_();
     //console.log('WaiIndexBot::article indexOfWords=<',indexOfWords,'>');
     return indexOfWords;
