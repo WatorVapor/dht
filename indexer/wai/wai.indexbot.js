@@ -78,6 +78,8 @@ class WaiIndexBot extends WaiBase {
     if(this.seqNumOfSentence_ > 1) {
       this.sentenceSeqMap_[this.seqNumOfSentence_].start = this.sentenceSeqMap_[this.seqNumOfSentence_ -1].stop;
     } else {
+      //console.log('WaiIndexBot::onSentenceStop_ this.sentenceSeqMap_=<',this.sentenceSeqMap_,'>');
+      //console.log('WaiIndexBot::onSentenceStop_ this.seqNumOfSentence_=<',this.seqNumOfSentence_,'>');
       this.sentenceSeqMap_[this.seqNumOfSentence_].start = 0;
     }
   }

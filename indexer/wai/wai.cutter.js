@@ -91,20 +91,24 @@ class WaiCutter {
   
   outWords(lang) {
     //console.log('WaiCutter outWords this.allCollect=<',this.allCollect,'>');
-    for(let sentence of this.allCollect) {
+    for(let sentenceIndex = 0; sentenceIndex < this.allCollect.length;sentenceIndex++) {
       //console.log('WaiCutter outWords this.delegate_.onSentence_=<',this.delegate_.onSentence_,'>');
+      const sentence = this.allCollect[sentenceIndex];
       if(sentence.cjk) {
         this.delegate_.onSentenceIn_(sentence.cjk);
         this.onCJK_(sentence.cjk,lang);
         this.delegate_.onSentenceOut_(sentence.cjk);
+        if(sentenceIndex +1  < this.allCollect.length) {
+          const sentenceNext = this.allCollect[sentenceIndex+1];
+          if(sentenceNext.stop) {
+            this.delegate_.onSentenceStop_(sentenceNext.stop);
+          }
+        }
       }
       if(sentence.noCjk) {
         //onSentence(cjkCollect[i],lang,aDocumentStatistics);
         //console.log('WaiCutter outWords sentence=<',sentence,'>');
         this.onNoCJK_(sentence.noCjk,lang);
-      }
-      if(sentence.stop) {
-        this.delegate_.onSentenceStop_(sentence.stop);
       }
     }    
   }

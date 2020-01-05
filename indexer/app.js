@@ -121,13 +121,13 @@ dht.peerInfo((peerInfo)=>{
 });
 
 const onSaveIndex2DHT = (searchIndex) => {
-  //console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
+  console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
   
-  /*
+  
   dht.append(searchIndex.word,JSON.stringify(searchIndex,undefined,'  '),(info) => {
     onAppend2DHTResult(info);
   });
-  */
+  
 }
 
 const onAppend2DHTResult = (info) => {
@@ -138,8 +138,13 @@ const onAppend2DHTResult = (info) => {
  test
 **/
 wai.onReady = () => {
-  const href = 'http://baijiahao.baidu.com/s?id=1654747834509146801';
-  let contents = JSON.stringify({href:href,discover:true,indexer:false,lang:'cn'});
+  const href = 'http://baijiahao.baidu.com/s?id=1654633985248178109';
+  let contents = JSON.stringify({
+    href:href,discover:true,lang:'cn',
+    indexer:false,
+    areaA:'6zxss4axnqj3y2367j1pf6mdge5k6fph',
+    areaB:'nvv21aetv386a71p7macwhgc98468gym'
+  });
   db.put(href,contents);
   setTimeout(()=>{
     onDiscoveryNewLink(href);
