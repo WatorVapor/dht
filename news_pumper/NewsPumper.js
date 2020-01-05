@@ -4,6 +4,10 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 const url = require('url');
 
+const RIPEMD160 = require('ripemd160');
+const base32 = require("base32.js");
+
+
 const LevelDFS = require('./LevelDFS.js');
 //console.log('::LevelDFS=<',LevelDFS,'>');
 
@@ -14,6 +18,8 @@ const redisOption = {
   password:'QfIvXWQCxnTZlEpT',
   family:'IPv6'
 };
+const bs32Option = { type: "crockford", lc: true };
+
 const redisNewsChannelDiscovery = 'redis.channel.news.discover.multi.lang';
 const gPublisher = redis.createClient(redisOption);
 gPublisher.on('error', (err) => {
@@ -40,6 +46,10 @@ module.exports = class NewsPumper {
       fs.mkdirSync(dbTextContent,{ recursive: true });
     }
     this.textDBPath_ = dbTextContent;
+    this.areaA_ = this.calcAddress_(JSON.stringify(this.seed_));
+    console.log('readNews_::this.areaA_=<',this.areaA_,'>');
+    this.areaB_ = this.calcAddress_(this.lastReadTime_.getFullYear().toString());
+    console.log('readNews_::this.areaB_=<',this.areaB_,'>');
   }
   turn() {
     this.globalLoopIndex_ = 0;
@@ -136,7 +146,9 @@ module.exports = class NewsPumper {
         const contentObj = {
           href:href,
           discover:true,
-          lang:this.lang_
+          lang:this.lang_,
+          areaA:this.areaA_,
+          areaB:this.areaB_
         };
         const contents = JSON.stringify(contentObj);
         self.linkDB_.put(href,contents);
@@ -169,6 +181,13 @@ module.exports = class NewsPumper {
     }
     setTimeout(this.onCheckTaskRun_.bind(this),1000*60*10);
   };
+
+
+  calcAddress_(msg) {
+    const msgRipemd = new RIPEMD160().update(msg).digest('hex');
+    const msgBuffer = Buffer.from(msgRipemd,'hex');
+    return base32.encode(msgBuffer,bs32Option);
+  }
 
 
 }

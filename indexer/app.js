@@ -138,7 +138,7 @@ const onAppend2DHTResult = (info) => {
  test
 **/
 wai.onReady = () => {
-  const href = 'http://baijiahao.baidu.com/s?id=1654086080000570017';
+  const href = 'http://baijiahao.baidu.com/s?id=1654747834509146801';
   let contents = JSON.stringify({href:href,discover:true,indexer:false,lang:'cn'});
   db.put(href,contents);
   setTimeout(()=>{

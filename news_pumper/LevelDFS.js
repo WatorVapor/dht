@@ -15,7 +15,7 @@ module.exports = class LevelDFS {
   }
   put(key,content,cb) {
     let keyAddress = this.getKeyAddress_(key);
-    //console.log('LevelDFS::put: keyAddress=<',keyAddress,'>');
+    console.log('LevelDFS::put: keyAddress=<',keyAddress,'>');
     let keyPath = path.dirname(keyAddress);
     //console.log('LevelDFS::put: keyPath=<',keyPath,'>');
     if (!fs.existsSync(keyPath)) {
