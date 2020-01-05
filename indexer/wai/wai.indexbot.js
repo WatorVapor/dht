@@ -2,7 +2,7 @@ const WaiBase = require('./wai.base.js');
 const WaiGraph = require('./wai.graph.js');
 const fs = require('fs');
 
-const iConstWordFilterOutStageOne = 2;
+const iConstWordFilterOutStageOne = 3;
 const iConstWordRepeatMin = 1;
 const iFactorialBaseOfRerank = 1;
 
@@ -31,19 +31,15 @@ class WaiIndexBot extends WaiBase {
   article(doc,lang) {
     this.doc_ = doc;
     this.words_ = {};
-    this.wordsRC_ = {};
     this.seqNumOfSentence_ = 0;
     this.wordsAtSentence_ = {};
     this.sentenceSeqMap_ = {};
     //console.log('WaiIndexBot::article lang=<',lang,'>');
     super.article(doc,lang);
-    //console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
-    //console.log('WaiIndexBot::article this.wordsRC_=<',this.wordsRC_,'>');
-    const highCollect = super.FilterOutLowFreq_(this.wordsRC_,iConstWordFilterOutStageOne);
-    //console.log('WaiIndexBot::article highCollect=<',highCollect,'>');
-    this.statsWords_ = super.FilterOutInside_(highCollect);
-    //console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
-    //console.log('WaiIndexBot::article this.statsWords_=<',this.statsWords_,'>');
+    this.hintWords_ = super.hintWords(lang);
+    console.log('WaiIndexBot::article this.hintWords_=<',this.hintWords_,'>');
+    super.outWords(lang);
+    console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
     const indexOfWords = this.reduce2Index_();
     //console.log('WaiIndexBot::article indexOfWords=<',indexOfWords,'>');
     return indexOfWords;
@@ -118,11 +114,6 @@ class WaiIndexBot extends WaiBase {
       //console.log('WaiIndexBot::onCJKWordRC_ start=<',start,'>');
       this.sentenceRange_.push({begin:start,end:start+word.length,word:word,freq:freq});
     }
-    if(this.wordsRC_.hasOwnProperty(word)) {
-      this.wordsRC_[word]++;
-    } else {
-      this.wordsRC_[word] = 1;
-    }
     if(this.wordsAtSentence_.hasOwnProperty(word)) {
       this.wordsAtSentence_[word].push(this.seqNumOfSentence_);
     } else {
@@ -156,14 +147,14 @@ class WaiIndexBot extends WaiBase {
       indexSummary[word] = this.indexSummary4Word_(word);
       indexSummary[word].freq = this.words_[word];
     }
-    for(let word in this.statsWords_) {
+    for(let word in this.hintWords_) {
       indexSummary[word] = Object.assign({},this.indexSummary4Word_(word));
       if(indexSummary[word].freq) {
-        if(this.statsWords_[word] > this.words_[word]) {
-          indexSummary[word].freq = this.statsWords_[word];
+        if(this.hintWords_[word] > this.words_[word]) {
+          indexSummary[word].freq = this.hintWords_[word];
         }
       } else {
-        indexSummary[word].freq = this.statsWords_[word];
+        indexSummary[word].freq = this.hintWords_[word];
       }
     }
     return indexSummary;

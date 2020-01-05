@@ -9,6 +9,18 @@ class WaiBase {
   article(doc,lang) {
     this.cutter_.article(doc,lang);
   }
+  hintWords(lang) {
+    this.hintWordRC_ = {};
+    this.cutter_.statsHint(lang);
+    const highCollect = this.FilterOutLowFreq_(this.hintWordRC_,iConstWordFilterOutStageOne);
+    //console.log('WaiBase::hintWords highCollect=<',highCollect,'>');
+    const hintWords = this.FilterOutInside_(highCollect);
+    return hintWords;
+  }
+  outWords(lang) {
+    this.cutter_.outWords(lang);
+  }
+  
   // inside
   mergeCollect_ (collect){
     //console.log('mergeCollect_ collect=<',collect,'>');
@@ -55,7 +67,18 @@ class WaiBase {
       }
     }
     return outCollect;
-  } 
+  }
+
+  onCJKWordHintRC_(word,start,lang) {
+    //console.log('WaiBase::onCJKWordHintRC_ this.hintWordRC_=<',this.hintWordRC_,'>');
+    if(this.hintWordRC_.hasOwnProperty(word)) {
+      this.hintWordRC_[word]++;
+    } else {
+      this.hintWordRC_[word] = 1;
+    }
+  }
+
+
 }
 
 module.exports = WaiBase;

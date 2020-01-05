@@ -121,10 +121,13 @@ dht.peerInfo((peerInfo)=>{
 });
 
 const onSaveIndex2DHT = (searchIndex) => {
-  console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
+  //console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
+  
+  /*
   dht.append(searchIndex.word,JSON.stringify(searchIndex,undefined,'  '),(info) => {
     onAppend2DHTResult(info);
   });
+  */
 }
 
 const onAppend2DHTResult = (info) => {
