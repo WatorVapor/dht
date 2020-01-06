@@ -42,26 +42,33 @@ const onlyUnique = (value, index, self) =>{
     return self.indexOf(value) === index;
 }
 
+let gNodeID = 0;
 const allPath = (sentence)=> {
-  console.log('allPath::sentence:=<',sentence,'>');
+  //console.log('allPath::sentence:=<',sentence,'>');
   sentence.sort((a, b)=> { return a.begin > b.begin});
   //console.log('allPath::sentence:=<',sentence,'>');
+  const sentenceMap = {};
+  for(const seq of sentence) {
+    sentenceMap[seq.hash] = seq;
+  }
   
-  const root = {leaf:{},begin:-1,end:0,hash:'begin'};
+  gNodeID = 0;
+  const root = {leaf:{},begin:-1,end:0,hash:'begin',id:gNodeID++};
+  const flatElement = {};
+  flatElement.begin = Object.assign({},root);
   for(const seg of sentence) {
     //console.log('allPath::seg:=<',seg,'>');
-    addLeaf(root,seg);
+    addLeaf(root,seg,flatElement);
   }
-  console.log('allPath::root:=<',JSON.stringify(root,undefined,'  '),'>');
-  const flatElement = {};
+  //console.log('allPath::root:=<',JSON.stringify(root,undefined,'  '),'>');
   //flatElement.begin = Object.assign({},root);
-  flatTree(root,flatElement);
-  console.log('allPath::flatElement:=<',flatElement,'>');
+  //flatTree(root,flatElement);
+  //console.log('allPath::flatElement:=<',flatElement,'>');
   const allTreePath = [];
   findAllLeafTreePath(root,allTreePath,flatElement);
-  console.log('allPath::allTreePath:=<',allTreePath,'>');
+  //console.log('allPath::allTreePath:=<',allTreePath,'>');
   const uniqueTreePath = allTreePath.filter( onlyUnique );
-  console.log('allPath::uniqueTreePath:=<',uniqueTreePath,'>');
+  //console.log('allPath::uniqueTreePath:=<',uniqueTreePath,'>');
 
   const allSeqPath = [];
   for(const pathTreeStr of uniqueTreePath) {
@@ -69,26 +76,25 @@ const allPath = (sentence)=> {
     const pathTree = pathTreeStr.split(',');
     for(const hash of pathTree) {
       if(hash !== 'begin') {
-        const seq = Object.assign({},flatElement[hash]);
-        delete seq.leaf;
-        delete seq.father;
+        const seq = Object.assign({},sentenceMap[hash]);
         pashSeq.push(seq);
       }
     }
     allSeqPath.push(pashSeq.reverse());
   }
-  console.log('allPath::allSeqPath:=<',allSeqPath,'>');
+  //console.log('allPath::allSeqPath:=<',allSeqPath,'>');
   return allSeqPath;
 }
 
-const addLeaf = (prev,seq) => {
+const addLeaf = (prev,seq,flatElement) => {
   //console.log('addLeaf::seq:=<',seq,'>');
   if(prev.end === seq.begin) {
-    prev.leaf[seq.hash] =  Object.assign({leaf:{},father:prev.hash},seq);
-    //flat[seq.hash] =  Object.assign({},prev.leaf[seq.hash]);
+    const node = Object.assign({leaf:{},father:prev.id,id:gNodeID++},seq);
+    prev.leaf[seq.hash] =  node;
+    flatElement[node.id] =  Object.assign({},node);
   }
   for(const leafKey in prev.leaf) {
-    addLeaf(prev.leaf[leafKey],seq);
+    addLeaf(prev.leaf[leafKey],seq,flatElement);
   }
 };
 
@@ -130,4 +136,6 @@ const pathOfTree = (curret,pathTree,flatElement) => {
   }
 }
 
-allPath(inputSentence);
+const seqPaths = allPath(inputSentence);
+
+console.log('::seqPaths:=<',seqPaths,'>');
