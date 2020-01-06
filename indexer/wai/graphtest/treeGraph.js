@@ -48,19 +48,20 @@ const allPath = (sentence)=> {
   //console.log('allPath::sentence:=<',sentence,'>');
   
   const root = {leaf:{},begin:-1,end:0,hash:'begin'};
-  const flatElement = {};
-  flatElement.begin = Object.assign({},root);
   for(const seg of sentence) {
     //console.log('allPath::seg:=<',seg,'>');
-    addLeaf(root,seg,flatElement);
+    addLeaf(root,seg);
   }
   console.log('allPath::root:=<',JSON.stringify(root,undefined,'  '),'>');
-  //console.log('allPath::root:=<',flatElement,'>');
+  const flatElement = {};
+  //flatElement.begin = Object.assign({},root);
+  flatTree(root,flatElement);
+  console.log('allPath::flatElement:=<',flatElement,'>');
   const allTreePath = [];
   findAllLeafTreePath(root,allTreePath,flatElement);
-  //console.log('allPath::allTreePath:=<',allTreePath,'>');
+  console.log('allPath::allTreePath:=<',allTreePath,'>');
   const uniqueTreePath = allTreePath.filter( onlyUnique );
-  //console.log('allPath::uniqueTreePath:=<',uniqueTreePath,'>');
+  console.log('allPath::uniqueTreePath:=<',uniqueTreePath,'>');
 
   const allSeqPath = [];
   for(const pathTreeStr of uniqueTreePath) {
@@ -79,44 +80,52 @@ const allPath = (sentence)=> {
   console.log('allPath::allSeqPath:=<',allSeqPath,'>');
   return allSeqPath;
 }
-const addLeaf = (prev,seq,flat) => {
+
+const addLeaf = (prev,seq) => {
   //console.log('addLeaf::seq:=<',seq,'>');
   if(prev.end === seq.begin) {
-    if(prev.leaf[seq.hash]) {
-      prev.leaf[seq.hash].father.push(prev.hash);
-    } else {
-      prev.leaf[seq.hash] = seq;
-      prev.leaf[seq.hash].leaf = {};
-      prev.leaf[seq.hash].father = [prev.hash];
-      flat[seq.hash] = Object.assign({},prev.leaf[seq.hash]);
-    }
+    prev.leaf[seq.hash] =  Object.assign({leaf:{},father:prev.hash},seq);
+    //flat[seq.hash] =  Object.assign({},prev.leaf[seq.hash]);
   }
   for(const leafKey in prev.leaf) {
-    addLeaf(prev.leaf[leafKey],seq,flat);
+    addLeaf(prev.leaf[leafKey],seq);
   }
 };
 
-const findAllLeafTreePath = (prev,allTreePath,flatElement) => {
-  if(Object.keys(prev.leaf).length === 0) {
+const flatTree = (current,flat) => {
+  let flatKey = current.hash;
+  if(flat[flatKey]) {
+    console.log('!!!!!!!!!!bad flatTree::flatKey:=<',flatKey,'>');
+  } else {
+    flat[flatKey] = current;    
+  }
+  for(const leafKey in current.leaf) {
+    flatTree(current.leaf[leafKey],flat);
+  }
+}
+
+
+const findAllLeafTreePath = (curret,allTreePath,flatElement) => {
+  if(Object.keys(curret.leaf).length === 0) {
     const pathTree = [];
-    pathOfTree(prev,pathTree,flatElement);
+    pathOfTree(curret,pathTree,flatElement);
     allTreePath.push(pathTree.join(','));
-   // console.log('addLeaf::pathTree:=<',pathTree,'>');
+   // console.log('findAllLeafTreePath::pathTree:=<',pathTree,'>');
     return;
   }
-  for(const leafKey in prev.leaf) {
-    //console.log('addLeaf::leafKey:=<',leafKey,'>');
-    const next = prev.leaf[leafKey];
+  for(const leafKey in curret.leaf) {
+    //console.log('findAllLeafTreePath::leafKey:=<',leafKey,'>');
+    const next = curret.leaf[leafKey];
     findAllLeafTreePath(next,allTreePath,flatElement);
   }
 }
 
-const pathOfTree = (prev,pathTree,flatElement) => {
-  pathTree.push(prev.hash);
-  if(prev.father) {
-    //console.log('addLeaf::prev.father:=<',prev.father,'>');
-    const father = flatElement[prev.father];
-    //console.log('addLeaf::father:=<',father,'>');
+const pathOfTree = (curret,pathTree,flatElement) => {
+  pathTree.push(curret.hash);
+  if(curret.father) {
+    //console.log('pathOfTree::curret.father:=<',curret.father,'>');
+    const father = flatElement[curret.father];
+    //console.log('pathOfTree::father:=<',father,'>');
     pathOfTree(father,pathTree,flatElement);
   }
 }
