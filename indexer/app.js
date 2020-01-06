@@ -62,28 +62,25 @@ const onLearnNewLink = () => {
       jsValue.indexer = true;
       let contents = JSON.stringify(jsValue);
       db.put(href,contents);
-    }
-    catch(e) {
+      const txtReader = new NewsTextReader(constTextDBPath);
+      console.log('onLearnNewLink::jsValue=<',jsValue,'>');
+      txtReader.fetch(href,(txt,title,myhref)=>{
+        onNewsText(txt,title,myhref,jsValue.lang,jsValue);
+      });
+    } catch(e) {
       console.log('onLearnNewLink::e=<',e,'>');
-      let contents = JSON.stringify({href:href,discover:true,indexer:true});
-      db.put(href,contents);
     }
-    const txtReader = new NewsTextReader(constTextDBPath);
-    console.log('onLearnNewLink::jsValue=<',jsValue,'>');
-    txtReader.fetch(href,(txt,title,myhref)=>{
-      onNewsText(txt,title,myhref,jsValue.lang);
-    });
   });
 }
 
 
 
-const onNewsText = (txt,title,myhref,lang) => {
+const onNewsText = (txt,title,myhref,lang,crawler) => {
   //console.log('onNewsText::txt=<',txt,'>');
   //console.log('onNewsText::myhref=<',myhref,'>');
   let wordIndex = wai.article(txt,lang);
   //console.log('onNewsText::wordIndex=<',wordIndex,'>');
-  onSaveIndex(myhref,wordIndex,lang,title,txt);  
+  onSaveIndex(myhref,wordIndex,lang,title,txt,crawler);  
 
 /*
   let wordTitleIndex = wai.article(title,lang);
@@ -95,7 +92,7 @@ const onNewsText = (txt,title,myhref,lang) => {
 
 
 
-const onSaveIndex = (myhref,wordIndex,lang,title,txt) => {
+const onSaveIndex = (myhref,wordIndex,lang,title,txt,crawler) => {
   //console.log('onSaveIndex::myhref=<',myhref,'>');
   //console.log('onSaveIndex::wordIndex=<',wordIndex,'>');
   //console.log('onSaveIndex::lang=<',lang,'>');
@@ -107,6 +104,8 @@ const onSaveIndex = (myhref,wordIndex,lang,title,txt) => {
     searchIndex.lang = lang;
     searchIndex.title = title;
     searchIndex.href = myhref;
+    searchIndex..earaA = crawler.earaA;
+    searchIndex..earaB = crawler.earaB;
     //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
     onSaveIndex2DHT(searchIndex);
   }
