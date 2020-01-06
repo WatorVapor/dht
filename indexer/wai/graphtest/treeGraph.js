@@ -1,26 +1,3 @@
-/*
-const root = {leaf:{}};
-root.leaf['1'] = {leaf:{}};
-root.leaf['2'] = {leaf:{}};
-root.leaf['3'] = {leaf:{}};
-
-console.log('root =<',root,'>');
-
-
-const addLeaf = (prev,pos,leaf) => {
-  for(const index in prev.leaf) {
-    console.log('index =<',index,'>');
-    if(index === pos) {
-      const distPos = prev.leaf[index];
-      distPos.leaf[leaf] = {leaf:{}};
-    }
-  }
-}
-addLeaf(root,'1','11');
-addLeaf(root,'2','21');
-
-console.log('root =<',JSON.stringify(root,undefined,'  '),'>');
-*/
 const inputSentence = 
  [ { begin: 0,
     end: 1,
@@ -105,11 +82,14 @@ const allPath = (sentence)=> {
 const addLeaf = (prev,seq,flat) => {
   //console.log('addLeaf::seq:=<',seq,'>');
   if(prev.end === seq.begin) {
-    prev.leaf[seq.hash] = seq;
-    prev.leaf[seq.hash].leaf = {};
-    prev.leaf[seq.hash].father = prev.hash;
-    flat[seq.hash] = Object.assign({},prev.leaf[seq.hash]);
-    return;
+    if(prev.leaf[seq.hash]) {
+      prev.leaf[seq.hash].father.push(prev.hash);
+    } else {
+      prev.leaf[seq.hash] = seq;
+      prev.leaf[seq.hash].leaf = {};
+      prev.leaf[seq.hash].father = [prev.hash];
+      flat[seq.hash] = Object.assign({},prev.leaf[seq.hash]);
+    }
   }
   for(const leafKey in prev.leaf) {
     addLeaf(prev.leaf[leafKey],seq,flat);
@@ -136,6 +116,7 @@ const pathOfTree = (prev,pathTree,flatElement) => {
   if(prev.father) {
     //console.log('addLeaf::prev.father:=<',prev.father,'>');
     const father = flatElement[prev.father];
+    //console.log('addLeaf::father:=<',father,'>');
     pathOfTree(father,pathTree,flatElement);
   }
 }
