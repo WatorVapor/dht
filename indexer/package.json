@@ -11,6 +11,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "graphviz": "0.0.9",
+    "js-graph-algorithms": "^1.0.18",
     "node-dijkstra": "^2.5.0",
     "redis": "^2.8.0",
     "ripemd160": "^2.0.2"

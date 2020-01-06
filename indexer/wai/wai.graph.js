@@ -15,6 +15,9 @@ class WaiGraph {
     //this.g_ = this.createGraphDot_(sentence);
     return this.dijkstraShortPath_(sentence);
   }
+  allPath(sentence) {
+    console.log('WaiGraph::allPath sentence=<',sentence,'>');
+  }
   
   dijkstraShortPath_(sentence) {
     //console.log('WaiGraph::dijkstraShortPath_ sentence=<',sentence,'>');

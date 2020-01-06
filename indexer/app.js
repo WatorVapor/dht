@@ -104,10 +104,10 @@ const onSaveIndex = (myhref,wordIndex,lang,title,txt,crawler) => {
     searchIndex.lang = lang;
     searchIndex.title = title;
     searchIndex.href = myhref;
-    searchIndex..earaA = crawler.earaA;
-    searchIndex..earaB = crawler.earaB;
+    searchIndex.earaA = crawler.earaA;
+    searchIndex.earaB = crawler.earaB;
     //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
-    onSaveIndex2DHT(searchIndex);
+    //onSaveIndex2DHT(searchIndex);
   }
 }
 
@@ -120,13 +120,10 @@ dht.peerInfo((peerInfo)=>{
 });
 
 const onSaveIndex2DHT = (searchIndex) => {
-  console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
-  
-  
+  //console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
   dht.append(searchIndex.word,JSON.stringify(searchIndex,undefined,'  '),(info) => {
     onAppend2DHTResult(info);
   });
-  
 }
 
 const onAppend2DHTResult = (info) => {
