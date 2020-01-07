@@ -79,7 +79,7 @@ const onNewsText = (txt,title,myhref,lang,crawler) => {
   //console.log('onNewsText::txt=<',txt,'>');
   //console.log('onNewsText::myhref=<',myhref,'>');
   let wordIndex = wai.article(txt,lang);
-  //console.log('onNewsText::wordIndex=<',wordIndex,'>');
+  console.log('onNewsText::wordIndex=<',wordIndex,'>');
   onSaveIndex(myhref,wordIndex,lang,title,txt,crawler);  
 
 /*

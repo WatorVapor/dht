@@ -1,15 +1,18 @@
 const WaiBase = require('./wai.base.js');
-const WaiGraph = require('./wai.graph.js');
+//const WaiGraph = require('./wai.graph.js');
+const WaiTreeGraph = require('./wai.treegraph.js');
 const fs = require('fs');
 
 const iFactorialBaseOfRerank = 2;
 const iFactorialBaseOfHint = 2;
+const iConstSummaryMax = 128;
 
 
 class WaiIndexBot extends WaiBase {
   constructor() {
     super();
-    this.graph_ = new WaiGraph();
+    //this.graph_ = new WaiGraph();
+    this.treeGraph_ = new WaiTreeGraph();
     this.indexWordPath_ = __dirname + '/cnwiki/indexer.float.words.min.manx.json';
     console.log('WaiIndexBot::this.indexWordPath_=<',this.indexWordPath_,'>');
     let content = fs.readFileSync(this.indexWordPath_, 'utf8');
@@ -58,8 +61,9 @@ class WaiIndexBot extends WaiBase {
     this.sentenceSeqMap_[this.seqNumOfSentence_].text = sentence;
     this.onReRankSentence_();
     //console.log('WaiIndexBot::onSentenceOut_ this.sentenceReRange_=<',this.sentenceReRange_,'>');
+    
+    /*
     const shortPath = this.graph_.shortPath(this.sentenceReRange_);
-    const allPath = this.graph_.allPath(this.sentenceReRange_);
     //console.log('WaiIndexBot::onSentenceOut_ shortPath=<',shortPath,'>');
     for(let wordRank of shortPath) {
       //console.log('WaiIndexBot::onSentenceOut_ wordRank=<',wordRank,'>');
@@ -68,6 +72,22 @@ class WaiIndexBot extends WaiBase {
         this.words_[word]++;
       } else {
         this.words_[word] = 1;
+      }
+    }
+    */
+    
+    //console.log('WaiIndexBot::onSentenceOut_ this.sentenceReRange_=<',this.sentenceReRange_,'>');
+    const allPath = this.treeGraph_.allPath(this.sentenceReRange_);
+    //console.log('WaiIndexBot::onSentenceOut_ allPath=<',allPath,'>');
+    for(let onePath of allPath) {
+      for(let wordRank of onePath) {
+        //console.log('WaiIndexBot::onSentenceOut_ wordRank=<',wordRank,'>');
+        const word = wordRank.word;
+        if(this.words_[word]) {
+          this.words_[word]++;
+        } else {
+          this.words_[word] = 1;
+        }
       }
     }
   }
@@ -183,6 +203,9 @@ class WaiIndexBot extends WaiBase {
     //console.log('WaiIndexBot::indexSummary4Word_ word=<',word,'>');
     const sentencePos = this.wordsAtSentence_[word];
     //console.log('WaiIndexBot::indexSummary4Word_ sentencePos=<',sentencePos,'>');
+    if(!sentencePos) {
+      return wordIndex;
+    }
     for(const pos of sentencePos) {
       const sentenceMap = this.sentenceSeqMap_[pos];
       //console.log('WaiIndexBot::indexSummary4Word_ sentenceMap=<',sentenceMap,'>');
@@ -193,6 +216,9 @@ class WaiIndexBot extends WaiBase {
     }
     const summaryArray = wordIndex.summary.split('<>');
     wordIndex.summary = summaryArray.join('');
+    if(wordIndex.summary.length > iConstSummaryMax) {
+      wordIndex.summary = wordIndex.summary.slice(0,iConstSummaryMax);
+    }
     return wordIndex;
   }
   

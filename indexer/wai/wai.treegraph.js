@@ -1,9 +1,16 @@
+const RIPEMD160 = require('ripemd160');
+const bs32Option = { type: "crockford", lc: true };
+
 class WaiTreeGraph {
   constructor() {
   }
   allPath(sentence) {
     const onlyUnique = (value, index, self) =>{ 
         return self.indexOf(value) === index;
+    }
+    const hashSeq = (word) => {
+      const hash = new RIPEMD160().update(JSON.stringify(word)).digest('hex');
+      word.hash = hash;
     }
 
     let gNodeID = 0;
@@ -13,6 +20,9 @@ class WaiTreeGraph {
       //console.log('allPath::sentence:=<',sentence,'>');
       const sentenceMap = {};
       for(const seq of sentence) {
+        if(!seq.hash) {
+          hashSeq(seq);
+        }
         sentenceMap[seq.hash] = seq;
       }
 
