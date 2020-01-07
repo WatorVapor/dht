@@ -1,5 +1,5 @@
-class WaiGraph {
+class WaiTreeGraph {
   constructor() {
   }
 };
-module.exports = WaiGraph;
+module.exports = WaiTreeGraph;
