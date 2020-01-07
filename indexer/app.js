@@ -79,13 +79,8 @@ const onNewsText = (txt,title,myhref,lang,crawler) => {
   //console.log('onNewsText::txt=<',txt,'>');
   //console.log('onNewsText::myhref=<',myhref,'>');
   let wordIndex = wai.article(txt,lang);
-  console.log('onNewsText::wordIndex=<',wordIndex,'>');
+  //console.log('onNewsText::wordIndex=<',wordIndex,'>');
   onSaveIndex(myhref,wordIndex,lang,title,txt,crawler);  
-
-/*
-  let wordTitleIndex = wai.article(title,lang);
-  console.log('onNewsText::wordTitleIndex=<',wordTitleIndex,'>');
-*/
   setTimeout(onLearnNewLink,0);
 }
 
@@ -107,7 +102,7 @@ const onSaveIndex = (myhref,wordIndex,lang,title,txt,crawler) => {
     searchIndex.earaA = crawler.earaA;
     searchIndex.earaB = crawler.earaB;
     //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
-    //onSaveIndex2DHT(searchIndex);
+    onSaveIndex2DHT(searchIndex);
   }
 }
 

@@ -1,0 +1,20 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    volumes:
+      - ./redis/redis.conf:/opt/redis/redis.conf
+      - /dev/shm:/dev/shm
+    command: redis-server /opt/redis/redis.conf
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+networks:
+  outside:
+    external:
+      name: "host"
