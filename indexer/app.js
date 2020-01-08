@@ -127,7 +127,7 @@ const onAppend2DHTResult = (info) => {
  test
 **/
 wai.onReady = () => {
-  const href = 'http://m.news.cctv.com/2020/01/08/ARTIgDDh64Om5ytIZFzPzml9200108.shtml';
+  const href = 'http://baijiahao.baidu.com/s?id=1655070277317406830';
   let contents = JSON.stringify({
     href:href,discover:true,lang:'cn',
     indexer:false,
