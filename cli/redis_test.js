@@ -22,7 +22,7 @@ const appendData = ()=> {
   });
 };
 
-//setTimeout(appendData,1000);
+setTimeout(appendData,1000);
 
 const fetchData = ()=> {
   dht.fetch4KeyWord('汉语',(resource) => {
