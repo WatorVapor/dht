@@ -8,25 +8,20 @@ const base32 = require("base32.js");
 const bs32Option = { type: "crockford", lc: true };
 const https = require('https');
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+const serverListenChannale = 'dht.ermu.api.server.listen';
 
 class DHTRedis {
   constructor() {
     console.log('DHTRedis::constructor');
-    this.client_ = redis.createClient(redisOption);
-    
+    this.apiChannel_ = this.calcCallBackHash_();
+    this.subscriber_ = redis.createClient(redisOption);
+    this.subscriber_.subscribe(this.apiChannel_);    
     const self = this;
-    this.client_.on('error', (err) => {
-      self.onError_(err);
+     this.subscriber_.on('message',(channel,message) => {
+      self.onMsg_(message);
     });
-    this.client_.on('data', (data) => {
-      self.onMsg_(data);
-    });
-    this.client_.on('drain', (data) => {
-      self.sending_ = false;
-    });
+    this.publisher_ = redis.createClient(redisOption);   
     this.cb_ = {};
-    this.sending_ = false;
-    this.sjson_ = new StreamJson();
   }
   peerInfo(cb) {
     console.log('DHTRedis::peerInfo');
@@ -60,9 +55,8 @@ class DHTRedis {
   }
   onMsg_(msg) {
     //console.log('DHTRedis::onMsg_ msg=<',msg.toString('utf-8'),'>');
-    const jMsgArray = this.sjson_.parse(msg.toString());
-    //console.log('DHTRedis::onMsg_ jMsgArray=<',jMsgArray,'>');
-    for(const jMsg of jMsgArray ) {
+    try {
+      const jMsg = JSON.parse(msg.toString());
       //console.log('DHTRedis::onMsg_ jMsg=<',jMsg,'>');
       if(jMsg) {
         if(jMsg.peerInfo) {
@@ -75,17 +69,17 @@ class DHTRedis {
       } else {
         console.log('DHTRedis::onMsg_ jMsg=<',jMsg,'>');
       }
+    } catch(e) {
+      console.log('DaemonRedis::onMsg_::::e=<',e,'>');
     }
   }
   writeData_(msg) {
-    if(this.sending_) {
-    }
-    this.sending_ = true;
     const cbtag = this.calcCallBackHash_(msg);
     msg.cb = cbtag;
+    msg.channel = this.apiChannel_;
     const msgBuff = Buffer.from(JSON.stringify(msg),'utf-8');
     try {
-      this.client_.write(msgBuff);
+      this.publisher_.publish(serverListenChannale,msgBuff);
     } catch (e) {
       console.log('writeData_::fetch e=<',e,'>');
     }
