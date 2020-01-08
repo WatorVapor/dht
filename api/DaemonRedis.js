@@ -3,21 +3,17 @@ const redis = require('redis');
 const redisOption = {
   path:'/dev/shm/dht.ermu.api.redis.sock'
 };
-const { execSync } = require('child_process');
+const serverListenChannale = 'dht.ermu.api.server.listen';
 class DaemonRedis {
   constructor(dht) {
     this.dht_ = dht;
-    this.sjson_ = new StreamJson();
+    this.subscriber_ = redis.createClient(redisOption);
+    this.subscriber_.subscribe(serverListenChannale);
     const self = this;
-    const server = net.createServer((socket) => {
-      try {
-        self.onConnection_(socket);
-      } catch(e) {
-        console.log('DaemonUnixSocket::constructore=<',e,'>');
-      }
+    this.subscriber_.on("message",(channel,message) => {
+      self.onData_();
     });
-    execSync(`rm -rf ${API_DOMAIN_PATH}`);
-    server.listen(API_DOMAIN_PATH);
+    this.publisher_ = redis.createClient(redisOption);
   }
   
   onConnection_(connection) {
@@ -139,4 +135,4 @@ class DaemonRedis {
 
 };
 
-module.exports = DaemonUnixSocket;
+module.exports = DaemonRedis;
