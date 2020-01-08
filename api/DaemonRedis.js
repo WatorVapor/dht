@@ -1,8 +1,9 @@
 'use strict';
-const net = require('net');
+const redis = require('redis');
+const redisOption = {
+  path:'/dev/shm/dht.ermu.api.redis.sock'
+};
 const { execSync } = require('child_process');
-
-const API_DOMAIN_PATH = '/dev/shm/dht_ermu_api_unix_dgram.sock';
 class DaemonRedis {
   constructor(dht) {
     this.dht_ = dht;
