@@ -3,6 +3,7 @@ const redis = require('redis');
 const redisOption = {
   path:'/dev/shm/dht.ermu.api.redis.sock'
 };
+const crypto = require('crypto');
 const RIPEMD160 = require('ripemd160');
 const base32 = require("base32.js");
 const bs32Option = { type: "crockford", lc: true };
@@ -13,7 +14,7 @@ const serverListenChannale = 'dht.ermu.api.server.listen';
 class DHTRedis {
   constructor() {
     console.log('DHTRedis::constructor');
-    this.apiChannel_ = this.calcCallBackHash_();
+    this.apiChannel_ = this.calcCallBackHash_(this);
     this.subscriber_ = redis.createClient(redisOption);
     this.subscriber_.subscribe(this.apiChannel_);    
     const self = this;
@@ -63,6 +64,8 @@ class DHTRedis {
           this.onPeerInfo_(jMsg);
         } else if(jMsg.fetchResp) {
           this.onFetchResp_(jMsg);
+        } else if(jMsg.store) {
+          this.onStoreResp_(jMsg);
         } else {
           console.log('DHTRedis::onMsg_ jMsg=<',jMsg,'>');          
         }
@@ -87,7 +90,7 @@ class DHTRedis {
   }
   calcCallBackHash_(msg) {
     let now = new Date();
-    const cbHash = JSON.stringify(msg) + now.toGMTString() + now.getMilliseconds();
+    const cbHash = crypto.randomBytes(256).toString('hex') + JSON.stringify(msg) + now.toGMTString() + now.getMilliseconds() ;
     const cbRipemd = new RIPEMD160().update(cbHash).digest('hex');
     const cbBuffer = Buffer.from(cbRipemd,'hex');
     return base32.encode(cbBuffer,bs32Option);
@@ -100,6 +103,9 @@ class DHTRedis {
       console.log('DHTRedis::onPeerInfo_ jMsg=<',jMsg,'>');
       console.log('DHTRedis::onPeerInfo_ this.cb_=<',this.cb_,'>');
     }
+  }
+  onStoreResp_(jMsg) {
+    
   }
 
   onFetchResp_(jMsg) {

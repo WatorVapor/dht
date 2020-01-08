@@ -48,13 +48,12 @@ const onLearnNewLink = () => {
   gNewLinks.splice(-1);
   //console.log('onLearnNewLink:: gNewLinks=<',gNewLinks,'>');
   db.get(href, (err, value) => {
-    if(err) {
-      throw err;
-    }
-    //console.log('onLearnNewLink::value=<',value,'>');
-    let jsValue;
     try {
-      jsValue = JSON.parse(value);
+      if(err) {
+        throw err;
+      }
+      //console.log('onLearnNewLink::value=<',value,'>');
+      const jsValue = JSON.parse(value);
       if(jsValue.indexer) {
         setTimeout(onLearnNewLink,1000);
         return;
@@ -99,15 +98,14 @@ const onSaveIndex = (myhref,wordIndex,lang,title,txt,crawler) => {
     searchIndex.lang = lang;
     searchIndex.title = title;
     searchIndex.href = myhref;
-    searchIndex.earaA = crawler.earaA;
-    searchIndex.earaB = crawler.earaB;
+    searchIndex.area = crawler.area;
     //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
     onSaveIndex2DHT(searchIndex);
   }
 }
 
 
-const DHT = require('../api/DHTUnxiSocket.js');
+const DHT = require('../api/DHTRedis.js');
 const dht = new DHT();
 //console.log(':: dht=<',dht,'>');
 dht.peerInfo((peerInfo)=>{
@@ -129,12 +127,14 @@ const onAppend2DHTResult = (info) => {
  test
 **/
 wai.onReady = () => {
-  const href = 'http://baijiahao.baidu.com/s?id=1654633985248178109';
+  const href = 'http://m.news.cctv.com/2020/01/08/ARTIgDDh64Om5ytIZFzPzml9200108.shtml';
   let contents = JSON.stringify({
     href:href,discover:true,lang:'cn',
     indexer:false,
-    areaA:'6zxss4axnqj3y2367j1pf6mdge5k6fph',
-    areaB:'nvv21aetv386a71p7macwhgc98468gym'
+    area:[
+      '6zxss4axnqj3y2367j1pf6mdge5k6fph',
+      'nvv21aetv386a71p7macwhgc98468gym'
+    ]
   });
   db.put(href,contents);
   setTimeout(()=>{

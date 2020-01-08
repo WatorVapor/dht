@@ -50,6 +50,8 @@ module.exports = class NewsPumper {
     console.log('readNews_::this.areaA_=<',this.areaA_,'>');
     this.areaB_ = this.calcAddress_(this.lastReadTime_.getFullYear().toString());
     console.log('readNews_::this.areaB_=<',this.areaB_,'>');
+    this.areaC_ = this.calcAddress_(this.lastReadTime_.getFullYear().toString() + this.lastReadTime_.getMonth().toString());
+    console.log('readNews_::this.areaC_=<',this.areaC_,'>');
   }
   turn() {
     this.globalLoopIndex_ = 0;
@@ -147,8 +149,7 @@ module.exports = class NewsPumper {
           href:href,
           discover:true,
           lang:this.lang_,
-          areaA:this.areaA_,
-          areaB:this.areaB_
+          area:[this.areaA_,this.areaB_,this.areaC_]
         };
         const contents = JSON.stringify(contentObj);
         self.linkDB_.put(href,contents);

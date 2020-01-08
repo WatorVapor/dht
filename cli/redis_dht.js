@@ -1,5 +1,5 @@
 'use strict';
-const DHT = require('../api/DHTUnxiSocket.js');
+const DHT = require('../api/DHTRedis.js');
 const dht = new DHT();
 //console.log(':: dht=<',dht,'>');
 dht.peerInfo((peerInfo)=>{
