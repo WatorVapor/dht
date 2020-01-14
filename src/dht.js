@@ -36,6 +36,7 @@ class DHT {
     //console.log('DHT::append dataStorage=<',dataStorage,'>');
     dataStorage.cb = cbTag;
     this.peer_.publish(dataStorage);
+    return dataStorage;
   }
   fetch4KeyWord(keyWord,cbTag,reply) {
     console.log('DHT::fetch4KeyWord keyWord=<',keyWord,'>');

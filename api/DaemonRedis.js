@@ -73,7 +73,8 @@ class DaemonRedis {
       store:jMsg.store
     };
     if(jMsg.store === 'append') {
-      this.onAppendData_(jMsg.key,jMsg.data,jMsg.cb);
+      const result = this.onAppendData_(jMsg.key,jMsg.data,jMsg.cb);
+      storeResp.result = result;
     } else if(jMsg.store === 'delete') {
       this.onDeleteData_(jMsg.key,jMsg.cb);
     } else {
@@ -88,9 +89,11 @@ class DaemonRedis {
   };
 
   onAppendData_ (key,data,cb) {
-    console.log('DaemonRedis::onAppendData_::key=<',key,'>');
-    console.log('DaemonRedis::onAppendData_::data=<',data,'>');
-    this.dht_.append(key,data,cb);
+    //console.log('DaemonRedis::onAppendData_::key=<',key,'>');
+    //console.log('DaemonRedis::onAppendData_::data=<',data,'>');
+    const resource = this.dht_.append(key,data,cb);
+    //console.log('DaemonRedis::onAppendData_::resource=<',resource,'>');
+    return resource;
   }
 
   onDeleteData_(key,cb) {

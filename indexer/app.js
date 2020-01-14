@@ -120,7 +120,7 @@ const onSaveIndex2DHT = (searchIndex) => {
 }
 
 const onAppend2DHTResult = (info) => {
-  console.log('onAppend2DHTResult:: info.store=<',info.store,'>');
+  console.log('onAppend2DHTResult:: info=<',info,'>');
 };
 
 /**

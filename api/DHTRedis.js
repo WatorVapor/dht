@@ -67,7 +67,7 @@ class DHTRedis {
         } else if(jMsg.store) {
           this.onStoreResp_(jMsg);
         } else {
-          console.log('DHTRedis::onMsg_ jMsg=<',jMsg,'>');          
+          console.log('DHTRedis::onMsg_ jMsg=<',jMsg,'>');
         }
       } else {
         console.log('DHTRedis::onMsg_ jMsg=<',jMsg,'>');
@@ -105,7 +105,13 @@ class DHTRedis {
     }
   }
   onStoreResp_(jMsg) {
-    
+    //console.log('DHTRedis::onStoreResp_ jMsg=<',jMsg,'>');
+    if( typeof this.cb_[jMsg.cb] === 'function') {
+      this.cb_[jMsg.cb](jMsg.result);
+    } else {
+      console.log('DHTRedis::onStoreResp_ jMsg=<',jMsg,'>');
+      console.log('DHTRedis::onStoreResp_ this.cb_=<',this.cb_,'>');
+    }
   }
 
   onFetchResp_(jMsg) {
@@ -153,8 +159,8 @@ class DHTRedis {
       }
       this.cb_[cb](resource);
     } else {
-      console.log('DHTRedis::onFetchResp_ cb=<',cb,'>');
-      console.log('DHTRedis::onFetchResp_ this.cb_=<',this.cb_,'>');
+      console.log('DHTRedis::onFetchResourceData_ cb=<',cb,'>');
+      console.log('DHTRedis::onFetchResourceData_ this.cb_=<',this.cb_,'>');
     }
   }
   
