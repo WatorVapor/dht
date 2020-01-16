@@ -17,17 +17,17 @@ class PeerStorage {
     this.machine_ = new PeerMachine(config);
   }
   append(request) {
-    console.log('PeerStorage::append: request=<',request,'>');
+    //console.log('PeerStorage::append: request=<',request,'>');
     const keyAddress = request.address;
     //console.log('PeerStorage::append: keyAddress=<',keyAddress,'>');
     const keyPath = this.getPath4KeyAddress_(keyAddress);
-    console.log('PeerStorage::append: keyPath=<',keyPath,'>');
+    //console.log('PeerStorage::append: keyPath=<',keyPath,'>');
     if (!fs.existsSync(keyPath)) {
       fs.mkdirSync(keyPath,{ recursive: true });
     }
     const contentAddress = this.getAddress_(request.uri);
     const contentPlacePath = keyPath + '/' + contentAddress;
-    console.log('PeerStorage::append: contentPlacePath=<',contentPlacePath,'>');
+    //console.log('PeerStorage::append: contentPlacePath=<',contentPlacePath,'>');
     fs.writeFileSync(contentPlacePath,request.uri);
   }
   fetch(request) {

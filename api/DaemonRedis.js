@@ -33,7 +33,7 @@ class DaemonRedis {
     //console.log('DaemonRedis::onData_::data=<',data.toString(),'>');  
     try {
       const jMsg = JSON.parse(data.toString());
-      console.log('DaemonRedis::onData_::jMsg=<',jMsg,'>');
+      //console.log('DaemonRedis::onData_::jMsg=<',jMsg,'>');
       if(jMsg) {
         if(jMsg.peerInfo) {
           this.onPeerInfo_(jMsg);

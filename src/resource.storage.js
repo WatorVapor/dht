@@ -30,18 +30,18 @@ class ResourceStorage {
     const keyAddress = this.getAddress_(key);
     //console.log('ResourceStorage::append: keyAddress=<',keyAddress,'>');
     const keyPath = this.getPath4KeyAddress_(keyAddress);
-    console.log('ResourceStorage::append: keyPath=<',keyPath,'>');
+    //console.log('ResourceStorage::append: keyPath=<',keyPath,'>');
     if (!fs.existsSync(keyPath)) {
       fs.mkdirSync(keyPath,{ recursive: true });
     }
     const contentAddress = this.getAddress_(content);
     const contentPlacePath = keyPath + '/' + contentAddress;
-    console.log('ResourceStorage::append: contentPlacePath=<',contentPlacePath,'>');
+    //console.log('ResourceStorage::append: contentPlacePath=<',contentPlacePath,'>');
     fs.writeFileSync(contentPlacePath,'');
     
     const contentPathFlat = this.getPath4ContentAddress_(contentAddress);
     const contentPathFlatDir = path.dirname(contentPathFlat);
-    console.log('ResourceStorage::append: contentPathFlatDir=<',contentPathFlatDir,'>');
+    //console.log('ResourceStorage::append: contentPathFlatDir=<',contentPathFlatDir,'>');
     if (!fs.existsSync(contentPathFlatDir)) {
       fs.mkdirSync(contentPathFlatDir,{ recursive: true });
     }
@@ -80,7 +80,7 @@ class ResourceStorage {
  
  fetchFlat(keyAddress,start,count) {
     const keyPath = this.getPath4KeyAddress_(keyAddress);
-    console.log('ResourceStorage::fetchFlat: keyPath=<',keyPath,'>');
+    //console.log('ResourceStorage::fetchFlat: keyPath=<',keyPath,'>');
     if(fs.existsSync(keyPath)) {
       console.log('ResourceStorage::fetchFlat: keyPath=<',keyPath,'>');
       const stat = fs.lstatSync(keyPath);

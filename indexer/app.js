@@ -86,7 +86,7 @@ const onNewsText = (txt,title,myhref,lang,crawler) => {
 
 
 
-const onSaveIndex = (myhref,wordIndex,lang,title,txt,crawler) => {
+const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
   //console.log('onSaveIndex::myhref=<',myhref,'>');
   //console.log('onSaveIndex::wordIndex=<',wordIndex,'>');
   //console.log('onSaveIndex::lang=<',lang,'>');
@@ -100,7 +100,7 @@ const onSaveIndex = (myhref,wordIndex,lang,title,txt,crawler) => {
     searchIndex.href = myhref;
     searchIndex.area = crawler.area;
     //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
-    onSaveIndex2DHT(searchIndex);
+    await onSaveIndex2DHT(searchIndex);
   }
 }
 
@@ -112,16 +112,17 @@ dht.peerInfo((peerInfo)=>{
   console.log('dht.peerInfo:: peerInfo=<',peerInfo,'>');
 });
 
-const onSaveIndex2DHT = (searchIndex) => {
-  //console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
-  dht.append(searchIndex.word,JSON.stringify(searchIndex,undefined,'  '),(info) => {
-    onAppend2DHTResult(info);
+const onSaveIndex2DHT = async (searchIndex) => {
+  console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
+  const promise = new Promise((resolve) => {
+    dht.append(searchIndex.word,JSON.stringify(searchIndex,undefined,'  '),(info) => {
+      console.log('onSaveIndex2DHT:: info=<',info,'>');
+      resolve(info);
+    });    
   });
+  return promise;
 }
 
-const onAppend2DHTResult = (info) => {
-  console.log('onAppend2DHTResult:: info=<',info,'>');
-};
 
 /**
  test

@@ -38,7 +38,7 @@ class PeerNetWork {
   }
 
   publish(resource) {
-    console.log('PeerNetWork::publish resource=<',resource,'>');
+    //console.log('PeerNetWork::publish resource=<',resource,'>');
     const place = new PeerPlace(resource.address,this.storePeers_,this.crypto_);
     //console.log('PeerNetWork::publish place=<',place,'>');
     //console.log('PeerNetWork::publish this.crypto_.idBS32=<',this.crypto_.idBS32,'>');

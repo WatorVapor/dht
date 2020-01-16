@@ -226,7 +226,7 @@ class WaiIndexBot extends WaiBase {
     const wordFreq = {};
     const minOfIndex = this.indexerDict_.min;
     const maxOfIndex = this.indexerDict_.max;
-    console.log('WaiIndexBot::adjustHintFreq_ minOfIndex=<',minOfIndex,'>');
+    //console.log('WaiIndexBot::adjustHintFreq_ minOfIndex=<',minOfIndex,'>');
     for(const word in words) {
       //console.log('WaiIndexBot::adjustHintFreq_ word=<',word,'>');
       let factorial = 1.0;
