@@ -10,7 +10,7 @@ const gSubscriber = redis.createClient(redisOption);
 
 
 gSubscriber.on('message', (channel, message) => {
-  console.log('gSubscriber::message=<',message,'>');
+  //console.log('gSubscriber::message=<',message,'>');
   onDiscoveryNewLink(message);
 })
 gSubscriber.subscribe(redisNewsChannelDiscovery);
@@ -23,53 +23,62 @@ const constTextDBPath = '/storage/dhtfs/cluster/indexer/news_text_db';
 const WaiIndexBot = require('./wai/wai.indexbot.js');
 
 const wai = new WaiIndexBot();
+const WaiIndexLinkCacheMax = 20;
 
 const LevelDFS = require('../api/LevelDFS.js');
 //console.log('::LevelDFS=<',LevelDFS,'>');
 const db = new LevelDFS('/storage/dhtfs/cluster/news_pumper/cn/news_discovery_db');
-const gNewLinks = [];
-const onDiscoveryNewLink = (href) => {
-  gNewLinks.push(href);
-  if(gNewLinks.length > 20) {
-    gNewLinks.shift();
+const gNewMessageLinks = [];
+const onDiscoveryNewLink = (msg) => {
+  gNewMessageLinks.push(msg);
+  if(gNewMessageLinks.length > WaiIndexLinkCacheMax) {
+    gNewMessageLinks.shift();
   }
   setTimeout(onLearnNewLink,1);
 }
 
 const onLearnNewLink = () => {
   const now = new Date();
-  if(gNewLinks.length < 1) {
-    console.log('onLearnNewLink:: gNewLinks=<',gNewLinks,'>');
+  if(gNewMessageLinks.length < 1) {
+    console.log('onLearnNewLink:: gNewMessageLinks=<',gNewMessageLinks,'>');
     return;
   } 
-  let href = gNewLinks[gNewLinks.length -1];
-  //console.log('onLearnNewLink::href=<',href,'>');
-  //console.log('onLearnNewLink:: gNewLinks=<',gNewLinks,'>');
-  gNewLinks.splice(-1);
-  //console.log('onLearnNewLink:: gNewLinks=<',gNewLinks,'>');
-  db.get(href, (err, value) => {
-    try {
-      if(err) {
-        throw err;
+  const msg = gNewMessageLinks[gNewMessageLinks.length -1];
+  gNewMessageLinks.splice(-1);
+  //console.log('onLearnNewLink:: gNewMessageLinks=<',gNewMessageLinks,'>');
+  try {
+    console.log('onLearnNewLink::msg=<',msg,'>');
+    const msgJson = JSON.parse(msg);
+    console.log('onLearnNewLink::msgJson=<',msgJson,'>');
+    const href = msgJson.href;
+    console.log('onLearnNewLink::href=<',href,'>');
+    //console.log('onLearnNewLink:: gNewMessageLinks=<',gNewMessageLinks,'>');
+    db.get(href, (err, value) => {
+      try {
+        if(err) {
+          throw err;
+        }
+        //console.log('onLearnNewLink::value=<',value,'>');
+        const jsValue = JSON.parse(value);
+        if(jsValue.indexer) {
+          setTimeout(onLearnNewLink,1000);
+          return;
+        }
+        jsValue.indexer = true;
+        let contents = JSON.stringify(jsValue);
+        db.put(href,contents);
+        const txtReader = new NewsTextReader(constTextDBPath);
+        console.log('onLearnNewLink::jsValue=<',jsValue,'>');
+        txtReader.fetch(href,(txt,title,myhref)=>{
+          onNewsText(txt,title,myhref,jsValue.lang,jsValue);
+        });
+      } catch(e) {
+        console.log('onLearnNewLink::e=<',e,'>');
       }
-      //console.log('onLearnNewLink::value=<',value,'>');
-      const jsValue = JSON.parse(value);
-      if(jsValue.indexer) {
-        setTimeout(onLearnNewLink,1000);
-        return;
-      }
-      jsValue.indexer = true;
-      let contents = JSON.stringify(jsValue);
-      db.put(href,contents);
-      const txtReader = new NewsTextReader(constTextDBPath);
-      console.log('onLearnNewLink::jsValue=<',jsValue,'>');
-      txtReader.fetch(href,(txt,title,myhref)=>{
-        onNewsText(txt,title,myhref,jsValue.lang,jsValue);
-      });
-    } catch(e) {
-      console.log('onLearnNewLink::e=<',e,'>');
-    }
-  });
+    });
+  } catch(e) {
+    console.log('onLearnNewLink::e=<',e,'>');
+  }
 }
 
 
@@ -139,7 +148,7 @@ wai.onReady = () => {
   });
   db.put(href,contents);
   setTimeout(()=>{
-    onDiscoveryNewLink(href);
+    onDiscoveryNewLink(contents);
   },1000);
 }
 

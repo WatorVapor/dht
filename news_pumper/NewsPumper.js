@@ -152,19 +152,20 @@ module.exports = class NewsPumper {
           area:[this.areaA_,this.areaB_,this.areaC_]
         };
         const contents = JSON.stringify(contentObj);
-        self.linkDB_.put(href,contents);
-        self.onWathNewLink_(href);
-        return;
+        self.linkDB_.put(href,contents,(address)=> {
+          self.onWathNewLink_(href,address);
+        });
       }
       //console.log('onWatchLink_::value=<',value,'>');
     });
   }
-  onWathNewLink_(href){
+  onWathNewLink_(href,address){
     console.log('onWathNewLink_::href=<',href,'>');
     const now = new Date();
     console.log('onWathNewLink_::now=<',now.toUTCString(),'>');
     let nextStage = {
       href:href,
+      address:address,
       linkdb:this.linkDBPath_,
       textdb:this.textDBPath_,
       lang:this.lang_

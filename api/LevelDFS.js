@@ -23,7 +23,7 @@ module.exports = class LevelDFS {
     }
     fs.writeFileSync(keyAddress,content);
     if(typeof cb === 'function') {
-      cb();
+      cb(keyAddress);
     }
   }
   
@@ -38,7 +38,7 @@ module.exports = class LevelDFS {
     } else {
       let err = {notFound:true,address:keyAddress};
       if(typeof cb === 'function') {
-        cb(err,keyAddress);
+        cb(err);
       }
     }
   }
