@@ -24,7 +24,7 @@ const WaiIndexBot = require('./wai/wai.indexbot.js');
 
 const wai = new WaiIndexBot();
 
-const LevelDFS = require('./LevelDFS.js');
+const LevelDFS = require('../api/LevelDFS.js');
 //console.log('::LevelDFS=<',LevelDFS,'>');
 const db = new LevelDFS('/storage/dhtfs/cluster/news_pumper/cn/news_discovery_db');
 const gNewLinks = [];
@@ -113,10 +113,10 @@ dht.peerInfo((peerInfo)=>{
 });
 
 const onSaveIndex2DHT = async (searchIndex) => {
-  console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
+  //console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
   const promise = new Promise((resolve) => {
     dht.append(searchIndex.word,JSON.stringify(searchIndex,undefined,'  '),(info) => {
-      console.log('onSaveIndex2DHT:: info=<',info,'>');
+      //console.log('onSaveIndex2DHT:: info=<',info,'>');
       resolve(info);
     });    
   });

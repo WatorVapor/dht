@@ -3,7 +3,7 @@ services:
   news_pumper_cn:
     image: node:lts
     volumes:
-      - ./:/opt/app
+      - ../:/opt/app
       - /storage/dhtfs/cluster/news_pumper:/storage/dhtfs/cluster/news_pumper
     working_dir: "/opt/app/news_pumper"
     command: node ./appCN.js

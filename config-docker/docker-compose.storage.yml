@@ -3,7 +3,7 @@ services:
   daemon:
     image: node:lts
     volumes:
-      - ./:/opt/app
+      - ../:/opt/app
       - /storage/dhtfs/cluster:/storage/dhtfs/cluster
       - /dev/shm:/dev/shm
     working_dir: "/opt/app/cli"
@@ -21,7 +21,7 @@ services:
   redis_dht:
     image: node:lts
     volumes:
-      - ./:/opt/app
+      - ../:/opt/app
       - /dev/shm:/dev/shm
     working_dir: "/opt/app/cli"
     command: node ./redis_dht.js
