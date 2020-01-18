@@ -8,7 +8,7 @@ const RIPEMD160 = require('ripemd160');
 const base32 = require("base32.js");
 
 
-const LevelDFS = require('./LevelDFS.js');
+const LevelDFS = require('../api/LevelDFS.js');
 //console.log('::LevelDFS=<',LevelDFS,'>');
 
 const redis = require('redis');
