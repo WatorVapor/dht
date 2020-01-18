@@ -101,6 +101,7 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
   //console.log('onSaveIndex::lang=<',lang,'>');
   //console.log('onSaveIndex::title=<',title,'>');
   //console.log('onSaveIndex::txt=<',txt,'>');
+  console.log('onSaveIndex::wordIndex.length=<',wordIndex.length,'>');
   for(const word in wordIndex) {
     //console.log('onSaveIndex::word=<',word,'>');
     const searchIndex = Object.assign({word:word},wordIndex[word]);
