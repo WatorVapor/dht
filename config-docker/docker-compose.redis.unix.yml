@@ -14,7 +14,7 @@ services:
         reservations:
           cpus: '0.1'
           memory: 128M
+    networks:
+      - disableNetwork
 networks:
-  outside:
-    external:
-      name: "host"
+  disableNetwork:

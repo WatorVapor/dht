@@ -7,7 +7,7 @@ services:
       - /storage/dhtfs/cluster:/storage/dhtfs/cluster
       - /dev/shm:/dev/shm
     working_dir: "/opt/app/cli"
-    command: node ./daemon.js
+    command: node ./redis.daemon_storage.js
     networks:
       - outside
     deploy:
@@ -25,23 +25,6 @@ services:
       - /dev/shm:/dev/shm
     working_dir: "/opt/app/cli"
     command: node ./redis_dht.js
-    networks:
-      - outside
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 32M
-        reservations:
-          cpus: '0.1'
-          memory: 16M
-  news_pumper_cn:
-    image: node:lts
-    volumes:
-      - ./:/opt/app
-      - /storage/dhtfs/cluster/news_pumper:/storage/dhtfs/cluster/news_pumper
-    working_dir: "/opt/app/news_pumper"
-    command: node ./appCN.js
     networks:
       - outside
     deploy:
