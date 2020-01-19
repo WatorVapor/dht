@@ -139,16 +139,17 @@ const onSaveIndex2DHT = async (searchIndex) => {
  test
 **/
 wai.onReady = () => {
-  const href = 'https://3w.huanqiu.com/a/c36dc8/9CaKrnKoYBm?agt=8';
+  const hrefTest = 'https://3w.huanqiu.com/a/c36dc8/9CaKrnKoYBm?agt=8';
+  console.log('wai.onReady:: hrefTest=<',hrefTest,'>');
   let contents = JSON.stringify({
-    href:href,discover:true,lang:'cn',
+    href:hrefTest,discover:true,lang:'cn',
     indexer:false,
     area:[
       '6zxss4axnqj3y2367j1pf6mdge5k6fph',
       'nvv21aetv386a71p7macwhgc98468gym'
     ]
   });
-  db.put(href,contents);
+  db.put(hrefTest,contents);
   setTimeout(()=>{
     onDiscoveryNewLink(contents);
   },1000);

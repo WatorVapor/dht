@@ -17,7 +17,7 @@ class WaiTreeGraph {
     const allPath = (sentence)=> {
       //console.log('allPath::sentence:=<',sentence,'>');
       sentence.sort((a, b)=> { return a.begin > b.begin});
-      //console.log('allPath::sentence:=<',sentence,'>');
+      console.log('allPath::sentence:=<',sentence,'>');
       const sentenceMap = {};
       for(const seq of sentence) {
         if(!seq.hash) {
@@ -64,11 +64,14 @@ class WaiTreeGraph {
       //console.log('addLeaf::seq:=<',seq,'>');
       if(prev.end === seq.begin) {
         const node = Object.assign({leaf:{},father:prev.id,id:gNodeID++},seq);
+        //console.log('addLeaf::node:=<',node,'>');
         prev.leaf[seq.hash] =  node;
         flatElement[node.id] =  Object.assign({},node);
-      }
-      for(const leafKey in prev.leaf) {
-        addLeaf(prev.leaf[leafKey],seq,flatElement);
+      } else {
+        for(const leafKey in prev.leaf) {
+          //console.log('addLeaf::leafKey:=<',leafKey,'>');
+          addLeaf(prev.leaf[leafKey],seq,flatElement);
+        }
       }
     };
 
