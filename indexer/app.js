@@ -47,11 +47,11 @@ const onLearnNewLink = () => {
   gNewMessageLinks.splice(-1);
   //console.log('onLearnNewLink:: gNewMessageLinks=<',gNewMessageLinks,'>');
   try {
-    console.log('onLearnNewLink::msg=<',msg,'>');
+    //console.log('onLearnNewLink::msg=<',msg,'>');
     const msgJson = JSON.parse(msg);
-    console.log('onLearnNewLink::msgJson=<',msgJson,'>');
+    //console.log('onLearnNewLink::msgJson=<',msgJson,'>');
     const href = msgJson.href;
-    console.log('onLearnNewLink::href=<',href,'>');
+    //console.log('onLearnNewLink::href=<',href,'>');
     //console.log('onLearnNewLink:: gNewMessageLinks=<',gNewMessageLinks,'>');
     db.get(href, (err, value) => {
       try {
@@ -68,7 +68,7 @@ const onLearnNewLink = () => {
         let contents = JSON.stringify(jsValue);
         db.put(href,contents);
         const txtReader = new NewsTextReader(constTextDBPath);
-        console.log('onLearnNewLink::jsValue=<',jsValue,'>');
+        //console.log('onLearnNewLink::jsValue=<',jsValue,'>');
         txtReader.fetch(href,(txt,title,myhref)=>{
           onNewsText(txt,title,myhref,jsValue.lang,jsValue);
         });
@@ -85,6 +85,7 @@ const onLearnNewLink = () => {
 
 const onNewsText = (txt,title,myhref,lang,crawler) => {
   //console.log('onNewsText::txt=<',txt,'>');
+  //console.log('onNewsText::title=<',title,'>');
   //console.log('onNewsText::myhref=<',myhref,'>');
   let wordIndex = wai.article(txt,lang);
   //console.log('onNewsText::wordIndex=<',wordIndex,'>');
@@ -101,7 +102,7 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
   //console.log('onSaveIndex::lang=<',lang,'>');
   //console.log('onSaveIndex::title=<',title,'>');
   //console.log('onSaveIndex::txt=<',txt,'>');
-  console.log('onSaveIndex::wordIndex.length=<',wordIndex.length,'>');
+  console.log('onSaveIndex::wordIndex.length=<',Object.keys(wordIndex).length,'>');
   for(const word in wordIndex) {
     //console.log('onSaveIndex::word=<',word,'>');
     const searchIndex = Object.assign({word:word},wordIndex[word]);
@@ -138,7 +139,7 @@ const onSaveIndex2DHT = async (searchIndex) => {
  test
 **/
 wai.onReady = () => {
-  const href = 'http://baijiahao.baidu.com/s?id=1655070277317406830';
+  const href = 'https://3w.huanqiu.com/a/c36dc8/9CaKrnKoYBm?agt=8';
   let contents = JSON.stringify({
     href:href,discover:true,lang:'cn',
     indexer:false,

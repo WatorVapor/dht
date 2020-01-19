@@ -21,7 +21,7 @@ module.exports = class NewsTextReader {
     }
   }
   fetch(href,cb) {
-    console.log('fetch::href=<',href,'>');
+    //console.log('fetch::href=<',href,'>');
     this.href_ = href;
     this.cb_ = cb;
     if(href.startsWith('https://')) {
@@ -61,8 +61,12 @@ module.exports = class NewsTextReader {
       //console.log('onHttpBody_::child=<',child.name,'>');
       if(child.name === 'title') {
         //console.log('onHttpBody_::child=<',child,'>');
-        //const title = child.children[0].data;
-        this.titleText_ = child.children[0].data;
+        if(child.children[0]) {
+          const title = child.children[0].data;
+          this.titleText_ = child.children[0].data;
+        } else {
+          //console.log('onHttpBody_::child=<',child,'>');
+        }
       }
     }
     //console.log('onHttpBody_::this.titleText_=<',this.titleText_,'>');
