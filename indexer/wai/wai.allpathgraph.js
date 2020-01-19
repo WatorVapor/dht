@@ -16,7 +16,7 @@ class WaiAllPathGraph {
     const allPath_ = (sentence)=> {
       //console.log('allPath_::sentence:=<',sentence,'>');
       sentence.sort((a, b)=> { return a.begin > b.begin});
-      //console.log('allPath_::sentence:=<',sentence,'>');
+      console.log('allPath_::sentence:=<',sentence,'>');
       const sentenceMap = {};
       let maxEnd = 0;
       for(const seq of sentence) {
@@ -28,13 +28,13 @@ class WaiAllPathGraph {
           maxEnd = seq.end;
         }
       }
+      console.log('allPath_::maxEnd:=<',maxEnd,'>');
       const jointedFlags = {};
       const connectedSet = createConnected(sentence,jointedFlags);
-      //console.log('allPath_::connectedSet:=<',connectedSet,'>');
+      console.log('allPath_::connectedSet:=<',connectedSet,'>');
       const thinMaps = reduceConnected(connectedSet,jointedFlags);
       //console.log('allPath_::thinMaps:=<',thinMaps,'>');
       //console.log('allPath_::jointedFlags:=<',jointedFlags,'>');
-      //console.log('allPath_::maxEnd:=<',maxEnd,'>');
       const pathThough  = [];
       for(const path of thinMaps) {
         //console.log('allPath_::path:=<',path,'>');
@@ -51,6 +51,7 @@ class WaiAllPathGraph {
         }
         pathThoughSeq.push(onePath);
       }
+      //console.log('allPath_::pathThoughSeq:=<',pathThoughSeq,'>');
       return pathThoughSeq;
     }
     const createConnected = (sentence,jointedFlags) => {
@@ -122,6 +123,7 @@ class WaiAllPathGraph {
           }
         }
       }
+      console.log('reduceConnected::connectedSet:=<',connectedSet.length,'>');
       if(isChanged) {
         return reduceConnected(connectedSet,jointedFlags);
       } else {
