@@ -210,8 +210,7 @@ class WaiAllPathGraph {
       }
     }
     console.log('allPath::allPath.length:=<',allPath.length,'>');
-
-    //return allPath_(sentence);
+    return allPath;
   }
 };
 module.exports = WaiAllPathGraph;
