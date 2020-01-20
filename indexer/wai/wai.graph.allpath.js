@@ -201,7 +201,7 @@ class WaiAllPathGraph {
         //console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
         const subPath = allPath_(subSentence);
         console.log('allPath::subPath.length:=<',subPath.length,'>');
-        for(const path:subPath) {
+        for(const path of subPath) {
           allPath.push(path);
         }
       } else {
