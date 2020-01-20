@@ -139,12 +139,12 @@ class WaiAllPathGraph {
       for(const seq of sentence) {
         const isKey = isKeyPoint_(seq.begin,sentence);
         if(isKey) {
-           keyPoints.push(seq.begin);
+           keyPoints.push(parseInt(seq.begin));
         }
         if(seq.end>maxEnd) {
           maxEnd = seq.end
         }
-        keyPoints.push(maxEnd);
+        keyPoints.push(parseInt(maxEnd));
       }
       //console.log('splitKeyPoint_::keyPoints:=<',keyPoints,'>');
       const uniKeyPoints = keyPoints.filter(onlyUnique);
