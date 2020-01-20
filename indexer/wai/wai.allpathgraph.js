@@ -142,12 +142,15 @@ class WaiAllPathGraph {
         }
       }
       console.log('splitKeyPoint_::keyPoints:=<',keyPoints,'>');
+      const uniKeyPoints = keyPoints.filter(onlyUnique);
+      console.log('splitKeyPoint_::uniKeyPoints:=<',uniKeyPoints,'>');
+      
     }
     const isKeyPoint_ = (pos,sentence) => {
       //console.log('isOverLay_::sentence:=<',sentence,'>');
       for(const seq of sentence) {
-        console.log('isOverLay_::pos:=<',pos,'>');
-        console.log('isOverLay_::seq:=<',seq,'>');
+        //console.log('isOverLay_::pos:=<',pos,'>');
+        //console.log('isOverLay_::seq:=<',seq,'>');
         if(pos > seq.begin && pos < seq.end) {
           return false;
         }
