@@ -133,7 +133,7 @@ class WaiAllPathGraph {
     }
     
     const splitKeyPoint_ = (sentence) => {
-      console.log('splitKeyPoint_::sentence:=<',sentence,'>');
+      console.log('splitKeyPoint_::sentence:=<',JSON.stringify(sentence,undefined,'2'),'>');
       const keyPoints = [];
       let maxEnd = 0;
       for(const seq of sentence) {
@@ -160,7 +160,7 @@ class WaiAllPathGraph {
         }
         subSentences.push(subSentence);
       }
-      console.log('splitKeyPoint_::subSentences:=<',subSentences,'>');
+      console.log('splitKeyPoint_::subSentences:=<',JSON.stringify(subSentences,undefined,'2'),'>');
     }
     const isKeyPoint_ = (pos,sentence) => {
       //console.log('isOverLay_::sentence:=<',sentence,'>');
