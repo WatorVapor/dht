@@ -267,9 +267,7 @@ class WaiAllPathGraph {
   sortBeginEnd_(sentence) {
     for(let word of sentence) {
       //console.log('WaiGraph::gatherAllPath_ word=<',word,'>');
-      const shasum = crypto.createHash('sha1');
-      shasum.update(JSON.stringify(word));
-      const hash = shasum.digest('hex');
+      const hash = new RIPEMD160().update(JSON.stringify(word)).digest('hex'); 
       word.hash = hash;
       this.hashSentence_[hash] = word;
       if(! this.begins_[word.begin]) {
