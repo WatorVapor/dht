@@ -136,7 +136,7 @@ class WaiAllPathGraph {
       //console.log('splitKeyPoint_::sentence:=<',sentence,'>');
       const keyPoints = [];
       for(const seq of sentence) {
-        auto isKey = isKeyPoint_(seq.begin,sentence);
+        const isKey = isKeyPoint_(seq.begin,sentence);
         if(isKey) {
            keyPoints.push(seq.begin);
         }
