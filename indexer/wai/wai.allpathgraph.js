@@ -39,7 +39,7 @@ class WaiAllPathGraph {
       console.log('allPath_::minBegin:=<',minBegin,'>');
       const jointedFlags = {};
       const connectedSet = createConnected(sentence,jointedFlags);
-      console.log('allPath_::connectedSet:=<',connectedSet,'>');
+      //console.log('allPath_::connectedSet:=<',connectedSet,'>');
       const thinMaps = reduceConnected(connectedSet,jointedFlags);
       //console.log('allPath_::thinMaps:=<',thinMaps,'>');
       //console.log('allPath_::jointedFlags:=<',jointedFlags,'>');
