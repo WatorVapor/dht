@@ -131,8 +131,13 @@ class WaiAllPathGraph {
       }
 
     }
+    
+    const splitKeyPoint_ = (sentence) => {
+      console.log('splitKeyPoint_::sentence:=<',sentence,'>');
+    }
+    const keySentence = splitKeyPoint_(sentence);
 
-    return allPath_(sentence);
+    //return allPath_(sentence);
   }
 };
 module.exports = WaiAllPathGraph;
