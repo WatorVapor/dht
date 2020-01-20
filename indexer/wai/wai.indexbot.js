@@ -1,6 +1,6 @@
 const WaiBase = require('./wai.base.js');
 //const WaiGraph = require('./wai.graph.js');
-const WaiAllPathGraph = require('../wai.graph.allpath.js');
+const WaiAllPathGraph = require('./wai.graph.allpath.js');
 const fs = require('fs');
 
 const iFactorialBaseOfRerank = 2;
