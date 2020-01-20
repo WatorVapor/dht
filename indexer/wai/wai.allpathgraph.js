@@ -137,7 +137,7 @@ class WaiAllPathGraph {
     
     const splitKeyPoint_ = (sentence) => {
       sentence.sort((a,b)=>{return a.begin - b.begin;});
-      console.log('splitKeyPoint_::sentence:=<',JSON.stringify(sentence,undefined,' '),'>');
+      //console.log('splitKeyPoint_::sentence:=<',JSON.stringify(sentence,undefined,' '),'>');
       const keyPoints = [];
       let maxEnd = 0;
       for(const seq of sentence) {
