@@ -1,6 +1,9 @@
 const RIPEMD160 = require('ripemd160');
 const bs32Option = { type: "crockford", lc: true };
 
+const util = require('util');
+const graphviz = require('graphviz');
+
 class WaiAllPathGraph {
   constructor() {
   }
