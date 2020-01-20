@@ -172,13 +172,16 @@ class WaiAllPathGraph {
     const isKeyPoint_ = (pos,sentence) => {
       //console.log('isKeyPoint_::sentence:=<',sentence,'>');
       for(const seq of sentence) {
-        console.log('isKeyPoint_::pos:=<',pos,'>');
-        console.log('isKeyPoint_::seq:=<',seq,'>');
+        //console.log('isKeyPoint_::pos:=<',pos,'>');
+        //console.log('isKeyPoint_::seq:=<',seq,'>');
         if(pos - seq.begin > 0 && pos - seq.end < 0) {
           console.log('isKeyPoint_::false:=<',false,'>');
+          console.log('isKeyPoint_::pos:=<',pos,'>');
           return false;
         }
       }
+      console.log('isKeyPoint_::true:=<',true,'>');
+      console.log('isKeyPoint_::pos:=<',pos,'>');
       return true;
     }
     const keySentence = splitKeyPoint_(sentence);
