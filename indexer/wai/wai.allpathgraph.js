@@ -186,8 +186,13 @@ class WaiAllPathGraph {
       return true;
     }
     const keySentences = splitKeyPoint_(sentence);
-    for(const subSentence in keySentences) {
-      console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
+    for(const subIndex in keySentences) {
+      const subSentence = keySentences[subIndex];
+      if(subSentence.length > 0) {
+        //console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
+      } else {
+        console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
+      }
     }
 
     //return allPath_(sentence);
