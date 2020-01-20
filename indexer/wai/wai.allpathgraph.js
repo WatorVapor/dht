@@ -181,7 +181,12 @@ class WaiAllPathGraph {
     //return allPath_(sentence);
   }
   
-  createGraphDot_(sentence) {
+  
+  
+  
+  
+  
+  createGraphDot(sentence) {
     //console.log('WaiGraph::createGraphDot_ sentence=<',sentence,'>');
     const g = graphviz.digraph("G");
     g.set("rankdir","LR");
