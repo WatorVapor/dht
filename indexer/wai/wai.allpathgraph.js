@@ -190,8 +190,11 @@ class WaiAllPathGraph {
       const subSentence = keySentences[subIndex];
       if(subSentence.length > 0) {
         //console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
+        const subPath = allPath_(sentence);
+        console.log('allPath::subPath:=<',subPath,'>');
       } else {
-        console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
+        console.log('allPath::subIndex:=<',subIndex,'>');
+        console.log('allPath::subSentence:=<',subSentence,'>');
       }
     }
 
