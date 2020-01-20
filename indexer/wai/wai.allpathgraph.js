@@ -131,7 +131,7 @@ class WaiAllPathGraph {
           }
         }
       }
-      console.log('reduceConnected::connectedSet:=<',connectedSet.length,'>');
+      //console.log('reduceConnected::connectedSet:=<',connectedSet.length,'>');
       if(isChanged) {
         return reduceConnected(connectedSet,jointedFlags);
       } else {
@@ -196,10 +196,10 @@ class WaiAllPathGraph {
       if(subSentence.length > 0) {
         //console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
         const subPath = allPath_(subSentence);
-        console.log('allPath::subPath:=<',subPath,'>');
+        console.log('allPath::subPath:=<',subPath.length,'>');
       } else {
         console.log('allPath::subIndex:=<',subIndex,'>');
-        console.log('allPath::subSentence:=<',subSentence,'>');
+        //console.log('allPath::subSentence:=<',subSentence,'>');
       }
     }
 
