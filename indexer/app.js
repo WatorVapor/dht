@@ -139,6 +139,7 @@ const onSaveIndex2DHT = async (searchIndex) => {
  test
 **/
 wai.onReady = () => {
+  /*
   const hrefTest = 'https://3w.huanqiu.com/a/c36dc8/9CaKrnKoYBm?agt=8';
   console.log('wai.onReady:: hrefTest=<',hrefTest,'>');
   let contents = JSON.stringify({
@@ -153,5 +154,6 @@ wai.onReady = () => {
   setTimeout(()=>{
     onDiscoveryNewLink(contents);
   },1000);
+  */
 }
 
