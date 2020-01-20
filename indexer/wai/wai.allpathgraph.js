@@ -148,7 +148,7 @@ class WaiAllPathGraph {
       }
       //console.log('splitKeyPoint_::keyPoints:=<',keyPoints,'>');
       const uniKeyPoints = keyPoints.filter(onlyUnique);
-      uniKeyPoints.sort();
+      uniKeyPoints.sort((a,b)=>{return a-b;});
       console.log('splitKeyPoint_::uniKeyPoints:=<',JSON.stringify(uniKeyPoints,undefined,' '),'>');
       const subSentences = {};
       let prevKeyPoint = -1;
