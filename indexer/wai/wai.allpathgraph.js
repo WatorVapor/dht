@@ -142,7 +142,7 @@ class WaiAllPathGraph {
       let maxEnd = 0;
       for(const seq of sentence) {
         const isKey = isKeyPoint_(seq.begin,sentence);
-        if(isKey) {
+        if(isKey === true) {
            keyPoints.push(parseInt(seq.begin));
         }
         if(seq.end>maxEnd) {
