@@ -281,6 +281,21 @@ class WaiAllPathGraph {
       this.ends_[word.end].push(word);
     }
   }
+    
+  findEndNode_(targetEnd,ends) {
+    //console.log('WaiGraph::findEndNode_ targetEnd=<',targetEnd,'>');
+    //console.log('WaiGraph::findEndNode_ ends=<',ends,'>');
+    const wordEnd = ends[targetEnd];
+    //console.log('WaiGraph::findEndNode_ wordEnd=<',wordEnd,'>');
+    let front = [];
+    if(wordEnd) {
+      for(let word of wordEnd) {
+        front.push(word.hash)
+      }
+    }
+    //console.log('WaiGraph::findEndNode_ front=<',front,'>');
+    return front;
+  }
 
 };
 module.exports = WaiAllPathGraph;
