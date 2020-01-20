@@ -15,7 +15,7 @@ class WaiAllPathGraph {
 
     const allPath_ = (sentence)=> {
       //console.log('allPath_::sentence:=<',sentence,'>');
-      sentence.sort((a, b)=> { return a.begin > b.begin});
+      sentence.sort((a, b)=> { return a.begin - b.begin});
       console.log('allPath_::sentence:=<',sentence,'>');
       const sentenceMap = {};
       let maxEnd = 0;
@@ -151,7 +151,7 @@ class WaiAllPathGraph {
       uniKeyPoints.sort((a,b)=>{return a-b;});
       console.log('splitKeyPoint_::uniKeyPoints:=<',JSON.stringify(uniKeyPoints,undefined,' '),'>');
       const subSentences = {};
-      let prevKeyPoint = -1;
+      let prevKeyPoint = 0;
       for(const keyPoint of uniKeyPoints) {
         //console.log('splitKeyPoint_::keyPoint:=<',keyPoint,'>');
         const subSentence = [];
