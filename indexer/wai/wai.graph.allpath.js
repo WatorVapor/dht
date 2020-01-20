@@ -132,7 +132,8 @@ class WaiAllPathGraph {
         }
       }
       //console.log('reduceConnected::connectedSet:=<',connectedSet.length,'>');
-      if(connectedSet.length > 1024* 64) {
+      if(connectedSet.length > 1024*16) {
+        console.log('reduceConnected::connectedSet:=<',connectedSet.length,'>');
         return connectedSet;
       }
       if(isChanged) {
