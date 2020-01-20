@@ -7,7 +7,6 @@
     "jsrsasign": "^8.0.12",
     "redis": "^2.8.0",
     "ripemd160": "^2.0.2",
-    "selfsigned": "^1.10.7",
-    "unix-dgram": "^2.0.3"
+    "selfsigned": "^1.10.7"
   }
 }
