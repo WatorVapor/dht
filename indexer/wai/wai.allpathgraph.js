@@ -190,6 +190,10 @@ class WaiAllPathGraph {
   
   
   createGraphDot(sentence) {
+    this.begins_ = {};
+    this.ends_ = {};
+    this.sortBeginEnd_(sentence);
+    
     //console.log('WaiGraph::createGraphDot_ sentence=<',sentence,'>');
     const g = graphviz.digraph("G");
     g.set("rankdir","LR");
@@ -260,5 +264,24 @@ class WaiAllPathGraph {
     //console.log('WaiGraph::createRankOfGraph_ rankG=<',rankG,'>');
     return rankG;
   }  
+  sortBeginEnd_(sentence) {
+    for(let word of sentence) {
+      //console.log('WaiGraph::gatherAllPath_ word=<',word,'>');
+      const shasum = crypto.createHash('sha1');
+      shasum.update(JSON.stringify(word));
+      const hash = shasum.digest('hex');
+      word.hash = hash;
+      this.hashSentence_[hash] = word;
+      if(! this.begins_[word.begin]) {
+        this.begins_[word.begin] = [];
+      }
+      this.begins_[word.begin].push(word);
+      if(! this.ends_[word.end]) {
+        this.ends_[word.end] = []
+      }
+      this.ends_[word.end].push(word);
+    }
+  }
+
 };
 module.exports = WaiAllPathGraph;
