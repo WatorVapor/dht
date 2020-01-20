@@ -148,6 +148,9 @@ class WaiAllPathGraph {
       for(const seq of sentence) {
         console.log('isOverLay_::pos:=<',pos,'>');
         console.log('isOverLay_::seq:=<',seq,'>');
+        if(pos > seq.begin && pos < seq.end) {
+          return false;
+        }
       }
       return true;
     }
