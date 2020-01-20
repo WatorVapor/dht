@@ -19,19 +19,24 @@ class WaiAllPathGraph {
     const allPath_ = (sentence)=> {
       //console.log('allPath_::sentence:=<',sentence,'>');
       sentence.sort((a, b)=> { return a.begin - b.begin});
-      console.log('allPath_::sentence:=<',sentence,'>');
+      //console.log('allPath_::sentence:=<',sentence,'>');
       const sentenceMap = {};
       let maxEnd = 0;
+      let minBegin = Number.MAX_SAFE_INTEGER;
       for(const seq of sentence) {
         if(!seq.hash) {
           hashSeq(seq);
         }
         sentenceMap[seq.hash] = seq;
-        if(seq.end > maxEnd) {
+        if(seq.end - maxEnd > 0) {
           maxEnd = seq.end;
+        }
+        if(seq.begin - minBegin < 0) {
+          minBegin = seq.begin;
         }
       }
       console.log('allPath_::maxEnd:=<',maxEnd,'>');
+      console.log('allPath_::minBegin:=<',minBegin,'>');
       const jointedFlags = {};
       const connectedSet = createConnected(sentence,jointedFlags);
       console.log('allPath_::connectedSet:=<',connectedSet,'>');
@@ -41,7 +46,7 @@ class WaiAllPathGraph {
       const pathThough  = [];
       for(const path of thinMaps) {
         //console.log('allPath_::path:=<',path,'>');
-        if(path.begin === 0 && path.end === maxEnd) {
+        if(path.begin === minBegin && path.end === maxEnd) {
           pathThough.push(path);
         }
       }
