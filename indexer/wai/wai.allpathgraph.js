@@ -167,7 +167,8 @@ class WaiAllPathGraph {
         prevKeyPoint = keyPoint;
         subSentences[keyPoint] = subSentence;
       }
-      console.log('splitKeyPoint_::subSentences:=<',JSON.stringify(subSentences,undefined,' '),'>');
+      //console.log('splitKeyPoint_::subSentences:=<',JSON.stringify(subSentences,undefined,' '),'>');
+      return subSentences;
     }
     const isKeyPoint_ = (pos,sentence) => {
       //console.log('isKeyPoint_::sentence:=<',sentence,'>');
@@ -184,7 +185,10 @@ class WaiAllPathGraph {
       //console.log('isKeyPoint_::pos:=<',pos,'>');
       return true;
     }
-    const keySentence = splitKeyPoint_(sentence);
+    const keySentences = splitKeyPoint_(sentence);
+    for(const subSentence in keySentences) {
+      console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
+    }
 
     //return allPath_(sentence);
   }
