@@ -35,8 +35,8 @@ class WaiAllPathGraph {
           minBegin = seq.begin;
         }
       }
-      console.log('allPath_::maxEnd:=<',maxEnd,'>');
-      console.log('allPath_::minBegin:=<',minBegin,'>');
+      //console.log('allPath_::maxEnd:=<',maxEnd,'>');
+      //console.log('allPath_::minBegin:=<',minBegin,'>');
       const jointedFlags = {};
       const connectedSet = createConnected(sentence,jointedFlags);
       //console.log('allPath_::connectedSet:=<',connectedSet,'>');
@@ -196,7 +196,7 @@ class WaiAllPathGraph {
       if(subSentence.length > 0) {
         //console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
         const subPath = allPath_(subSentence);
-        console.log('allPath::subPath:=<',subPath.length,'>');
+        console.log('allPath::subPath.length:=<',subPath.length,'>');
       } else {
         console.log('allPath::subIndex:=<',subIndex,'>');
         //console.log('allPath::subSentence:=<',subSentence,'>');
