@@ -170,11 +170,12 @@ class WaiAllPathGraph {
       console.log('splitKeyPoint_::subSentences:=<',JSON.stringify(subSentences,undefined,' '),'>');
     }
     const isKeyPoint_ = (pos,sentence) => {
-      //console.log('isOverLay_::sentence:=<',sentence,'>');
+      //console.log('isKeyPoint_::sentence:=<',sentence,'>');
       for(const seq of sentence) {
-        console.log('isOverLay_::pos:=<',pos,'>');
-        console.log('isOverLay_::seq:=<',seq,'>');
+        console.log('isKeyPoint_::pos:=<',pos,'>');
+        console.log('isKeyPoint_::seq:=<',seq,'>');
         if(pos - seq.begin > 0 && pos - seq.end < 0) {
+          console.log('isKeyPoint_::false:=<',false,'>');
           return false;
         }
       }
