@@ -143,7 +143,7 @@ class WaiAllPathGraph {
       }
       console.log('splitKeyPoint_::keyPoints:=<',keyPoints,'>');
     }
-    const isKeyPoint_(pos,sentence) => {
+    const isKeyPoint_ = (pos,sentence) => {
       //console.log('isOverLay_::sentence:=<',sentence,'>');
       for(const seq of sentence) {
         console.log('isOverLay_::pos:=<',pos,'>');
