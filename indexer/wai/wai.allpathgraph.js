@@ -192,6 +192,7 @@ class WaiAllPathGraph {
   createGraphDot(sentence) {
     this.begins_ = {};
     this.ends_ = {};
+    this.hashSentence_ = {};
     this.sortBeginEnd_(sentence);
     
     //console.log('WaiGraph::createGraphDot_ sentence=<',sentence,'>');
