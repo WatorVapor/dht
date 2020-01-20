@@ -133,7 +133,23 @@ class WaiAllPathGraph {
     }
     
     const splitKeyPoint_ = (sentence) => {
-      console.log('splitKeyPoint_::sentence:=<',sentence,'>');
+      //console.log('splitKeyPoint_::sentence:=<',sentence,'>');
+      const keyPoints = [];
+      for(const seq of sentence) {
+        auto isKey = isKeyPoint_(seq.begin,sentence);
+        if(isKey) {
+           keyPoints.push(seq.begin);
+        }
+      }
+      console.log('splitKeyPoint_::keyPoints:=<',keyPoints,'>');
+    }
+    const isKeyPoint_(pos,sentence) => {
+      //console.log('isOverLay_::sentence:=<',sentence,'>');
+      for(const seq of sentence) {
+        console.log('isOverLay_::pos:=<',pos,'>');
+        console.log('isOverLay_::seq:=<',seq,'>');
+      }
+      return true;
     }
     const keySentence = splitKeyPoint_(sentence);
 
