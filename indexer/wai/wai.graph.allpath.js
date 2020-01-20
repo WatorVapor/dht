@@ -131,7 +131,7 @@ class WaiAllPathGraph {
           }
         }
       }
-      console.log('reduceConnected::connectedSet:=<',connectedSet.length,'>');
+      //console.log('reduceConnected::connectedSet:=<',connectedSet.length,'>');
       if(connectedSet.length > 1024* 64) {
         return connectedSet;
       }
@@ -194,17 +194,22 @@ class WaiAllPathGraph {
       return true;
     }
     const keySentences = splitKeyPoint_(sentence);
+    const allPath = [];
     for(const subIndex in keySentences) {
       const subSentence = keySentences[subIndex];
       if(subSentence.length > 0) {
         //console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
         const subPath = allPath_(subSentence);
         console.log('allPath::subPath.length:=<',subPath.length,'>');
+        for(const path:subPath) {
+          allPath.push(path);
+        }
       } else {
         console.log('allPath::subIndex:=<',subIndex,'>');
         //console.log('allPath::subSentence:=<',subSentence,'>');
       }
     }
+    console.log('allPath::allPath.length:=<',allPath.length,'>');
 
     //return allPath_(sentence);
   }
