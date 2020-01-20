@@ -148,8 +148,8 @@ class WaiAllPathGraph {
         if(seq.end>maxEnd) {
           maxEnd = seq.end
         }
-        keyPoints.push(parseInt(maxEnd));
       }
+      keyPoints.push(parseInt(maxEnd));
       //console.log('splitKeyPoint_::keyPoints:=<',keyPoints,'>');
       const uniKeyPoints = keyPoints.filter(onlyUnique);
       uniKeyPoints.sort((a,b)=>{return a-b;});
@@ -175,13 +175,13 @@ class WaiAllPathGraph {
         //console.log('isKeyPoint_::pos:=<',pos,'>');
         //console.log('isKeyPoint_::seq:=<',seq,'>');
         if(pos - seq.begin > 0 && pos - seq.end < 0) {
-          console.log('isKeyPoint_::false:=<',false,'>');
-          console.log('isKeyPoint_::pos:=<',pos,'>');
+          //console.log('isKeyPoint_::false:=<',false,'>');
+          //console.log('isKeyPoint_::pos:=<',pos,'>');
           return false;
         }
       }
-      console.log('isKeyPoint_::true:=<',true,'>');
-      console.log('isKeyPoint_::pos:=<',pos,'>');
+      //console.log('isKeyPoint_::true:=<',true,'>');
+      //console.log('isKeyPoint_::pos:=<',pos,'>');
       return true;
     }
     const keySentence = splitKeyPoint_(sentence);
