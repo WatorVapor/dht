@@ -362,9 +362,8 @@ const inputSentence =
 ];
     
 
-const WaiAllPathGraph = require('../wai.allpathgraph.js');
+const WaiAllPathGraph = require('../wai.graph.allpath.js');
 
 const graph = new WaiAllPathGraph();
 const seqPaths = graph.allPath(inputSentence);
 console.log('::seqPaths:=<',seqPaths,'>');
-//graph.createGraphDot(inputSentence);
