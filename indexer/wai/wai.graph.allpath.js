@@ -131,37 +131,32 @@ class WaiAllPathGraph {
     }
     //console.log('reduceConnected::endSeqMap:=<',endSeqMap,'>');
     //const newConnectedPairs = [];
-    let isChanged = false;
-    for(const seq of connectedSet) {
-      //console.log('reduceConnected::seq:=<',seq,'>');
-      const connected = endSeqMap[seq.begin];
-      if(connected) {
-        //console.log('reduceConnected::connected:=<',connected,'>');
-        for(const prev of connected) {
-          //console.log('reduceConnected::prev:=<',prev,'>');
-          //console.log('reduceConnected::seq:=<',seq,'>');
-          const newPath = prev.path.concat(seq.path);
-          const pair = {begin:prev.begin,end:seq.end,path:newPath};
-          const jointedKey = pair.path.join('');
-          if(!jointedFlags[jointedKey]) {
-            connectedSet.push(pair);
-            isChanged = true;
-            jointedFlags[jointedKey] = true;
+    while(true) {
+      let isChanged = false;
+      for(const seq of connectedSet) {
+        //console.log('reduceConnected::seq:=<',seq,'>');
+        const connected = endSeqMap[seq.begin];
+        if(connected) {
+          //console.log('reduceConnected::connected:=<',connected,'>');
+          for(const prev of connected) {
+            //console.log('reduceConnected::prev:=<',prev,'>');
+            //console.log('reduceConnected::seq:=<',seq,'>');
+            const newPath = prev.path.concat(seq.path);
+            const pair = {begin:prev.begin,end:seq.end,path:newPath};
+            const jointedKey = pair.path.join('');
+            if(!jointedFlags[jointedKey]) {
+              connectedSet.push(pair);
+              isChanged = true;
+              jointedFlags[jointedKey] = true;
+            }
           }
         }
       }
+      if(isChanged === false) {
+        break;
+      }
     }
-    //console.log('reduceConnected::connectedSet:=<',connectedSet.length,'>');
-    if(connectedSet.length - 1024 > 0) {
-      console.log('reduceConnected::connectedSet:=<',connectedSet.length,'>');
-      return connectedSet;
-    }
-    if(isChanged) {
-      return this.reduceConnected_(connectedSet,jointedFlags);
-    } else {
-      return connectedSet;
-    }
-
+    return connectedSet;
   }
   
   splitKeyPoint_ (sentence) {
