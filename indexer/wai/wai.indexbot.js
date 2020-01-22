@@ -37,6 +37,11 @@ class WaiIndexBot extends WaiBase {
     this.wordsAtSentence_ = {};
     this.sentenceSeqMap_ = {};
     //console.log('WaiIndexBot::article lang=<',lang,'>');
+    try {
+      global.gc();
+    } catch(e) {
+      
+    }
     super.article(doc,lang);
     this.hintWords_ = super.hintWords(lang);
     //console.log('WaiIndexBot::article this.hintWords_=<',this.hintWords_,'>');
@@ -74,6 +79,11 @@ class WaiIndexBot extends WaiBase {
         }
       }
     }
+    try {
+      global.gc();
+    } catch(e) {
+      
+    }    
   }
   onSentenceStop_(stop) {
     //console.log('WaiIndexBot::onSentenceStop_ stop=<',stop,'>');

@@ -7,7 +7,7 @@ services:
       - /storage/dhtfs/cluster/news_pumper:/storage/dhtfs/cluster/news_pumper
       - /dev/shm:/dev/shm
     working_dir: "/opt/app/indexer"
-    command: node ./app.js
+    command: node --expose-gc ./app.js
     networks:
       - outside
     deploy:
