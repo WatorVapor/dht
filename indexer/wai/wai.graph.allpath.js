@@ -152,6 +152,10 @@ class WaiAllPathGraph {
           }
         }
       }
+      if(connectedSet.length - 1024*16 > 0) {
+        console.log('reduceConnected:: too big connectedSet.length:=<',connectedSet.length,'>');
+        break;
+      }
       if(isChanged === false) {
         break;
       }

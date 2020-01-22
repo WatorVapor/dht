@@ -39,8 +39,7 @@ class WaiIndexBot extends WaiBase {
     //console.log('WaiIndexBot::article lang=<',lang,'>');
     try {
       global.gc();
-    } catch(e) {
-      
+    } catch(e) {   
     }
     super.article(doc,lang);
     this.hintWords_ = super.hintWords(lang);
@@ -53,8 +52,7 @@ class WaiIndexBot extends WaiBase {
     //console.log('WaiIndexBot::article indexOfWords=<',indexOfWords,'>');
     try {
       global.gc();
-    } catch(e) {
-      
+    } catch(e) {      
     }    
     return indexOfWords;
   }
@@ -84,6 +82,18 @@ class WaiIndexBot extends WaiBase {
         }
       }
     }
+    
+    const used = process.memoryUsage();
+    const usedPercentage = parseFloat(used.heapUsed) / parseFloat(used.heapTotal);
+    if(usedPercentage > 0.1) {
+      console.log('WaiIndexBot::onSentenceOut_ used=<',used,'>');
+      console.log('WaiIndexBot::onSentenceOut_ usedPercentage=<',usedPercentage,'>');
+      try {
+        global.gc();
+      } catch(e) {      
+      }
+    }
+
   }
   onSentenceStop_(stop) {
     //console.log('WaiIndexBot::onSentenceStop_ stop=<',stop,'>');
