@@ -84,10 +84,10 @@ class WaiIndexBot extends WaiBase {
     }
     
     const used = process.memoryUsage();
-    const usedPercentage = parseFloat(used.heapUsed) / parseFloat(used.heapTotal);
-    if(usedPercentage > 0.1) {
+    const totalUsed = used.rss + used.heapTotal;
+    if(totalUsed - 1024 * 1024 * 512> 0) {
       console.log('WaiIndexBot::onSentenceOut_ used=<',used,'>');
-      console.log('WaiIndexBot::onSentenceOut_ usedPercentage=<',usedPercentage,'>');
+      console.log('WaiIndexBot::onSentenceOut_ totalUsed=<',totalUsed,'>');
       try {
         global.gc();
       } catch(e) {      
