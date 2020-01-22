@@ -51,6 +51,11 @@ class WaiIndexBot extends WaiBase {
     //console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
     const indexOfWords = this.reduce2Index_();
     //console.log('WaiIndexBot::article indexOfWords=<',indexOfWords,'>');
+    try {
+      global.gc();
+    } catch(e) {
+      
+    }    
     return indexOfWords;
   }
 
@@ -79,11 +84,6 @@ class WaiIndexBot extends WaiBase {
         }
       }
     }
-    try {
-      global.gc();
-    } catch(e) {
-      
-    }    
   }
   onSentenceStop_(stop) {
     //console.log('WaiIndexBot::onSentenceStop_ stop=<',stop,'>');
