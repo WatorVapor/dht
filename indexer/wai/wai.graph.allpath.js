@@ -23,7 +23,7 @@ class WaiAllPathGraph {
       if(subSentence.length > 0) {
         //console.log('isKeyPoint_::subSentence:=<',subSentence,'>');
         const subPath = this.allPath_(subSentence);
-        console.log('allPath::subPath.length:=<',subPath.length,'>');
+        //console.log('allPath::subPath.length:=<',subPath.length,'>');
         for(const path of subPath) {
           allPath.push(path);
         }
@@ -122,19 +122,17 @@ class WaiAllPathGraph {
   
   reduceConnected_ (connectedSet,jointedFlags){
     //console.log('reduceConnected::connectedSet:=<',connectedSet,'>');
-    const beginSeqMap = {};
-    const endSeqMap = {};
-    for(const seq of connectedSet) {
-      //console.log('reduceConnected::seq:=<',seq,'>');
-      if(endSeqMap[seq.end]) {
-        endSeqMap[seq.end].push(seq);
-      } else {
-        endSeqMap[seq.end] = [seq];
-      }
-    }
-    //console.log('reduceConnected::endSeqMap:=<',endSeqMap,'>');
-    //const newConnectedPairs = [];
     while(true) {
+      const endSeqMap = {};
+      for(const seq of connectedSet) {
+        //console.log('reduceConnected::seq:=<',seq,'>');
+        if(endSeqMap[seq.end]) {
+          endSeqMap[seq.end].push(seq);
+        } else {
+          endSeqMap[seq.end] = [seq];
+        }
+      }
+      //console.log('reduceConnected::endSeqMap:=<',endSeqMap,'>');
       let isChanged = false;
       for(const seq of connectedSet) {
         //console.log('reduceConnected::seq:=<',seq,'>');
