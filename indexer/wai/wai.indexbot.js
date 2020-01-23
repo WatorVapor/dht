@@ -37,10 +37,6 @@ class WaiIndexBot extends WaiBase {
     this.wordsAtSentence_ = {};
     this.sentenceSeqMap_ = {};
     //console.log('WaiIndexBot::article lang=<',lang,'>');
-    try {
-      global.gc();
-    } catch(e) {   
-    }
     super.article(doc,lang);
     this.hintWords_ = super.hintWords(lang);
     //console.log('WaiIndexBot::article this.hintWords_=<',this.hintWords_,'>');
@@ -50,11 +46,14 @@ class WaiIndexBot extends WaiBase {
     //console.log('WaiIndexBot::article this.words_=<',this.words_,'>');
     const indexOfWords = this.reduce2Index_();
     //console.log('WaiIndexBot::article indexOfWords=<',indexOfWords,'>');
-    try {
-      global.gc();
-    } catch(e) {      
-    }    
     return indexOfWords;
+  }
+  clear() {
+    this.words_ = {};
+    this.seqNumOfSentence_ = 0;
+    this.wordsAtSentence_ = {};
+    this.sentenceSeqMap_ = {};
+    this.pathGraph_ = new WaiAllPathGraph();
   }
 
   onSentenceIn_(sentence) {
@@ -82,7 +81,8 @@ class WaiIndexBot extends WaiBase {
         }
       }
     }
-    
+
+/*    
     const used = process.memoryUsage();
     const totalUsed = used.rss + used.heapTotal;
     if(totalUsed - 1024 * 1024 * 512> 0) {
@@ -93,6 +93,7 @@ class WaiIndexBot extends WaiBase {
       } catch(e) {      
       }
     }
+*/
 
   }
   onSentenceStop_(stop) {

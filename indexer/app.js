@@ -89,7 +89,7 @@ const onNewsText = (txt,title,myhref,lang,crawler) => {
   //console.log('onNewsText::myhref=<',myhref,'>');
   let wordIndex = wai.article(txt,lang);
   //console.log('onNewsText::wordIndex=<',wordIndex,'>');
-  onSaveIndex(myhref,wordIndex,lang,title,txt,crawler);  
+  onSaveIndex(myhref,wordIndex,lang,title,txt,crawler);
   setTimeout(onLearnNewLink,0);
 }
 
@@ -113,6 +113,11 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
     //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
     await onSaveIndex2DHT(searchIndex);
   }
+  wai.clear();
+  try {
+    global.gc();
+  } catch(e) {   
+  }  
 }
 
 

@@ -35,6 +35,9 @@ class WaiAllPathGraph {
     console.log('allPath::allPath.length:=<',allPath.length,'>');
     return allPath;
   }
+  
+  
+  
 
   allPath_(sentence) {
     //console.log('allPath_::sentence:=<',sentence,'>');
