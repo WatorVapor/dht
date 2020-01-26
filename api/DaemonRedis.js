@@ -3,12 +3,16 @@ const redis = require('redis');
 const redisOption = {
   path:'/dev/shm/dht.ermu.api.redis.sock'
 };
-const serverListenChannale = 'dht.ermu.api.server.listen';
+const serverListenChannel = 'dht.ermu.api.server.listen';
 class DaemonRedis {
-  constructor(dht) {
+  constructor(dht,serverChannel) {
     this.dht_ = dht;
     this.subscriber_ = redis.createClient(redisOption);
-    this.subscriber_.subscribe(serverListenChannale);
+    if(serverChannel) {
+      this.subscriber_.subscribe(serverChannel);
+    } else {
+      this.subscriber_.subscribe(serverListenChannel);
+    }
     const self = this;
     this.subscriber_.on('message',(channel,message) => {
       self.onData_(message);
