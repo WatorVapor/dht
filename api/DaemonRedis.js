@@ -110,7 +110,7 @@ class DaemonRedis {
     if(jMsg.fetch === 'keyWord') {
       this.onFetchDataByKeyWord_(jMsg.keyWord,jMsg.cb,jMsg.channel);
     } else if(jMsg.fetch === 'keyWordCache') {
-      this.onFetchDataByKeyWordCache_(jMsg.keyWord,jMsg.cb,jMsg.channel);
+      this.onFetchDataByKeyWordCache_(jMsg.keyWord,jMsg.begin,jMsg.end,jMsg.cb,jMsg.channel);
     } else if(jMsg.fetch === 'address') {
       this.onFetchDataByAddress_(jMsg.address,jMsg.cb,jMsg.channel);
     } else {
@@ -131,8 +131,11 @@ class DaemonRedis {
     });
   }
 
-  onFetchDataByKeyWordCache_ (keyWord,cb,channel){
+  onFetchDataByKeyWordCache_ (keyWord,begin,end,cb,channel){
     console.log('DaemonRedis::onFetchDataByKeyWordCache_::keyWord=<',keyWord,'>');
+    console.log('DaemonRedis::onFetchDataByKeyWordCache_::begin=<',begin,'>');
+    console.log('DaemonRedis::onFetchDataByKeyWordCache_::end=<',end,'>');
+    console.log('DaemonRedis::onFetchDataByKeyWordCache_::cb=<',cb,'>');
     this.dht_.fetch4KeyWord(keyWord,cb,(resouce)=> {
       console.log('DaemonRedis::onFetchDataByKeyWordCache_::resouce=<',resouce,'>');
       try {
