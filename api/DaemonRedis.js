@@ -109,6 +109,8 @@ class DaemonRedis {
     //console.log('DaemonRedis::onFetchData::jMsg=<',jMsg,'>');
     if(jMsg.fetch === 'keyWord') {
       this.onFetchDataByKeyWord_(jMsg.keyWord,jMsg.cb,jMsg.channel);
+    } else if(jMsg.fetch === 'keyWordCache') {
+      this.onFetchDataByKeyWordCache_(jMsg.keyWord,jMsg.cb,jMsg.channel);
     } else if(jMsg.fetch === 'address') {
       this.onFetchDataByAddress_(jMsg.address,jMsg.cb,jMsg.channel);
     } else {
@@ -128,6 +130,20 @@ class DaemonRedis {
       }
     });
   }
+
+  onFetchDataByKeyWordCache_ (keyWord,cb,channel){
+    console.log('DaemonRedis::onFetchDataByKeyWordCache_::keyWord=<',keyWord,'>');
+    this.dht_.fetch4KeyWord(keyWord,cb,(resouce)=> {
+      console.log('DaemonRedis::onFetchDataByKeyWordCache_::resouce=<',resouce,'>');
+      try {
+        const RespBuff = Buffer.from(JSON.stringify(resouce),'utf-8');
+        this.publisher_.publish(channel,RespBuff);
+      } catch(e) {
+        console.log('DaemonRedis::onFetchDataByKeyWordCache_::::e=<',e,'>');
+      }
+    });
+  }
+
 
   onFetchDataByAddress_ (address,cb,channel){
     console.log('DaemonRedis::onFetchDataByAddress_::address=<',address,'>');

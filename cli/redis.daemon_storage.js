@@ -3,6 +3,7 @@ const path = require('path');
 //console.log(':: __filename=<',__filename,'>');
 const dhtPath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/peerstore';
 const dataPath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/datastore';
+const cachePath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/cache';
 const config = {
   listen:{
     ctrl:{
@@ -24,7 +25,8 @@ const config = {
   ],
   reps: {
     dht:dhtPath,
-    data:dataPath
+    data:dataPath,
+    cache:cachePath
   },
   storage:true
 };

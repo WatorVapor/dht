@@ -24,13 +24,13 @@ subRedis.on('message', (channel, message) => {
 subRedis.subscribe(channelWS2DHT);
 
 const onRedisMsg = (channel, message) => {
-  console.log('onRedisMsg::channel=<',channel,'>');
-  console.log('onRedisMsg::message=<',message,'>');
+  //console.log('onRedisMsg::channel=<',channel,'>');
+  //console.log('onRedisMsg::message=<',message,'>');
   try {
     const jsonMsg = JSON.parse(message);
     if(jsonMsg && jsonMsg.words) {
       console.log('onRedisMsg::jsonMsg=<',jsonMsg,'>');
-      dht.fetch4KeyWord(jsonMsg.words,(result)=> {
+      dht.fetch4KeyWordCache(jsonMsg.words,jsonMsg.begin,jsonMsg.end,(result)=> {
         try {
           console.log('onRedisMsg::result=<',result,'>');
           const response = {...jsonMsg,...result};

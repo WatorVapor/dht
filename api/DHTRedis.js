@@ -54,6 +54,18 @@ class DHTRedis {
     const cbTag = this.writeData_(msg);
     this.cb_[cbTag] = cb;    
   }
+  fetch4KeyWordCache(keyWord,begin,end,cb) {
+    console.log('DHTRedis::fetch4KeyWordCache keyWord=<',keyWord,'>');
+    const msg = {
+      fetch:'keyWordCache',
+      keyWord:keyWord,
+      begin:begin,
+      end:end
+    };
+    const cbTag = this.writeData_(msg);
+    this.cb_[cbTag] = cb;    
+  }
+
   
   onError_(err) {
     console.log('DHTRedis::onError_ err=<',err,'>');
