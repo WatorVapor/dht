@@ -6,6 +6,7 @@ const RIPEMD160 = require('ripemd160');
 const base32 = require("base32.js");
 const bs32Option = { type: "crockford", lc: true };
 const PeerMachine = require('./peer.machine.js');
+const iConstPeersAtOneTime = 200;
 
 class PeerStorage {
   constructor(config) {
@@ -30,15 +31,34 @@ class PeerStorage {
     //console.log('PeerStorage::append: contentPlacePath=<',contentPlacePath,'>');
     fs.writeFileSync(contentPlacePath,request.uri);
   }
-  fetch(request) {
+  fetch(request,cb) {
     //console.log('PeerStorage::fetch: request=<',request,'>');
     const keyAddress = request.address;
     //console.log('PeerStorage::fetch: keyAddress=<',keyAddress,'>');    
     const keyPath = this.getPath4KeyAddress_(keyAddress);
     //console.log('PeerStorage::fetch: keyPath=<',keyPath,'>');
-    const response = this.fetchDirAndContents_(keyPath,0,200);
-    console.log('PeerStorage::fetch: response=<',response,'>');
-    return response;
+    const responseStats = this.fetchKeyStats_(keyPath);
+    responseStats.finnish = false;
+    //console.log('PeerStorage::fetch: responseStats=<',responseStats,'>');
+    if(typeof cb === 'function') {
+      cb(responseStats);
+    }
+    const maxPeers = responseStats.stats.maxPeers;
+    //console.log('PeerStorage::fetch: maxPeers=<',maxPeers,'>');
+    for(let start = 0;start < maxPeers;start += iConstPeersAtOneTime) {
+      let end = start + iConstPeersAtOneTime;
+      let finnish = false;
+      if(end > maxPeers) {
+        end = maxPeers;
+        finnish = true;
+      }
+      const response = this.fetchDirAndContents_(keyPath,start,end);
+      //console.log('PeerStorage::fetch: response=<',response,'>');
+      response.finnish = finnish;
+      if(typeof cb === 'function') {
+        cb(response);
+      }
+    }
   }
   
   getAddress_(resourceKey) {
@@ -54,13 +74,25 @@ class PeerStorage {
     pathAddress += '/' + address;
     return pathAddress;
   }
+  fetchKeyStats_(dirPath) {
+    const statsResult = {stats:{}};
+    if (fs.existsSync(dirPath)) {
+      const files = fs.readdirSync(dirPath);
+      console.log('ResourceStorage::fetchKeyStats_: files=<',files,'>');
+      statsResult.stats.maxPeers = files.length;
+    }
+    //console.log('ResourceStorage::fetchKeyStats_: statsResult=<',statsResult,'>');
+    return statsResult;    
+  }
 
   fetchDirAndContents_(dirPath,start,count) {
-    const content = {};
+    const content = {peers:{}};
     //console.log('ResourceStorage::fetchDirAndContents_: dirPath=<',dirPath,'>');
     if (fs.existsSync(dirPath)) {
       const files = fs.readdirSync(dirPath);
-      //console.log('ResourceStorage::fetchDirAndContents_: files=<',files,'>');
+      console.log('ResourceStorage::fetchDirAndContents_: files=<',files,'>');
+      console.log('ResourceStorage::fetchDirAndContents_: start=<',start,'>');
+      console.log('ResourceStorage::fetchDirAndContents_: count=<',count,'>');
       const rangeS = start;
       let rangeE = rangeS+count;
       if(rangeE > files.length) {
@@ -74,10 +106,10 @@ class PeerStorage {
         const pathContents = dirPath + '/' + file;
         //console.log('ResourceStorage::fetchDirAndContents_: pathContents=<',pathContents,'>');
         const uri = fs.readFileSync(pathContents);
-        content[file] = uri.toString('utf-8');
+        content.peers[file] = uri.toString('utf-8');
       }
     }
-    console.log('ResourceStorage::fetchDirAndContents_: content=<',content,'>');
+    //console.log('ResourceStorage::fetchDirAndContents_: content=<',content,'>');
     return content;
   }
 

@@ -10,10 +10,14 @@ const bs32Option = { type: "crockford", lc: true };
 const https = require('https');
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 const serverListenChannale = 'dht.ermu.api.server.listen';
+const iConstMaxResultsOnce = 20;
 
 class DHTRedis {
-  constructor() {
+  constructor(serverChannel) {
     console.log('DHTRedis::constructor');
+    if(serverChannel) {
+      this.serverChannel_ = serverChannel;
+    }
     this.apiChannel_ = this.calcCallBackHash_(this);
     this.subscriber_ = redis.createClient(redisOption);
     this.subscriber_.subscribe(this.apiChannel_);    
@@ -82,7 +86,11 @@ class DHTRedis {
     msg.channel = this.apiChannel_;
     const msgBuff = Buffer.from(JSON.stringify(msg),'utf-8');
     try {
-      this.publisher_.publish(serverListenChannale,msgBuff);
+      if(this.serverChannel_) {
+        this.publisher_.publish(this.serverChannel_,msgBuff);
+      } else {
+        this.publisher_.publish(serverListenChannale,msgBuff);        
+      }
     } catch (e) {
       console.log('writeData_::fetch e=<',e,'>');
     }
@@ -115,33 +123,62 @@ class DHTRedis {
   }
 
   onFetchResp_(jMsg) {
-    //console.log('DHTRedis::onFetchResp_ jMsg=<',jMsg,'>');
-    const address = jMsg.address;
-    for(const keyAddress in jMsg.fetchResp) {
-      //console.log('DHTRedis::onFetchResp_:: keyAddress=<',keyAddress,'>');
-      const uri = jMsg.fetchResp[keyAddress] + '/' + address;
-      //console.log('DHTRedis::onFetchResp_:: uri=<',uri,'>');
-      const self = this;
-      this.requestURI_(uri,(data) => {
-        try {
-          const jData = JSON.parse(data);
-          //console.log('DHTRedis::onFetchResp_:: jData=<',jData,'>');
-          self.onFetchResource_(jData,jMsg.fetchResp[keyAddress],jMsg.cb,keyAddress);
-        }catch(e) {
-          console.log('DHTRedis::onFetchResp_:: e=<',e,'>');
-        }
-      });
+    console.log('DHTRedis::onFetchResp_ jMsg=<',jMsg,'>');
+    if(jMsg.stats && jMsg.stats.maxPeers) {
+      console.log('DHTRedis::onFetchResp_ jMsg.stats.maxPeers=<',jMsg.stats.maxPeers,'>');
+    }
+    
+    const peers = jMsg.fetchResp.peers;
+    if(peers) {
+      const address = jMsg.address;
+      for(const keyAddress in peers) {
+        //console.log('DHTRedis::onFetchResp_:: keyAddress=<',keyAddress,'>');
+        const uriStats = peers[keyAddress] + '/' + address + '?stats=1';
+        //console.log('DHTRedis::onFetchResp_:: uriStats=<',uriStats,'>');
+        const self = this;
+        this.requestURI_(uriStats,(data) => {
+          try {
+            const jDataStats = JSON.parse(data);
+            //console.log('DHTRedis::onFetchResp_:: jDataStats=<',jDataStats,'>');
+            const uri = peers[keyAddress] + '/' + address;
+            self.onFetchResourceStats_(jDataStats,peers[keyAddress],uri,jMsg.cb,keyAddress);
+          }catch(e) {
+            console.log('DHTRedis::onFetchResp_:: e=<',e,'>');
+          }
+        });
+      }
     }
   }
-  onFetchResource_(jData,url,cb,keyAddress) {
-    //console.log('DHTRedis::onFetchResource_:: jData=<',jData,'>');
-    //console.log('DHTRedis::onFetchResource_:: url=<',url,'>');
+  
+  onFetchResourceStats_(jDataStats,rootURL,url,cb,keyAddress) {
+    //console.log('DHTRedis::onFetchResourceStats_:: jDataStats=<',jDataStats,'>');
+    //console.log('DHTRedis::onFetchResourceStats_:: url=<',url,'>');
+    //console.log('DHTRedis::onFetchResourceStats_:: cb=<',cb,'>');
+    //console.log('DHTRedis::onFetchResourceStats_:: keyAddress=<',keyAddress,'>');
+    const maxResouces = jDataStats.stats.maxResouces;
+    const self = this;
+    for(let start = 0;start < maxResouces;start += iConstMaxResultsOnce) {
+      const resourceCache = url + `?start=${start}&count=${iConstMaxResultsOnce}`;
+      //console.log('DHTRedis::onFetchResourceStats_:: resourceCache=<',resourceCache,'>');
+      this.requestURI_(resourceCache,(data)=>{
+        const jDataResource = JSON.parse(data);
+        //console.log('DHTRedis::onFetchResourceStats_:: jDataResource=<',jDataResource,'>');
+        self.onFetchResource_(jDataResource,rootURL,cb,keyAddress);
+      })
+    }
+  }
+  
+  
+  
+  onFetchResource_(jData,urlRoot,cb,keyAddress) {
+    console.log('DHTRedis::onFetchResource_:: jData=<',jData,'>');
+    console.log('DHTRedis::onFetchResource_:: urlRoot=<',urlRoot,'>');
     //console.log('DHTRedis::onFetchResource_:: cb=<',cb,'>');
     const self = this;
     for(const address of jData) {
       //console.log('DHTRedis::onFetchResource_:: address=<',address,'>');
-      const uri = url + '/' + address;
-      //console.log('DHTRedis::onFetchResource_:: uri=<',uri,'>');
+      const uri = urlRoot + '/' + address;
+      console.log('DHTRedis::onFetchResource_:: uri=<',uri,'>');
       this.requestURI_(uri,(data)=> {
         //console.log('DHTRedis::onFetchResource_:: data=<',data,'>');
         self.onFetchResourceData_(data,address,keyAddress,cb);

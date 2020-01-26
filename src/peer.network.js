@@ -64,15 +64,16 @@ class PeerNetWork {
       cb:cb
     };
     if(place.isFinal(this.crypto_.idBS32)) {
-      const localResource = this.storage_.fetch(fetchMessge);
-      console.log('PeerNetWork::fetch4KeyWord localResource=<',localResource,'>');
-      const fetchResp = {
-        fetchResp:localResource,
-        address:address,
-        local:true,
-        cb:cb
-      };
-      reply(fetchResp);
+      this.storage_.fetch(fetchMessge,(localResource)=> {
+        console.log('PeerNetWork::fetch4KeyWord localResource=<',localResource,'>');
+        const fetchResp = {
+          fetchResp:localResource,
+          address:address,
+          local:true,
+          cb:cb
+        };
+        reply(fetchResp);        
+      });
     }
     this.replays_[cb] = reply;    
     if(place.nearest !== this.crypto_.idBS32) {
@@ -345,14 +346,16 @@ class PeerNetWork {
     //console.log('PeerNetWork::onFetch4Remote__ place=<',place,'>');
     //console.log('PeerNetWork::onFetch4Remote__:: this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
     if(place.isFinal(this.crypto_.idBS32)) {
-      const localResource = this.storage_.fetch(fetch);
-      console.log('PeerNetWork::onFetch4Remote__:: localResource=<',localResource,'>');
-      const fetchRespMsg = {
-        fetchResp:localResource
-      };
-      fetchRespMsg.fetchResp.cb = fetch.cb;
-      fetchRespMsg.fetchResp.address = fetch.address;
-      this.sendMessage_(fromId,fetchRespMsg);
+      const self = this;
+      this.storage_.fetch(fetch,(localResource)=> {
+        console.log('PeerNetWork::onFetch4Remote__:: localResource=<',localResource,'>');
+        const fetchRespMsg = {
+          fetchResp:localResource
+        };
+        fetchRespMsg.fetchResp.cb = fetch.cb;
+        fetchRespMsg.fetchResp.address = fetch.address;
+        self.sendMessage_(fromId,fetchRespMsg);        
+      });
     }
     if(place.nearest !== this.crypto_.idBS32 && place.nearest !== fromId) {
       this.relayFetchMessage_(place.nearest,fetch);

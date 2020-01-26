@@ -32,5 +32,5 @@ const peer = dht.peerInfo();
 console.log(':: peer=<',peer,'>');
 
 const DaemonRedis = require('../api/DaemonRedis.js');
-const serverTestListenChannel = 'dht.ermu.api.server.listen.test';
-const daemon = new DaemonRedis(dht,serverTestListenChannel);
+const serverUTListenChannel = 'dht.ermu.api.server.listen.ut';
+const daemon = new DaemonRedis(dht,serverUTListenChannel);

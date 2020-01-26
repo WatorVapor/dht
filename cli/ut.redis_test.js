@@ -1,7 +1,8 @@
 'use strict';
 const path = require('path');
 const DHT = require('../api/DHTRedis.js');
-const dht = new DHT();
+const serverUTListenChannel = 'dht.ermu.api.server.listen.ut';
+const dht = new DHT(serverUTListenChannel);
 //console.log(':: dht=<',dht,'>');
 dht.peerInfo((peerInfo)=>{
   console.log('dht.peerInfo:: peerInfo=<',peerInfo,'>');

@@ -5,6 +5,7 @@ const jsrsasign = require('jsrsasign');
 const RIPEMD160 = require('ripemd160');
 const base32 = require("base32.js");
 const PeerMachine = require('./peer.machine.js');
+const iConstResoucesAtOneTime = 20;
 
 
 const bs32Option = { type: "crockford", lc: true };
@@ -75,8 +76,23 @@ class ResourceStorage {
         }
       }
     }
+ }
+
+  fetchStats(keyAddress) {
+    console.log('ResourceStorage::fetchStats: keyAddress=<',keyAddress,'>');
+    const keyPath = this.getPath4KeyAddress_(keyAddress);
+    console.log('ResourceStorage::fetchStats: keyPath=<',keyPath,'>');
+    if(fs.existsSync(keyPath)) {
+      const stat = fs.lstatSync(keyPath);
+      if(stat.isDirectory()) {
+        return this.fetchDirStats_(keyPath);
+      }
+    } else {
+    }
     return null;
  }
+
+
  
  fetchFlat(keyAddress,start,count) {
     const keyPath = this.getPath4KeyAddress_(keyAddress);
@@ -132,7 +148,7 @@ class ResourceStorage {
   }
   
   fetchDir_(dirPath,start,count) {
-    //console.log('ResourceStorage::fetchDir_: dirPath=<',dirPath,'>');
+    console.log('ResourceStorage::fetchDir_: dirPath=<',dirPath,'>');
     const files = fs.readdirSync(dirPath);
     //console.log('ResourceStorage::fetchDir_: files=<',files,'>');
     const rangeS = start;
@@ -144,6 +160,15 @@ class ResourceStorage {
     //console.log('ResourceStorage::fetchDir_: rangeE=<',rangeE,'>');
     return files.slice(rangeS,rangeE);
   }
+  
+  fetchDirStats_(dirPath) {
+    const statsResult = {stats:{}};
+    const files = fs.readdirSync(dirPath);
+    statsResult.stats.maxResouces = files.length;
+    return statsResult;
+  }
+  
+  
   
   fetchFile_(filePath) {
     //console.log('ResourceStorage::fetchFile_: filePath=<',filePath,'>');
