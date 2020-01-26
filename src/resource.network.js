@@ -45,11 +45,11 @@ class ResourceNetWork {
     //console.log('ResourceNetWork::onRequest_ url_parts.pathname=<',url_parts.pathname,'>');
     const address = url_parts.pathname.replace('/','');
     const query = new url.URLSearchParams(url_parts.query);
-    console.log('ResourceNetWork::onRequest_ query=<',query,'>');
-    console.log('ResourceNetWork::onRequest_ query.get("stats")=<',query.get('stats'),'>');
+    //console.log('ResourceNetWork::onRequest_ query=<',query,'>');
+    //console.log('ResourceNetWork::onRequest_ query.get("stats")=<',query.get('stats'),'>');
     if(query.get('stats')) {
       const contents = this.storage_.fetchStats(address);
-      console.log('ResourceNetWork::onRequest_ contents=<',contents,'>');
+      //console.log('ResourceNetWork::onRequest_ contents=<',contents,'>');
       res.end(JSON.stringify(contents,undefined,2),'utf-8');
       return;
     }
@@ -62,7 +62,7 @@ class ResourceNetWork {
       count = parseInt(query.get('count'));
     }
     const contents = this.storage_.fetch(address,start,count);
-    console.log('ResourceNetWork::onRequest_ contents=<',contents,'>');
+    //console.log('ResourceNetWork::onRequest_ contents=<',contents,'>');
     res.end(JSON.stringify(contents,undefined,2),'utf-8');
   }
 }

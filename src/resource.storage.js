@@ -79,9 +79,9 @@ class ResourceStorage {
  }
 
   fetchStats(keyAddress) {
-    console.log('ResourceStorage::fetchStats: keyAddress=<',keyAddress,'>');
+    //console.log('ResourceStorage::fetchStats: keyAddress=<',keyAddress,'>');
     const keyPath = this.getPath4KeyAddress_(keyAddress);
-    console.log('ResourceStorage::fetchStats: keyPath=<',keyPath,'>');
+    //console.log('ResourceStorage::fetchStats: keyPath=<',keyPath,'>');
     if(fs.existsSync(keyPath)) {
       const stat = fs.lstatSync(keyPath);
       if(stat.isDirectory()) {
@@ -98,7 +98,7 @@ class ResourceStorage {
     const keyPath = this.getPath4KeyAddress_(keyAddress);
     //console.log('ResourceStorage::fetchFlat: keyPath=<',keyPath,'>');
     if(fs.existsSync(keyPath)) {
-      console.log('ResourceStorage::fetchFlat: keyPath=<',keyPath,'>');
+      //console.log('ResourceStorage::fetchFlat: keyPath=<',keyPath,'>');
       const stat = fs.lstatSync(keyPath);
       //console.log('ResourceStorage::fetchFlat: stat=<',stat,'>');
       if(stat.isDirectory()) {
@@ -148,7 +148,7 @@ class ResourceStorage {
   }
   
   fetchDir_(dirPath,start,count) {
-    console.log('ResourceStorage::fetchDir_: dirPath=<',dirPath,'>');
+    //console.log('ResourceStorage::fetchDir_: dirPath=<',dirPath,'>');
     const files = fs.readdirSync(dirPath);
     //console.log('ResourceStorage::fetchDir_: files=<',files,'>');
     const rangeS = start;
