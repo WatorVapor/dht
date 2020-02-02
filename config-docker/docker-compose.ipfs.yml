@@ -3,8 +3,7 @@ services:
   daemon:
     image: ipfs/go-ipfs:v0.4.23
     volumes:
-      - ../:/opt/app
-      - /storage/dhtfs/cluster:/storage/dhtfs/cluster
+      - /storage/dhtfs/cluster/ipfs-storage:/data/ipfs
     networks:
       - outside
     deploy:
