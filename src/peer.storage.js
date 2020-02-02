@@ -18,7 +18,7 @@ class PeerStorage {
     this.machine_ = new PeerMachine(config);
   }
   append(request) {
-    //console.log('PeerStorage::append: request=<',request,'>');
+    console.log('PeerStorage::append: request=<',request,'>');
     const keyAddress = request.address;
     //console.log('PeerStorage::append: keyAddress=<',keyAddress,'>');
     const keyPath = this.getPath4KeyAddress_(keyAddress);
@@ -26,13 +26,34 @@ class PeerStorage {
     if (!fs.existsSync(keyPath)) {
       fs.mkdirSync(keyPath,{ recursive: true });
     }
-    const contentAddress = this.getAddress_(request.uri);
-    const contentPlacePath = keyPath + '/' + contentAddress;
+    const rankPath = keyPath + '/' + request.rank;
+    if (!fs.existsSync(rankPath)) {
+      fs.mkdirSync(rankPath,{ recursive: true });
+    }
+    const contentPlacePath = rankPath + '/' + request.ipfs;
     //console.log('PeerStorage::append: contentPlacePath=<',contentPlacePath,'>');
-    fs.writeFileSync(contentPlacePath,request.uri);
+    if (!fs.existsSync(contentPlacePath)) {
+      fs.writeFileSync(contentPlacePath,'');
+      const statsRankPath = rankPath + '/stats.json';
+      let stats = {};
+      try {
+        stats = require(statsRankPath);
+      } catch (e) {
+        
+      }
+      console.log('PeerStorage::append: stats=<',stats,'>');
+      if(stats.count) {
+        stats.count++;
+      } else {
+        stats.count = 1;
+      }
+      fs.writeFileSync(statsRankPath,JSON.stringify(stats,undefined,'  '));
+    } else {
+      
+    }
   }
   fetch(request,cb) {
-    //console.log('PeerStorage::fetch: request=<',request,'>');
+    console.log('PeerStorage::fetch: request=<',request,'>');
     const keyAddress = request.address;
     //console.log('PeerStorage::fetch: keyAddress=<',keyAddress,'>');    
     const keyPath = this.getPath4KeyAddress_(keyAddress);

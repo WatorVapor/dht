@@ -34,12 +34,13 @@ class DHTRedis {
     const cbTag = this.writeData_(msg);
     this.cb_[cbTag] = cb;
   }
-  append(key,data,cb) {
+  append(key,data,rank,cb) {
     //console.log('DHTRedis::append key=<',key,'>');
     //console.log('DHTRedis::append data=<',data,'>');
     const msg = {
       store:'append',
       key:key,
+      rank:rank,
       data:data
     };
     const cbTag = this.writeData_(msg);

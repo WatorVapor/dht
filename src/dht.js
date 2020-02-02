@@ -4,7 +4,8 @@ const dgram = require("dgram");
 const PeerCrypto = require('./peer.crypto.js');
 const PeerNetWork = require('./peer.network.js');
 const ResourceNetWork = require('./resource.network.js');
-const ResourceStorage = require('./resource.storage.js');
+//const ResourceStorage = require('./resource.storage.js');
+const ResourceOnIpfs = require('./resource.ipfs.js');
 
 
 class DHT {
@@ -12,7 +13,8 @@ class DHT {
     this.crypto_ = new PeerCrypto(config);
     this.peer_ = new PeerNetWork(config);
     this.resource_ = new ResourceNetWork(config);
-    this.storage_ = new ResourceStorage(config);
+    //this.storage_ = new ResourceStorage(config);
+    this.storage_ = new ResourceOnIpfs(config);
     this.info_ = {
       id:this.crypto_.idBS32,
       peer:{
@@ -29,11 +31,13 @@ class DHT {
   peerInfo() {
     return this.info_;
   }
-  append(key,data,cbTag) {
+  async append(key,data,rank,cbTag) {
     //console.log('DHT::append key=<',key,'>');
     //console.log('DHT::append data=<',data,'>');
-    const dataStorage = this.storage_.append(key,data);
+    //console.log('DHT::append rank=<',rank,'>');
+    const dataStorage = await this.storage_.append(key,data);
     //console.log('DHT::append dataStorage=<',dataStorage,'>');
+    dataStorage.rank = rank;
     dataStorage.cb = cbTag;
     this.peer_.publish(dataStorage);
     return dataStorage;
