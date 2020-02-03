@@ -6,6 +6,7 @@
     "create-cert": "^1.0.6",
     "ipfs-http-client": "^42.0.0-pre.2",
     "jsrsasign": "^8.0.12",
+    "level": "^6.0.0",
     "redis": "^2.8.0",
     "ripemd160": "^2.0.2",
     "selfsigned": "^1.10.7"
