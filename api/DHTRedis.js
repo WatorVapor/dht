@@ -137,10 +137,12 @@ class DHTRedis {
 
   onFetchResp_(jMsg) {
     console.log('DHTRedis::onFetchResp_ jMsg=<',jMsg,'>');
-    if(jMsg.stats && jMsg.stats.maxPeers) {
-      console.log('DHTRedis::onFetchResp_ jMsg.stats.maxPeers=<',jMsg.stats.maxPeers,'>');
+    if(jMsg.fetchResp && jMsg.cb) {
+      if(typeof this.cb_[jMsg.cb] === 'function') {
+        this.cb_[jMsg.cb](jMsg.fetchResp);
+      }
     }
-    
+    /*
     const peers = jMsg.fetchResp.peers;
     if(peers) {
       const address = jMsg.address;
@@ -161,6 +163,7 @@ class DHTRedis {
         });
       }
     }
+    */
   }
   
   onFetchResourceStats_(jDataStats,rootURL,url,cb,keyAddress) {
