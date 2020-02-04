@@ -12,6 +12,7 @@ class PeerNetWork {
     this.peers = {};
     this.storePeers_ = {};
     this.peekPeers_ = {};
+    this.bucket_ = {};
 
     this.crypto_ = new PeerCrypto(config);
     this.machine_ = new PeerMachine(config);
