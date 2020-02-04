@@ -5,6 +5,7 @@ const PeerMachine = require('./peer.machine.js');
 const PeerCrypto = require('./peer.crypto.js');
 const PeerPlace = require('./peer.place.js');
 const PeerStorage = require('./peer.storage.js');
+const PeerBucket = require('./peer.bucket.js');
 
 class PeerNetWork {
   constructor(config) {
@@ -12,11 +13,11 @@ class PeerNetWork {
     this.peers = {};
     this.storePeers_ = {};
     this.peekPeers_ = {};
-    this.bucket_ = {};
 
     this.crypto_ = new PeerCrypto(config);
     this.machine_ = new PeerMachine(config);
     this.storage_ = new PeerStorage(config);
+    this.bucket_ = new PeerBucket(config);
 
     this.serverCtrl = dgram.createSocket("udp6");
     this.client = dgram.createSocket("udp6");
