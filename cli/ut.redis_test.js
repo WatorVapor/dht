@@ -12,6 +12,15 @@ const appendData = ()=> {
   dht.append('汉语','https://zh.wikipedia.org/wiki/汉语',1,(info) => {
     console.log('dht.append:: info=<',info,'>');
   });  
+  dht.append('汉语','https://baike.baidu.com/item/%E6%B1%89%E8%AF%AD/22488993',2,(info) => {
+    console.log('dht.append:: info=<',info,'>');
+  });  
+  dht.append('汉语','http://www.hwjyw.com/textbooks/downloads/hanyu/',3,(info) => {
+    console.log('dht.append:: info=<',info,'>');
+  });  
+  dht.append('汉语','http://www.shihan.org.cn/',3,(info) => {
+    console.log('dht.append:: info=<',info,'>');
+  });  
   dht.append('航母','https://www.6parknews.com/newspark/view.php?app=news&act=view&nid=386668',1,(info) => {
     console.log('dht.append:: info=<',info,'>');
   });
@@ -23,17 +32,13 @@ const appendData = ()=> {
   });
 };
 
-//setTimeout(appendData,1000);
+setTimeout(appendData,1000);
 
 const fetchData = ()=> {
   dht.fetch4KeyWord('汉语',(resource) => {
     //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
     onFetchResult(resource);
   });  
-  dht.fetch4KeyWord('航母',(resource) => {
-    //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
-    onFetchResult(resource);
-  });
   dht.fetch4KeyWord('航母',(resource) => {
     //console.log('dht.fetch4KeyWord:: resource=<',resource,'>');
     onFetchResult(resource);
@@ -45,7 +50,7 @@ const fetchData = ()=> {
 };
 
 
-setTimeout(fetchData,1000);
+setTimeout(fetchData,2000);
 
 
 const onFetchResult = (result) => {

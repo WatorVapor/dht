@@ -8,7 +8,9 @@ const bs32Option = { type: "crockford", lc: true };
 const PeerMachine = require('./peer.machine.js');
 const iConstPeersAtOneTime = 200;
 const level = require('level');
-const dbName = 'wator.search.db';
+const strConstDBName = 'wator.search.db';
+const strConstStatsName = 'stats.json';
+const iConstResourceOnce = 16;
 
 class PeerStorage {
   constructor(config) {
@@ -18,10 +20,9 @@ class PeerStorage {
       fs.mkdirSync(this._pathPeer,{ recursive: true });
     }    console.log('PeerStorage::constructor: config=<',config,'>');
     this.machine_ = new PeerMachine(config);
-    this.dbAppend_ = {}; 
-    this.dbFetch_ = {}; 
+    this.dbOpenCache_ = {}; 
   }
-  append(request) {
+  async append(request) {
     //console.log('PeerStorage::append: request=<',request,'>');
     const keyAddress = request.address;
     //console.log('PeerStorage::append: keyAddress=<',keyAddress,'>');
@@ -34,63 +35,39 @@ class PeerStorage {
     if (!fs.existsSync(rankPath)) {
       fs.mkdirSync(rankPath,{ recursive: true });
     }
-    const dbPath = rankPath + '/' + dbName;
+    const dbPath = rankPath + '/' + strConstDBName;
     let db = false;
-    if(!this.dbAppend_[dbPath]) {
-      db = level(dbPath);
-      this.dbAppend_[dbPath] = db;
-    } else {
-      db = this.dbAppend_[dbPath];
-    }
-    db.put(request.ipfs, '',(err)=> {
-      if(err) {
-        console.log('PeerStorage::append:db err=<',err,'>');
+    try {
+      //console.log('PeerStorage::append dbPath=<',dbPath,'>');
+      if(!this.dbOpenCache_[dbPath]) {
+        //console.log('PeerStorage::append this.dbOpenCache_=<',this.dbOpenCache_,'>');
+        db = level(dbPath);
+        this.dbOpenCache_[dbPath] = db;
       } else {
-        const self = this;
-        setTimeout(()=>{
-          if(self.dbAppend_[dbPath]) {
-            self.dbAppend_[dbPath].close();
-            delete self.dbAppend_[dbPath];
-          }
-        },1000 * 5);
+        db = this.dbOpenCache_[dbPath];
       }
-    });
-  }
-  /*
-  fetch(request,cb) {
-    console.log('PeerStorage::fetch: request=<',request,'>');
-    const keyAddress = request.address;
-    //console.log('PeerStorage::fetch: keyAddress=<',keyAddress,'>');    
-    const keyPath = this.getPath4KeyAddress_(keyAddress);
-    //console.log('PeerStorage::fetch: keyPath=<',keyPath,'>');
-    const responseStats = this.fetchKeyStats_(keyPath);
-    responseStats.finnish = false;
-    //console.log('PeerStorage::fetch: responseStats=<',responseStats,'>');
-    if(typeof cb === 'function') {
-      cb(responseStats);
-    }
-    const maxPeers = responseStats.stats.maxPeers;
-    //console.log('PeerStorage::fetch: maxPeers=<',maxPeers,'>');
-    for(let start = 0;start < maxPeers;start += iConstPeersAtOneTime) {
-      let end = start + iConstPeersAtOneTime;
-      let finnish = false;
-      if(end > maxPeers) {
-        end = maxPeers;
-        finnish = true;
-      }
-      const response = this.fetchDirAndContents_(keyPath,start,end);
-      //console.log('PeerStorage::fetch: response=<',response,'>');
-      response.finnish = finnish;
-      if(typeof cb === 'function') {
-        cb(response);
+      const result = await db.get(request.ipfs);
+      //console.log('PeerStorage::append result=<',result,'>');
+    } catch(err) {
+      if (err) {
+        if (err.notFound) {
+          await this.saveNewResult_(request.ipfs,db,rankPath);
+          const self = this;
+          setTimeout(()=>{
+            if(self.dbOpenCache_[dbPath]) {
+              self.dbOpenCache_[dbPath].close();
+              delete self.dbOpenCache_[dbPath];
+            }
+          },1000 * 5);
+        } else {
+          console.log('PeerStorage::append e=<',e,'>');
+        }
       }
     }
   }
-  */
-
 
   fetch(request,cb) {
-    console.log('PeerStorage::fetch: request=<',request,'>');
+    //console.log('PeerStorage::fetch: request=<',request,'>');
     const keyAddress = request.address;
     //console.log('PeerStorage::fetch: keyAddress=<',keyAddress,'>');    
     const keyPath = this.getPath4KeyAddress_(keyAddress);
@@ -98,29 +75,96 @@ class PeerStorage {
     if (fs.existsSync(keyPath)) {
       const files = fs.readdirSync(keyPath);
       //console.log('PeerStorage::fetch: files=<',files,'>');
-      let maxResult = 0;
+      let totalResult = 0;
+      const rankConter = {};
       for(const rank of files) {
         console.log('PeerStorage::fetch: rank=<',rank,'>');
-        const dbPath = keyPath + '/' + rank + '/' + dbName;
-        console.log('PeerStorage::fetch: dbPath=<',dbPath,'>');
-        let db = false;
-        if(!this.dbFetch_[dbPath]) {
-          db = level(dbPath);
-          this.dbFetch_[dbPath] = db;
-        } else {
-          db = this.dbFetch_[dbPath];
-        }
-        const keyStream = db.createKeyStream();
-        keyStream.on('data',  (data) =>{
-          maxResult++;
-        });
-        keyStream.on('end', () =>{
-          console.log('PeerStorage::fetch: maxResult=<',maxResult,'>');
-          const responseStats = {stats:{maxResult:maxResult},finnish:false};
-          if(typeof cb === 'function') {
-            cb(responseStats);
+        const dbStats = keyPath + '/' + rank + '/' + strConstStatsName;
+        try {
+          const stats = require(dbStats);
+          if(stats.count > 0) {
+            totalResult += stats.count;
+            rankConter[rank] = stats.count;
           }
-        });
+        } catch(e) {
+          
+        }
+      }
+      const responseStats = {stats:{totalResult:totalResult},finnish:false};
+      if(typeof cb === 'function') {
+        cb(responseStats);
+      }
+      //console.log('PeerStorage::fetch: rankConter=<',rankConter,'>');
+      let start = request.start;
+      if(!start) {
+        start = 0;
+      }
+      //console.log('PeerStorage::fetch: start=<',start,'>');
+      const rankKeys = Object.keys(rankConter);
+      rankKeys.sort((a,b) => {return parseInt(b) - parseInt(a);});
+      //console.log('PeerStorage::fetch: rankKeys=<',rankKeys,'>');
+      let countCollect = 0;
+      const rankGather = [];
+      for(const rank of rankKeys) {
+        const count = rankConter[rank];
+        //console.log('PeerStorage::fetch: count=<',count,'>');
+        //console.log('PeerStorage::fetch: rank=<',rank,'>');
+        if(countCollect + count > start) {
+          rankGather.push({rank:rank,collect:countCollect});
+        }
+        countCollect += count;
+      }
+      //console.log('PeerStorage::fetch: rankGather=<',rankGather,'>');
+      const results = [];
+      let onReadCounter = 0;
+      const gatherResult = (index)=> {
+        if(rankGather.length > index) {
+          const rankInfo = rankGather[index];
+          //console.log('PeerStorage::fetch: rankInfo=<',rankInfo,'>');
+          const rank = rankInfo.rank;
+          const collect = rankInfo.collect;
+          const dbPath = keyPath + '/' + rank + '/' + strConstDBName;
+          //console.log('PeerStorage::fetch: dbPath=<',dbPath,'>');
+          let db = false;
+          if(!this.dbOpenCache_[dbPath]) {
+            db = level(dbPath);
+            this.dbOpenCache_[dbPath] = db;
+          } else {
+            db = this.dbOpenCache_[dbPath];
+          }
+          const skipCounter = start - rankGather[0].collect;
+          const keyStream = db.createKeyStream();
+          keyStream.on('data',  (data) =>{
+            //console.log('PeerStorage::fetch: data=<',data,'>');
+            if(onReadCounter > skipCounter) {
+              results.push(data);
+            }
+            if(results.length >= iConstResourceOnce) {
+              const responseResult = {results:results,finnish:true};
+              if(typeof cb === 'function') {
+                cb(responseResult);
+              }
+              keyStream.close();
+            }
+            onReadCounter++;
+          });
+          keyStream.on('end',  () =>{
+            if(results.length < iConstResourceOnce) {
+              gatherResult(index+1);
+            }
+          });
+        } else {
+          const responseResult = {results:results,finnish:true};
+          if(typeof cb === 'function') {
+            cb(responseResult);
+          }          
+        }
+      }
+      gatherResult(0);
+    } else {
+      const responseStats = {stats:{totalResult:0},finnish:true};
+      if(typeof cb === 'function') {
+        cb(responseStats);
       }
     }
   }
@@ -139,43 +183,23 @@ class PeerStorage {
     pathAddress += '/' + address;
     return pathAddress;
   }
-  fetchKeyStats_(dirPath) {
-    const statsResult = {stats:{}};
-    if (fs.existsSync(dirPath)) {
-      const files = fs.readdirSync(dirPath);
-      console.log('PeerStorage::fetchKeyStats_: files=<',files,'>');
-      statsResult.stats.maxPeers = files.length;
-    }
-    //console.log('PeerStorage::fetchKeyStats_: statsResult=<',statsResult,'>');
-    return statsResult;    
-  }
 
-  fetchDirAndContents_(dirPath,start,count) {
-    const content = {peers:{}};
-    //console.log('PeerStorage::fetchDirAndContents_: dirPath=<',dirPath,'>');
-    if (fs.existsSync(dirPath)) {
-      const files = fs.readdirSync(dirPath);
-      console.log('PeerStorage::fetchDirAndContents_: files=<',files,'>');
-      console.log('PeerStorage::fetchDirAndContents_: start=<',start,'>');
-      console.log('PeerStorage::fetchDirAndContents_: count=<',count,'>');
-      const rangeS = start;
-      let rangeE = rangeS+count;
-      if(rangeE > files.length) {
-        rangeE = files.length
-      }
-      //console.log('PeerStorage::fetchDirAndContents_: rangeS=<',rangeS,'>');
-      //console.log('PeerStorage::fetchDirAndContents_: rangeE=<',rangeE,'>');
-      const fileRange = files.slice(rangeS,rangeE);
-      for(const file of fileRange) {
-        //console.log('PeerStorage::fetchDirAndContents_: file=<',file,'>');
-        const pathContents = dirPath + '/' + file;
-        //console.log('PeerStorage::fetchDirAndContents_: pathContents=<',pathContents,'>');
-        const uri = fs.readFileSync(pathContents);
-        content.peers[file] = uri.toString('utf-8');
-      }
+  async saveNewResult_(resource,db,pPath) {
+    const result2 = await db.put(resource, '');
+    //console.log('PeerStorage::saveNewResult_ result2=<',result2,'>');
+    const statsPath = pPath + '/' + strConstStatsName;
+    let stats = {};
+    try {
+      stats = require(statsPath);
+    } catch(e) {
+      
     }
-    //console.log('PeerStorage::fetchDirAndContents_: content=<',content,'>');
-    return content;
+    if(stats.count) {
+      stats.count++;
+    } else {
+      stats.count = 1;
+    }
+    fs.writeFileSync(statsPath,JSON.stringify(stats));
   }
 
 
