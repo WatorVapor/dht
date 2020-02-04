@@ -1,6 +1,6 @@
 class PeerBucket {
   constructor(address,peers) {
-    //console.log('PeerPlace::constructor peers=<',peers,'>');
+    //console.log('PeerBucket::constructor peers=<',peers,'>');
   }
 };
 module.exports = PeerBucket;
