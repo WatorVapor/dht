@@ -32,11 +32,35 @@ class WaiAllPathGraph {
         //console.log('allPath::subSentence:=<',subSentence,'>');
       }
     }
-    console.log('allPath::allPath.length:=<',allPath.length,'>');
+    //console.log('allPath::allPath.length:=<',allPath.length,'>');
     return allPath;
   }
   
-  
+  statsWord(sentence) {
+    const allPaths = this.allPath(sentence);
+    //console.log('statsWord::allPaths.length:=<',allPaths.length,'>');
+    const words = {};
+    const hashSumAlready = {};
+    for(let onePath of allPaths) {
+      for(let wordRank of onePath) {
+        //console.log('WaiIndexBot::onSentenceOut_ wordRank=<',wordRank,'>');
+        const word = wordRank.word;
+        const hash = wordRank.hash;
+        //console.log('WaiIndexBot::onSentenceOut_ hash=<',hash,'>');
+        if(words[word]) {
+          if(!hashSumAlready[hash]) {
+            words[word]++;
+            hashSumAlready[hash] = true;
+          }
+        } else {
+          words[word] = 1;
+          hashSumAlready[hash] = true;
+        }
+      }
+    }
+    //console.log('statsWord::words:=<',words,'>');
+    return words;
+  }
   
 
   allPath_(sentence) {

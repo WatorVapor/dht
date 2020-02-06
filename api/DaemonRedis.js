@@ -81,6 +81,9 @@ class DaemonRedis {
       storeResp.result = result;
     } else if(jMsg.store === 'delete') {
       this.onDeleteData_(jMsg.key,jMsg.cb);
+    } else if(jMsg.store === 'ipfs') {
+      const result = await this.onIPFSData_(jMsg.ipfs,jMsg.cb);
+      storeResp.result = result;
     } else {
       console.log('onStoreData_::jMsg=<',jMsg,'>');
     }
@@ -102,6 +105,14 @@ class DaemonRedis {
 
   onDeleteData_(key,cb) {
     console.log('DaemonRedis::onDeleteData_::jMsg=<',jMsg,'>');
+  }
+
+  async onIPFSData_ (data,cb) {
+    //console.log('DaemonRedis::onIPFSData_::key=<',key,'>');
+    //console.log('DaemonRedis::onIPFSData_::data=<',data,'>');
+     const address = await this.dht_.addIPFS(data,cb);
+    //console.log('DaemonRedis::onIPFSData_::address=<',address,'>');
+    return address;
   }
 
 

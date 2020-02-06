@@ -83,13 +83,13 @@ const onLearnNewLink = () => {
 
 
 
-const onNewsText = (txt,title,myhref,lang,crawler) => {
+const onNewsText = async (txt,title,myhref,lang,crawler) => {
   //console.log('onNewsText::txt=<',txt,'>');
   //console.log('onNewsText::title=<',title,'>');
   //console.log('onNewsText::myhref=<',myhref,'>');
   let wordIndex = wai.article(txt,lang);
   //console.log('onNewsText::wordIndex=<',wordIndex,'>');
-  onSaveIndex(myhref,wordIndex,lang,title,txt,crawler);
+  await onSaveIndex(myhref,wordIndex,lang,title,txt,crawler);
   setTimeout(onLearnNewLink,0);
 }
 
@@ -103,6 +103,7 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
   //console.log('onSaveIndex::title=<',title,'>');
   //console.log('onSaveIndex::txt=<',txt,'>');
   console.log('onSaveIndex::wordIndex.length=<',Object.keys(wordIndex).length,'>');
+  const allSearchIndex = [];
   for(const word in wordIndex) {
     //console.log('onSaveIndex::word=<',word,'>');
     const searchIndex = Object.assign({word:word},wordIndex[word]);
@@ -111,8 +112,13 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
     searchIndex.href = myhref;
     searchIndex.area = crawler.area;
     //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
-    await onSaveIndex2DHT(searchIndex);
+    allSearchIndex.push(searchIndex);
   }
+  const searchContent = JSON.stringify(allSearchIndex);
+  console.log('onSaveIndex::searchContent=<',searchContent,'>');
+  //await onSaveIndex2DHT(searchIndex);
+  const ipfsAddress = await onSaveIndex2IPFS(searchContent);
+  console.log('onSaveIndex::ipfsAddress=<',ipfsAddress,'>');
   wai.clear();
   try {
     global.gc();
@@ -129,22 +135,35 @@ dht.peerInfo((peerInfo)=>{
 });
 
 const onSaveIndex2DHT = async (searchIndex) => {
-  //console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
+  console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
+  /*
   const promise = new Promise((resolve) => {
-    dht.append(searchIndex.word,JSON.stringify(searchIndex,undefined,'  '),(info) => {
-      //console.log('onSaveIndex2DHT:: info=<',info,'>');
+    const contents = JSON.stringify(searchIndex,undefined,'  ');
+    dht.append(searchIndex.word,contents,searchIndex.freq,(info) => {
+      console.log('onSaveIndex2DHT:: info=<',info,'>');
       resolve(info);
+    });
+  });
+  return promise;
+  */
+}
+const onSaveIndex2IPFS = async (searchContent) => {
+  //console.log('onSaveIndex2DHT::searchContent=<',searchContent,'>');
+  const promise = new Promise((resolve) => {
+    dht.addIPFS(searchContent,(cid) => {
+      console.log('onSaveIndex2IPFS:: cid=<',cid,'>');
+      resolve(cid);
     });    
   });
   return promise;
-}
 
+}
 
 /**
  test
 **/
 wai.onReady = () => {
-  /*
+  
   const hrefTest = 'https://3w.huanqiu.com/a/c36dc8/9CaKrnKoYBm?agt=8';
   console.log('wai.onReady:: hrefTest=<',hrefTest,'>');
   let contents = JSON.stringify({
@@ -159,6 +178,6 @@ wai.onReady = () => {
   setTimeout(()=>{
     onDiscoveryNewLink(contents);
   },1000);
-  */
+  
 }
 

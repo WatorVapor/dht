@@ -66,6 +66,16 @@ class DHTRedis {
     const cbTag = this.writeData_(msg);
     this.cb_[cbTag] = cb;    
   }
+  
+  addIPFS(content,cb) {
+    //console.log('DHTRedis::addIPFS content=<',content,'>');
+    const msg = {
+      store:'ipfs',
+      ipfs:content
+    };
+    const cbTag = this.writeData_(msg);
+    this.cb_[cbTag] = cb;    
+  }
 
   
   onError_(err) {

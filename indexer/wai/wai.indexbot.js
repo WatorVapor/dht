@@ -68,20 +68,15 @@ class WaiIndexBot extends WaiBase {
     this.sentenceSeqMap_[this.seqNumOfSentence_].text = sentence;
     this.onReRankSentence_();
     //console.log('WaiIndexBot::onSentenceOut_ this.sentenceReRange_=<',this.sentenceReRange_,'>');
-    const allPath = this.pathGraph_.allPath(this.sentenceReRange_);
-    //console.log('WaiIndexBot::onSentenceOut_ allPath=<',allPath,'>');
-    for(let onePath of allPath) {
-      for(let wordRank of onePath) {
-        //console.log('WaiIndexBot::onSentenceOut_ wordRank=<',wordRank,'>');
-        const word = wordRank.word;
-        if(this.words_[word]) {
-          this.words_[word]++;
-        } else {
-          this.words_[word] = 1;
-        }
+    const words = this.pathGraph_.statsWord(this.sentenceReRange_);
+    //console.log('WaiIndexBot::onSentenceOut_ words=<',words,'>');
+    for(let word in words) {
+      if(this.words_[word]) {
+        this.words_[word] += words[word];
+      } else {
+        this.words_[word] = words[word];
       }
     }
-
 /*    
     const used = process.memoryUsage();
     const totalUsed = used.rss + used.heapTotal;

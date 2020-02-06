@@ -365,5 +365,5 @@ const inputSentence =
 const WaiAllPathGraph = require('../wai.graph.allpath.js');
 
 const graph = new WaiAllPathGraph();
-const seqPaths = graph.allPath(inputSentence);
-console.log('::seqPaths:=<',seqPaths,'>');
+const words = graph.statsWord(inputSentence);
+console.log('::words:=<',words,'>');
