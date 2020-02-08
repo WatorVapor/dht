@@ -11,6 +11,7 @@ class ResourceOnIpfs {
   constructor() {
     this.connectIpfsNode_();
   }
+  /*
   async append(key,content) {
     //console.log('ResourceOnIpfs::append: key=<',key,'>');
     const keyAddress = this.getAddress_(key);
@@ -18,6 +19,13 @@ class ResourceOnIpfs {
     for await (const result of this.ipfs_.add(content,ipfsOption)) {
       //console.log('ResourceOnIpfs::append: result.path=<',result.path,'>');
       return {address:keyAddress,ipfs:result.path};
+    }
+  }
+  */
+  async add(data) {
+    for await (const result of this.ipfs_.add(data,ipfsOption)) {
+      //console.log('ResourceOnIpfs::addIPFS: result.path=<',result.path,'>');
+      return {cid:result.path};
     }
   }
   
@@ -34,7 +42,7 @@ class ResourceOnIpfs {
     console.log('ResourceOnIpfs::constructor: identity.id=<',identity.id,'>');
   }
 
-  getAddress_(resourceKey) {
+  getAddress(resourceKey) {
     const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');
     const resourceBuffer = Buffer.from(resourceRipemd,'hex');
     return base32.encode(resourceBuffer,bs32Option);

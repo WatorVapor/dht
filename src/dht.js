@@ -31,17 +31,29 @@ class DHT {
   peerInfo() {
     return this.info_;
   }
-  async append(key,data,rank,cbTag) {
+  async append(key,ipfsAddress,rank,cbTag) {
     //console.log('DHT::append key=<',key,'>');
-    //console.log('DHT::append data=<',data,'>');
+    console.log('DHT::append ipfsAddress=<',ipfsAddress,'>');
     //console.log('DHT::append rank=<',rank,'>');
-    const dataStorage = await this.storage_.append(key,data);
+    const keyAddress = await this.storage_.getAddress(key);
     //console.log('DHT::append dataStorage=<',dataStorage,'>');
-    dataStorage.rank = rank;
-    dataStorage.cb = cbTag;
+    const dataStorage = {
+      address:keyAddress,
+      ipfs:ipfsAddress.cid,
+      rank:rank,
+      cb:cbTag
+    }
     this.peer_.publish(dataStorage);
     return dataStorage;
   }
+  
+  async addIPFS(data,cb) {
+    console.log('DHT::addIPFS cb=<',cb,'>');
+    const dataStorage = await this.storage_.add(data);
+    console.log('DHT::addIPFS dataStorage=<',dataStorage,'>');
+    return dataStorage;
+  }
+  
   fetch4KeyWord(keyWord,cbTag,reply) {
     console.log('DHT::fetch4KeyWord keyWord=<',keyWord,'>');
     this.peer_.fetch4KeyWord(keyWord,cbTag,(responseToken)=>{

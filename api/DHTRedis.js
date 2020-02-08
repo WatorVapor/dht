@@ -149,7 +149,9 @@ class DHTRedis {
     console.log('DHTRedis::onFetchResp_ jMsg=<',jMsg,'>');
     if(jMsg.fetchResp && jMsg.cb) {
       if(typeof this.cb_[jMsg.cb] === 'function') {
-        this.cb_[jMsg.cb](jMsg.fetchResp);
+        const respObj = Object.assign({},jMsg.fetchResp);
+        respObj.address = jMsg.address;
+        this.cb_[jMsg.cb](respObj);
       }
     }
     /*
@@ -176,6 +178,7 @@ class DHTRedis {
     */
   }
   
+  /*
   onFetchResourceStats_(jDataStats,rootURL,url,cb,keyAddress) {
     //console.log('DHTRedis::onFetchResourceStats_:: jDataStats=<',jDataStats,'>');
     //console.log('DHTRedis::onFetchResourceStats_:: url=<',url,'>');
@@ -243,6 +246,7 @@ class DHTRedis {
       console.log('DHTRedis::requestURI_:: e=<',e,'>');
     })    
   }
+  */
 }
 
 module.exports = DHTRedis;

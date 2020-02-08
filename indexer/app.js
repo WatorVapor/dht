@@ -103,7 +103,7 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
   //console.log('onSaveIndex::title=<',title,'>');
   //console.log('onSaveIndex::txt=<',txt,'>');
   console.log('onSaveIndex::wordIndex.length=<',Object.keys(wordIndex).length,'>');
-  const allSearchIndex = [];
+  const allSearchIndex = {};
   for(const word in wordIndex) {
     //console.log('onSaveIndex::word=<',word,'>');
     const searchIndex = Object.assign({word:word},wordIndex[word]);
@@ -112,13 +112,19 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
     searchIndex.href = myhref;
     searchIndex.area = crawler.area;
     //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
-    allSearchIndex.push(searchIndex);
+    allSearchIndex[word] = searchIndex;
   }
   const searchContent = JSON.stringify(allSearchIndex);
   console.log('onSaveIndex::searchContent=<',searchContent,'>');
   //await onSaveIndex2DHT(searchIndex);
   const ipfsAddress = await onSaveIndex2IPFS(searchContent);
   console.log('onSaveIndex::ipfsAddress=<',ipfsAddress,'>');
+  
+  for(const word in wordIndex) {
+    const index = wordIndex[word];
+    await onSaveIndex2DHT(word,ipfsAddress,index.freq);
+  }
+  
   wai.clear();
   try {
     global.gc();
@@ -134,19 +140,19 @@ dht.peerInfo((peerInfo)=>{
   console.log('dht.peerInfo:: peerInfo=<',peerInfo,'>');
 });
 
-const onSaveIndex2DHT = async (searchIndex) => {
-  console.log('onSaveIndex2DHT::searchIndex=<',searchIndex,'>');
-  /*
+const onSaveIndex2DHT = async (word,ipfsAddress,freq) => {
+  console.log('onSaveIndex2DHT::word=<',word,'>');
+  console.log('onSaveIndex2DHT::ipfsAddress=<',ipfsAddress,'>');
+  console.log('onSaveIndex2DHT::freq=<',freq,'>');
   const promise = new Promise((resolve) => {
-    const contents = JSON.stringify(searchIndex,undefined,'  ');
-    dht.append(searchIndex.word,contents,searchIndex.freq,(info) => {
+    dht.append(word,ipfsAddress,freq,(info) => {
       console.log('onSaveIndex2DHT:: info=<',info,'>');
       resolve(info);
     });
   });
   return promise;
-  */
 }
+
 const onSaveIndex2IPFS = async (searchContent) => {
   //console.log('onSaveIndex2DHT::searchContent=<',searchContent,'>');
   const promise = new Promise((resolve) => {

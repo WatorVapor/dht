@@ -67,7 +67,7 @@ class PeerNetWork {
     };
     if(place.isFinal(this.crypto_.idBS32)) {
       this.storage_.fetch(fetchMessge,(localResource)=> {
-        console.log('PeerNetWork::fetch4KeyWord localResource=<',localResource,'>');
+        console.log('PeerNetWork::fetch4KeyWord localResource=<',JSON.stringify(localResource),'>');
         const fetchResp = {
           fetchResp:localResource,
           address:address,

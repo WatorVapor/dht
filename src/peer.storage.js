@@ -10,7 +10,7 @@ const iConstPeersAtOneTime = 200;
 const level = require('level');
 const strConstDBName = 'wator.search.db';
 const strConstStatsName = 'stats.json';
-const iConstResourceOnce = 2;
+const iConstResourceOnce = 20;
 
 class PeerStorage {
   constructor(config) {
@@ -116,7 +116,7 @@ class PeerStorage {
       }
       //console.log('PeerStorage::fetch: rankGather=<',rankGather,'>');
       const prevEnd = request.prevEnd;
-      const results = [];
+      const respResults = [];
       const self = this;
       const gatherResult = (index)=> {
         if(rankGather.length > index) {
@@ -137,40 +137,43 @@ class PeerStorage {
           if(prevEnd) {
             keyStreamOption.gt = prevEnd;
           }
+          console.log('PeerStorage::fetch: keyStreamOption=<',keyStreamOption,'>');
           const keyStream = db.createKeyStream(keyStreamOption);
           keyStream.on('data',  (data) =>{
-            //console.log('PeerStorage::fetch: data=<',data,'>');
-            //console.log('PeerStorage::fetch:keyStream data results=<',results,'>');
+            console.log('PeerStorage::fetch: data=<',data,'>');
+            //console.log('PeerStorage::fetch:keyStream data respResults=<',respResults,'>');
             //console.log('PeerStorage::fetch:keyStream data request.cb=<',request.cb,'>');
-            if(results.length >= iConstResourceOnce) {
-              const responseResult = {results:results,finnish:true};
-              //console.log('PeerStorage::fetch: responseResult=<',responseResult,'>');
+            if(respResults.length >= iConstResourceOnce) {
+              const responseObj = {results:respResults,finnish:true};
+              console.log('PeerStorage::fetch: responseObj=<',responseObj,'>');
               if(typeof cb === 'function') {
-                cb(responseResult);
+                cb(responseObj);
               }
               db.close();
               delete self.dbOpenCache_[dbPath];
             } else {
-              results.push(data);
+              respResults.push(data);
             }
+            console.log('PeerStorage::fetch: results=<',respResults,'>');
           });
           keyStream.on('end',  () =>{
-            //console.log('PeerStorage::fetch:keyStream end results=<',results,'>');
+            console.log('PeerStorage::fetch:keyStream end respResults=<',respResults,'>');
             //console.log('PeerStorage::fetch:keyStream end request.cb=<',request.cb,'>');            
-            if(results.length < iConstResourceOnce) {
+            if(respResults.length < iConstResourceOnce) {
               gatherResult(index+1);
             } else {
-              const responseResult = {results:results,finnish:true};
-              //console.log('PeerStorage::fetch: responseResult=<',responseResult,'>');
+              const responseObj = {results:respResults,finnish:true};
+              console.log('PeerStorage::fetch: responseObj=<',responseObj,'>');
               if(typeof cb === 'function') {
-                cb(responseResult);
+                cb(responseObj);
               }              
             }
           });
         } else {
-          const responseResult = {results:results,finnish:true};
+          const responseObj = {results:respResults,finnish:true};
+          console.log('PeerStorage::fetch: responseObj=<',responseObj,'>');
           if(typeof cb === 'function') {
-            cb(responseResult);
+            cb(responseObj);
           }
         }
       }
