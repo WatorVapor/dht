@@ -12,9 +12,18 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 const serverListenChannale = 'dht.ermu.api.server.listen';
 const iConstMaxResultsOnce = 20;
 
+const BufferList = require('bl/BufferList');
+const ipfsClient = require('ipfs-http-client');
+const ipfsOption = {
+  cidVersion:1
+};
+
+
 class DHTRedis {
   constructor(serverChannel) {
     console.log('DHTRedis::constructor');
+    this.connectIpfsNode_();
+
     if(serverChannel) {
       this.serverChannel_ = serverChannel;
     }
@@ -77,6 +86,13 @@ class DHTRedis {
     this.cb_[cbTag] = cb;    
   }
 
+
+  async connectIpfsNode_() {
+    this.ipfs_ = ipfsClient({ host: 'localhost', port: '5001', protocol: 'http' });
+    const identity = await this.ipfs_.id();
+    console.log('DHTRedis::connectIpfsNode_: identity.id=<',identity.id,'>');
+  }
+
   
   onError_(err) {
     console.log('DHTRedis::onError_ err=<',err,'>');
@@ -126,6 +142,12 @@ class DHTRedis {
     const cbBuffer = Buffer.from(cbRipemd,'hex');
     return base32.encode(cbBuffer,bs32Option);
   }
+  getAddress(resourceKey) {
+    const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');
+    const resourceBuffer = Buffer.from(resourceRipemd,'hex');
+    return base32.encode(resourceBuffer,bs32Option);
+    return 
+  }
   
   onPeerInfo_(jMsg) {
     if( typeof this.cb_[jMsg.cb] === 'function') {
@@ -145,7 +167,7 @@ class DHTRedis {
     }
   }
 
-  onFetchResp_(jMsg) {
+  async onFetchResp_(jMsg) {
     console.log('DHTRedis::onFetchResp_ jMsg=<',jMsg,'>');
     if(jMsg.fetchResp && jMsg.cb) {
       if(typeof this.cb_[jMsg.cb] === 'function') {
@@ -153,7 +175,20 @@ class DHTRedis {
         respObj.address = jMsg.address;
         this.cb_[jMsg.cb](respObj);
       }
+      if(jMsg.fetchResp.results) {
+        //console.log('DHTRedis::onFetchResp_ jMsg.fetchResp.results=<',jMsg.fetchResp.results,'>');
+        const summaryResult = {};
+        for(const cid of jMsg.fetchResp.results) {
+          //console.log('DHTRedis::onFetchResp_ cid=<',cid,'>');
+          const summary = await this.fetchIpfsContents_(cid,jMsg.address);
+          //console.log('DHTRedis::onFetchResp_ summary=<',summary,'>');
+          summaryResult[cid] = summary;
+        }
+        //console.log('DHTRedis::onFetchResp_ ipfsResult=<',ipfsResult,'>');
+        this.cb_[jMsg.cb]({summaryResult:summaryResult});
+      }
     }
+    
     /*
     const peers = jMsg.fetchResp.peers;
     if(peers) {
@@ -177,7 +212,28 @@ class DHTRedis {
     }
     */
   }
-  
+  async fetchIpfsContents_(cid,addressKeyWord) {
+    const self = this;
+    for await (const file of this.ipfs_.get(cid)) {
+      //console.log('DHTRedis::fetchIpfsContents_ file=<',file,'>');
+      const content = new BufferList()
+      for await (const chunk of file.content) {
+        content.append(chunk);
+      }
+      //console.log('DHTRedis::fetchIpfsContents_ content.toString()=<',content.toString(),'>');
+      const jContens = JSON.parse(content.toString());
+      //console.log('DHTRedis::fetchIpfsContents_ jContens=<',jContens,'>');
+      for(const word in jContens) {
+        //console.log('DHTRedis::fetchIpfsContents_ word=<',word,'>');
+        const address = self.getAddress(word);
+        //console.log('DHTRedis::fetchIpfsContents_ address=<',address,'>');
+        if(address === addressKeyWord) {
+          return jContens[word];
+        }
+      }
+    }
+    return {};
+  }
   /*
   onFetchResourceStats_(jDataStats,rootURL,url,cb,keyAddress) {
     //console.log('DHTRedis::onFetchResourceStats_:: jDataStats=<',jDataStats,'>');
