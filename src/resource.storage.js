@@ -120,6 +120,13 @@ class ResourceStorage {
     }
  }
 
+  getAddress(resourceKey) {
+    const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');
+    const resourceBuffer = Buffer.from(resourceRipemd,'hex');
+    return base32.encode(resourceBuffer,bs32Option);
+    return 
+  }
+
 
   getAddress_(resourceKey) {
     const resourceRipemd = new RIPEMD160().update(resourceKey).digest('hex');

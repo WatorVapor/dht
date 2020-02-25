@@ -46,12 +46,12 @@ class PeerStorage {
       } else {
         db = this.dbOpenCache_[dbPath];
       }
-      const result = await db.get(request.ipfs);
+      const result = await db.get(request.resource);
       //console.log('PeerStorage::append result=<',result,'>');
     } catch(err) {
       if (err) {
         if (err.notFound) {
-          await this.saveNewResult_(request.ipfs,db,rankPath);
+          await this.saveNewResult_(request.resource,db,rankPath);
           const self = this;
           setTimeout(()=>{
             if(self.dbOpenCache_[dbPath]) {
@@ -60,7 +60,7 @@ class PeerStorage {
             }
           },1000 * 5);
         } else {
-          console.log('PeerStorage::append e=<',e,'>');
+          console.log('PeerStorage::append err=<',err,'>');
         }
       }
     }

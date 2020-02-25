@@ -4,6 +4,7 @@ const dgram = require("dgram");
 const PeerCrypto = require('./peer.crypto.js');
 const PeerNetWork = require('./peer.network.js');
 const ResourceNetWork = require('./resource.network.js');
+const ResourceStorage = require('./resource.dht.level.js');
 
 
 class DHT {
@@ -11,7 +12,7 @@ class DHT {
     this.crypto_ = new PeerCrypto(config);
     this.peer_ = new PeerNetWork(config);
     this.resource_ = new ResourceNetWork(config);
-    //this.storage_ = new ResourceStorage(config);
+    this.storage_ = new ResourceStorage(config);
     this.info_ = {
       id:this.crypto_.idBS32,
       peer:{
