@@ -4,8 +4,6 @@ const dgram = require("dgram");
 const PeerCrypto = require('./peer.crypto.js');
 const PeerNetWork = require('./peer.network.js');
 const ResourceNetWork = require('./resource.network.js');
-//const ResourceStorage = require('./resource.storage.js');
-const ResourceOnIpfs = require('./resource.ipfs.js');
 
 
 class DHT {
@@ -14,7 +12,6 @@ class DHT {
     this.peer_ = new PeerNetWork(config);
     this.resource_ = new ResourceNetWork(config);
     //this.storage_ = new ResourceStorage(config);
-    this.storage_ = new ResourceOnIpfs(config);
     this.info_ = {
       id:this.crypto_.idBS32,
       peer:{
@@ -31,15 +28,15 @@ class DHT {
   peerInfo() {
     return this.info_;
   }
-  async append(key,ipfsAddress,rank,cbTag) {
+  async append(key,addResource,rank,cbTag) {
     //console.log('DHT::append key=<',key,'>');
-    console.log('DHT::append ipfsAddress=<',ipfsAddress,'>');
+    console.log('DHT::append addResource=<',addResource,'>');
     //console.log('DHT::append rank=<',rank,'>');
     const keyAddress = await this.storage_.getAddress(key);
     //console.log('DHT::append dataStorage=<',dataStorage,'>');
     const dataStorage = {
       address:keyAddress,
-      ipfs:ipfsAddress.cid,
+      resource:addResource,
       rank:rank,
       cb:cbTag
     }
@@ -47,12 +44,6 @@ class DHT {
     return dataStorage;
   }
   
-  async addIPFS(data,cb) {
-    console.log('DHT::addIPFS cb=<',cb,'>');
-    const dataStorage = await this.storage_.add(data);
-    console.log('DHT::addIPFS dataStorage=<',dataStorage,'>');
-    return dataStorage;
-  }
   
   fetch4KeyWord(keyWord,cbTag,reply) {
     console.log('DHT::fetch4KeyWord keyWord=<',keyWord,'>');

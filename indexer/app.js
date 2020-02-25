@@ -103,7 +103,7 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
   //console.log('onSaveIndex::title=<',title,'>');
   //console.log('onSaveIndex::txt=<',txt,'>');
   console.log('onSaveIndex::wordIndex.length=<',Object.keys(wordIndex).length,'>');
-  const allSearchIndex = {};
+
   for(const word in wordIndex) {
     //console.log('onSaveIndex::word=<',word,'>');
     const searchIndex = Object.assign({word:word},wordIndex[word]);
@@ -112,8 +112,11 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
     searchIndex.href = myhref;
     searchIndex.area = crawler.area;
     //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
-    allSearchIndex[word] = searchIndex;
+    const result = await onSave2DHTLevelDB(JSON.stringify(searchIndex));
+    console.log('onSaveIndex::result=<',result,'>');
+    await onSaveIndex2DHT(word,result.address,searchIndex.freq);
   }
+  /*
   const searchContent = JSON.stringify(allSearchIndex);
   console.log('onSaveIndex::searchContent=<',searchContent,'>');
   //await onSaveIndex2DHT(searchIndex);
@@ -124,12 +127,32 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
     const index = wordIndex[word];
     await onSaveIndex2DHT(word,ipfsAddress,index.freq);
   }
+  */
   
   wai.clear();
   try {
     global.gc();
   } catch(e) {   
   }  
+}
+
+const DHTLevelDB = require('../api/DHTLevelDB.js');
+const serverUTListenChannel = 'dht.level.api.server.listen.ut';
+const dhtLevel = new DHTLevelDB(serverUTListenChannel);
+//console.log(':: dhtLevel=<',dhtLevel,'>');
+dhtLevel.peerInfo((peerInfo)=>{
+  console.log('dhtLevel.peerInfo:: peerInfo=<',peerInfo,'>');
+});
+
+const onSave2DHTLevelDB = async (contents) => {
+  console.log('onSave2DHTLevelDB:: contents=<',contents,'>');
+  const promise = new Promise((resolve) => {
+    dhtLevel.put(contents,(info) => {
+      console.log('onSave2DHTLevelDB:: info=<',info,'>');
+      resolve(info);
+    });
+  });
+  return promise;
 }
 
 
@@ -140,12 +163,14 @@ dht.peerInfo((peerInfo)=>{
   console.log('dht.peerInfo:: peerInfo=<',peerInfo,'>');
 });
 
-const onSaveIndex2DHT = async (word,ipfsAddress,freq) => {
+
+
+const onSaveIndex2DHT = async (word,address,freq) => {
   console.log('onSaveIndex2DHT::word=<',word,'>');
-  console.log('onSaveIndex2DHT::ipfsAddress=<',ipfsAddress,'>');
+  console.log('onSaveIndex2DHT::address=<',address,'>');
   console.log('onSaveIndex2DHT::freq=<',freq,'>');
   const promise = new Promise((resolve) => {
-    dht.append(word,ipfsAddress,freq,(info) => {
+    dht.append(word,address,freq,(info) => {
       console.log('onSaveIndex2DHT:: info=<',info,'>');
       resolve(info);
     });
@@ -153,17 +178,6 @@ const onSaveIndex2DHT = async (word,ipfsAddress,freq) => {
   return promise;
 }
 
-const onSaveIndex2IPFS = async (searchContent) => {
-  //console.log('onSaveIndex2DHT::searchContent=<',searchContent,'>');
-  const promise = new Promise((resolve) => {
-    dht.addIPFS(searchContent,(cid) => {
-      console.log('onSaveIndex2IPFS:: cid=<',cid,'>');
-      resolve(cid);
-    });    
-  });
-  return promise;
-
-}
 
 /**
  test

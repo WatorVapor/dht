@@ -12,18 +12,9 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 const serverListenChannale = 'dht.ermu.api.server.listen';
 const iConstMaxResultsOnce = 20;
 
-const BufferList = require('bl/BufferList');
-const ipfsClient = require('ipfs-http-client');
-const ipfsOption = {
-  cidVersion:1
-};
-
-
 class DHTRedis {
   constructor(serverChannel) {
     console.log('DHTRedis::constructor');
-    this.connectIpfsNode_();
-
     if(serverChannel) {
       this.serverChannel_ = serverChannel;
     }
@@ -75,24 +66,6 @@ class DHTRedis {
     const cbTag = this.writeData_(msg);
     this.cb_[cbTag] = cb;    
   }
-  
-  addIPFS(content,cb) {
-    //console.log('DHTRedis::addIPFS content=<',content,'>');
-    const msg = {
-      store:'ipfs',
-      ipfs:content
-    };
-    const cbTag = this.writeData_(msg);
-    this.cb_[cbTag] = cb;    
-  }
-
-
-  async connectIpfsNode_() {
-    this.ipfs_ = ipfsClient({ host: 'localhost', port: '5001', protocol: 'http' });
-    const identity = await this.ipfs_.id();
-    console.log('DHTRedis::connectIpfsNode_: identity.id=<',identity.id,'>');
-  }
-
   
   onError_(err) {
     console.log('DHTRedis::onError_ err=<',err,'>');
@@ -177,15 +150,14 @@ class DHTRedis {
       }
       if(jMsg.fetchResp.results) {
         //console.log('DHTRedis::onFetchResp_ jMsg.fetchResp.results=<',jMsg.fetchResp.results,'>');
-        const summaryResult = {};
         for(const cid of jMsg.fetchResp.results) {
           //console.log('DHTRedis::onFetchResp_ cid=<',cid,'>');
           const summary = await this.fetchIpfsContents_(cid,jMsg.address);
           //console.log('DHTRedis::onFetchResp_ summary=<',summary,'>');
+          const summaryResult = {};
           summaryResult[cid] = summary;
+          this.cb_[jMsg.cb]({summaryResult:summaryResult});
         }
-        //console.log('DHTRedis::onFetchResp_ ipfsResult=<',ipfsResult,'>');
-        this.cb_[jMsg.cb]({summaryResult:summaryResult});
       }
     }
     
