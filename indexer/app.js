@@ -94,6 +94,7 @@ const onNewsText = async (txt,title,myhref,lang,crawler) => {
 }
 
 
+const DHTLevelDB = require('../api/DHTLevelDB.js');
 
 
 const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
@@ -103,7 +104,7 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
   //console.log('onSaveIndex::title=<',title,'>');
   //console.log('onSaveIndex::txt=<',txt,'>');
   console.log('onSaveIndex::wordIndex.length=<',Object.keys(wordIndex).length,'>');
-
+  const allSearchIndex = {};
   for(const word in wordIndex) {
     //console.log('onSaveIndex::word=<',word,'>');
     const searchIndex = Object.assign({word:word},wordIndex[word]);
@@ -112,17 +113,19 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
     searchIndex.href = myhref;
     searchIndex.area = crawler.area;
     //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
-    const result = await onSave2DHTLevelDB(JSON.stringify(searchIndex));
-    console.log('onSaveIndex::result=<',result,'>');
-    await onSaveIndex2DHT(word,result.address,searchIndex.freq);
+    const searchIndexContent = JSON.stringify(searchIndex);
+    const address = DHTLevelDB.calcAddress(searchIndexContent);
+    allSearchIndex[address] = searchIndex;
+    //const result = await onSave2DHTLevelDB(searchIndexContent);
+    //console.log('onSaveIndex::result=<',result,'>');
+    //await onSaveIndex2DHT(word,result.address,searchIndex.freq);
   }
-  /*
   const searchContent = JSON.stringify(allSearchIndex);
-  console.log('onSaveIndex::searchContent=<',searchContent,'>');
-  //await onSaveIndex2DHT(searchIndex);
-  const ipfsAddress = await onSaveIndex2IPFS(searchContent);
-  console.log('onSaveIndex::ipfsAddress=<',ipfsAddress,'>');
+  //console.log('onSaveIndex::searchContent=<',searchContent,'>');
+  const result = await onSave2DHTLevelDB(searchContent);
+  console.log('onSaveIndex::result=<',result,'>');
   
+  /*
   for(const word in wordIndex) {
     const index = wordIndex[word];
     await onSaveIndex2DHT(word,ipfsAddress,index.freq);
@@ -136,7 +139,6 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
   }  
 }
 
-const DHTLevelDB = require('../api/DHTLevelDB.js');
 const serverUTListenChannel = 'dht.level.api.server.listen.ut';
 const dhtLevel = new DHTLevelDB(serverUTListenChannel);
 //console.log(':: dhtLevel=<',dhtLevel,'>');
@@ -145,10 +147,10 @@ dhtLevel.peerInfo((peerInfo)=>{
 });
 
 const onSave2DHTLevelDB = async (contents) => {
-  console.log('onSave2DHTLevelDB:: contents=<',contents,'>');
   const promise = new Promise((resolve) => {
-    dhtLevel.put(contents,(info) => {
-      console.log('onSave2DHTLevelDB:: info=<',info,'>');
+    console.log('onSave2DHTLevelDB:: contents=<',contents,'>');
+    dhtLevel.putBatch(contents,(info) => {
+      //console.log('onSave2DHTLevelDB:: info=<',info,'>');
       resolve(info);
     });
   });

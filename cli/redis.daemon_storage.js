@@ -1,9 +1,9 @@
 'use strict';
 const path = require('path');
 //console.log(':: __filename=<',__filename,'>');
-const dhtPath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/peerstore';
-const dataPath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/datastore';
-const cachePath = '/storage/dhtfs/cluster/' + path.parse(__filename).name + '/cache';
+const dhtPath = '/storage/dhtfs/cluster/dht_ermu_' + path.parse(__filename).name + '/peerstore';
+const dataPath = '/storage/dhtfs/cluster/dht_ermu_' + path.parse(__filename).name + '/datastore';
+const cachePath = '/storage/dhtfs/cluster/dht_ermu_' + path.parse(__filename).name + '/cache';
 const config = {
   listen:{
     ctrl:{

@@ -44,6 +44,15 @@ class DHTLevelDB {
     const cbTag = this.writeData_(msg);
     this.cb_[cbTag] = cb;
   }
+  putBatch(data,cb) {
+    //console.log('DHTClient::putBatch data=<',data,'>');
+    const msg = {
+      store:'putBatch',
+      data:data
+    };
+    const cbTag = this.writeData_(msg);
+    this.cb_[cbTag] = cb;
+  }  
   get(address,cb) {
     //console.log('DHTLevelDB::get data=<',data,'>');
     const msg = {
@@ -53,6 +62,13 @@ class DHTLevelDB {
     const cbTag = this.writeData_(msg);
     this.cb_[cbTag] = cb;
   }
+
+  static calcAddress(resource) {
+    const resourceRipemd = new RIPEMD160().update(resource).digest('hex');
+    const resourceBuffer = Buffer.from(resourceRipemd,'hex');
+    return base32.encode(resourceBuffer,bs32Option);    
+  }
+  
 
   
   onError_(err) {
