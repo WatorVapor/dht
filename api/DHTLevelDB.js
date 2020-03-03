@@ -54,7 +54,7 @@ class DHTLevelDB {
     this.cb_[cbTag] = cb;
   }  
   get(address,cb) {
-    //console.log('DHTLevelDB::get data=<',data,'>');
+    console.log('DHTLevelDB::get address=<',address,'>');
     const msg = {
       fetch:'get',
       address:address
@@ -145,7 +145,7 @@ class DHTLevelDB {
   }
 
   async onFetchResp_(jMsg) {
-    //console.log('DHTLevelDB::onFetchResp_ jMsg=<',jMsg,'>');
+    console.log('DHTLevelDB::onFetchResp_ jMsg=<',jMsg,'>');
     if(jMsg.fetchResp && jMsg.cb) {
       if(typeof this.cb_[jMsg.cb] === 'function') {
         const respObj = Object.assign({},jMsg.fetchResp);

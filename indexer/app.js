@@ -139,7 +139,7 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
   }  
 }
 
-const serverUTListenChannel = 'dht.level.api.server.listen.ut';
+const serverUTListenChannel = 'dht.level.api.server.listen';
 const dhtLevel = new DHTLevelDB(serverUTListenChannel);
 //console.log(':: dhtLevel=<',dhtLevel,'>');
 dhtLevel.peerInfo((peerInfo)=>{
