@@ -8,6 +8,8 @@ const PeerStorage = require('./peer.storage.js');
 const PeerBucket = require('./peer.bucket.js');
 const PeerRoute = require('./peer.route.js');
 
+const iConstMaxTTRInMs = 1000 * 5;
+
 
 class PeerNetWork {
   constructor(config) {
@@ -43,24 +45,58 @@ class PeerNetWork {
   }
 
   publish(resource) {
-    //console.log('PeerNetWork::publish resource=<',resource,'>');
-    const place = new PeerPlace(resource.address,this.storePeers_,this.crypto_);
-    //console.log('PeerNetWork::publish place=<',place,'>');
-    //console.log('PeerNetWork::publish this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
-    if(place.isFinal(this.crypto_.idBS32)) {
+    console.log('PeerNetWork::publish resource=<',resource,'>');
+    const relayPeer = this.route_.calcContent(resource.address);
+    console.log('PeerNetWork::publish relayPeer=<',relayPeer,'>');
+    
+    console.log('PeerNetWork::publish this.crypto_.id=<',this.crypto_.id,'>');
+    if(relayPeer.min === this.crypto_.id || 
+      relayPeer.max === this.crypto_.id
+    ) {
       this.storage_.append(resource);
     }
-    if(place.nearest !== this.crypto_.idBS32) {
-      this.relayStoreMessage_(place.nearest,resource);
+    if(relayPeer.min !== this.crypto_.id) {
+      this.relayMsgTo_(relayPeer.min,resource);
     }
-    if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest) {
-      this.relayStoreMessage_(place.farthest,resource);
-    }
+    if(relayPeer.max !== this.crypto_.id) {
+      this.relayMsgTo_(relayPeer.max,resource);
+    }   
   }
   fetch4KeyWord(keyWord,cb,reply) {
     console.log('PeerNetWork::fetch4KeyWord keyWord=<',keyWord,'>');
     const address = this.crypto_.calcResourceAddress(keyWord);
     console.log('PeerNetWork::fetch4KeyWord address=<',address,'>');
+    
+    const relayPeer = this.route_.calcContent(address);
+    console.log('PeerNetWork::publish relayPeer=<',relayPeer,'>');    
+    console.log('PeerNetWork::publish this.crypto_.id=<',this.crypto_.id,'>');
+
+    if(relayPeer.min === this.crypto_.id || 
+      relayPeer.max === this.crypto_.id
+    ) {
+      const fetchMessge = {
+        address:address,
+        cb:cb
+      };
+      this.storage_.fetch(fetchMessge,(localResource)=> {
+        console.log('PeerNetWork::fetch4KeyWord localResource=<',JSON.stringify(localResource),'>');
+        const fetchResp = {
+          fetchResp:localResource,
+          address:address,
+          local:true,
+          cb:cb
+        };
+        reply(fetchResp);        
+      });
+    }    
+    if(relayPeer.min !== this.crypto_.id) {
+      this.relayMsgTo_(relayPeer.min,resource);
+    }
+    if(relayPeer.max !== this.crypto_.id) {
+      this.relayMsgTo_(relayPeer.max,resource);
+    }   
+
+    /*
     const place = new PeerPlace(address,this.storePeers_,this.crypto_);
     console.log('PeerNetWork::fetch4KeyWord place=<',place,'>');
     console.log('PeerNetWork::fetch4KeyWord this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
@@ -87,6 +123,7 @@ class PeerNetWork {
     if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest) {
       this.relayFetchMessage_(place.farthest,fetchMessge);
     }
+    */
   }
   
 
@@ -152,7 +189,7 @@ class PeerNetWork {
         ports: ports        
       }      
     }
-    //console.log('onNewNodeEntry__ this.peers=<', this.peers, '>');
+    console.log('onNewNodeEntry__ this.peers=<', this.peers, '>');
 
     let msg = {
       welcome: this.peers
@@ -164,23 +201,23 @@ class PeerNetWork {
     });
   }
   onWelcomeNode__(welcome) {
-    //console.log('onWelcomeNode__ welcome=<',welcome,'>');
+    console.log('onWelcomeNode__ welcome=<',welcome,'>');
     this.peers = Object.assign(this.peers, welcome);
-    //console.log('onWelcomeNode__ this.peers=<',this.peers,'>');
+    console.log('onWelcomeNode__ this.peers=<',this.peers,'>');
     try {
     } catch (e) {
       console.log('onWelcomeNode__ e=<', e, '>');
     }
     for(const peerid in this.peers) {
-      //console.log('onWelcomeNode__ peerid=<',peerid,'>');
+      console.log('onWelcomeNode__ peerid=<',peerid,'>');
       const peerNew = Object.assign({},this.peers[peerid]);
+      console.log('onWelcomeNode__ peerNew=<',peerNew,'>');
       if(peerNew.storage) {
-        delete peerNew.storage;
         this.storePeers_[peerid] = peerNew;
       } else {
-        delete peerNew.storage;
         this.peekPeers_[peerid] = peerNew;
       }
+      this.route_.addPeer(peerid,peerNew.storage);
     }
   }
 
@@ -231,6 +268,11 @@ class PeerNetWork {
     if (this.peers[id]) {
       //console.log('onPeerPong__ this.peers[id]=<',this.peers[id],'>');
       this.peers[id].ttr = ttr;
+      if(ttr < iConstMaxTTRInMs) {
+        this.route_.updatePeer(peerid,ttr,this.peers[peerid].storage);
+      } else {
+        this.route_.removePeer(peerid);
+      }
     }
     //console.log('onPeerPong__ this.peers=<',JSON.stringify(this.peers,undefined,2),'>');
   }
@@ -279,7 +321,7 @@ class PeerNetWork {
       //console.log('eachRemotePeer__ peer=<',peer,'>');
       let peerInfo = this.peers[peer];
       //console.log('eachRemotePeer__ peerInfo=<',peerInfo,'>');
-      if (peer !== this.crypto_.idBS32) {
+      if (peer !== this.crypto_.id) {
         fn(peer, peerInfo);
       }
     }
@@ -295,7 +337,7 @@ class PeerNetWork {
     setTimeout(()=>{
       self.doClientPing__();
     },1000*1);
-    this.peers[this.crypto_.idBS32] = {
+    this.peers[this.crypto_.id] = {
       host: this.machine_.readMachienIp(),
       ports: this.config.listen,
       storage:this.config.storage

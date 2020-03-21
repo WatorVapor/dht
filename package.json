@@ -10,6 +10,8 @@
     "level": "^6.0.0",
     "redis": "^2.8.0",
     "ripemd160": "^2.0.2",
-    "selfsigned": "^1.10.7"
+    "selfsigned": "^1.10.7",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
   }
 }

@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('fs');
-const jsrsasign = require('jsrsasign');
+const nacl = require('tweetnacl');
+nacl.util = require('tweetnacl-util');
 const RIPEMD160 = require('ripemd160');
 const base32 = require("base32.js");
 
@@ -22,29 +23,28 @@ class PeerCrypto {
       this.createKey__();
     }
     //console.log('PeerCrypto::loadKey this.keyMaster=<',this.keyMaster,'>');
-    this.calcKeyBS32__();
-    //console.log('PeerCrypto::constructor this.pubBS32=<',this.pubBS32,'>');
-    //console.log('PeerCrypto::constructor this.idBS32=<',this.idBS32,'>');
+    this.calcKeyID__();
+    console.log('PeerCrypto::constructor this.id=<',this.id,'>');
+    console.log('PeerCrypto::constructor this.address=<',this.address,'>');
   }
   sign(msg) {
     let now = new Date();
-    msg.sign = {};
-    msg.sign.ts = now.toGMTString();
-    msg.sign.ms = now.getMilliseconds();
-    msg.sign.pubKey = this.pubBS32;
+    const signedMsg = Object.assign({}, msg);
+    signedMsg.sign = {};
+    signedMsg.sign.ts = now.toGMTString();
+    signedMsg.sign.ms = now.getMilliseconds();
+    signedMsg.sign.pubKey = this.keyMaster.publicKey;
     
-    let msgStr = JSON.stringify(msg);
-    let msgHash = new RIPEMD160().update(msgStr).digest('hex');
+    let msgStr = JSON.stringify(signedMsg);
+    let msgHash = new RIPEMD160().update(msgStr).digest('base64');
     //console.log('PeerCrypto::sign msgHash=<',msgHash,'>');
-    let sign = {hash:msgHash};
-    
-    const ec = new jsrsasign.KJUR.crypto.ECDSA({'curve': 'secp256r1'});
-    const sigValue = ec.signHex(msgHash, this.keyMaster.prvKeyHex);
-    //console.log('PeerCrypto::sign sigValue=<',sigValue,'>');
-    msg.signed = {} 
-    msg.signed.hash = msgHash;
-    msg.signed.val = sigValue;
-    return msg;
+    //console.log('PeerCrypto::sign this.secretKey=<',this.secretKey,'>');
+    const signBuff = nacl.sign(nacl.util.decodeBase64(msgHash),this.secretKey);
+    //console.log('PeerCrypto::sign signBuff=<',signBuff,'>');
+    signedMsg.verify = {} 
+    signedMsg.verify.hash = msgHash;
+    signedMsg.verify.signed = nacl.util.encodeBase64(signBuff);
+    return signedMsg;
   }
 
   verify(msgJson) {
@@ -55,32 +55,36 @@ class PeerCrypto {
     //console.log('PeerCrypto::verify escape_time=<',escape_time,'>');
     if(escape_time > iConstMessageOutDateInMs) {
       return false;
-    }
-    
+    }    
     const hashMsg = Object.assign({}, msgJson);
-    delete hashMsg.signed;
-
+    delete hashMsg.verify;
     let msgStr = JSON.stringify(hashMsg);
-    let msgHash = new RIPEMD160().update(msgStr).digest('hex');
+    //console.log('PeerCrypto::verify msgStr=<',msgStr,'>');
+    let msgHash = new RIPEMD160().update(msgStr).digest('base64');
     //console.log('PeerCrypto::verify msgHash=<',msgHash,'>');
-    if(msgHash !== msgJson.signed.hash) {
+    if(msgHash !== msgJson.verify.hash) {
       console.log('PeerCrypto::verify msgJson=<',msgJson,'>');
+      console.log('PeerCrypto::verify msgHash=<',msgHash,'>');
       return false;
     }
-    //console.log('PeerCrypto::verify msgJson.sign.pubKey=<',msgJson.sign.pubKey,'>');
-    const pubKey = base32.decode(msgJson.sign.pubKey,bs32Option);
+    //console.log('PeerCrypto::verify msgJson=<',msgJson,'>');
+    const pubKey = nacl.util.decodeBase64(msgJson.sign.pubKey);
     //console.log('PeerCrypto::verify pubKey=<',pubKey,'>');
-    let pubKeyHex = base32.decode(msgJson.sign.pubKey,bs32Option).toString('hex');
-    //console.log('PeerCrypto::verify pubKeyHex=<',pubKeyHex,'>');
-    
-    const ec = new jsrsasign.KJUR.crypto.ECDSA({'curve': 'secp256r1'});
-    const verifyResult = ec.verifyHex(msgJson.signed.hash,msgJson.signed.val,pubKeyHex);
-    //console.log('PeerCrypto::verify verifyResult=<',verifyResult,'>');
-    return verifyResult;
+    const signedVal = nacl.util.decodeBase64(msgJson.verify.signed);
+    //console.log('PeerCrypto::verify signedVal=<',signedVal,'>');
+    const openedMsg = nacl.sign.open(signedVal,pubKey);
+    //console.log('PeerCrypto::verify openedMsg=<',openedMsg,'>');
+    if(openedMsg) {
+      const openedMsgB64 = nacl.util.encodeBase64(openedMsg);
+      //console.log('PeerCrypto::verify openedMsgB64=<',openedMsgB64,'>');
+      if(openedMsgB64 === msgJson.verify.hash) {
+        return true;
+      }
+    }
+    return false;
   }
   calcID(msgJson) {
-    const pubKeyHex = base32.decode(msgJson.sign.pubKey,bs32Option).toString('hex');
-    const keyRipemd = new RIPEMD160().update(pubKeyHex).digest('hex');
+    const keyRipemd = new RIPEMD160().update(msgJson.sign.pubKey).digest('hex');
     const keyBuffer = Buffer.from(keyRipemd,'hex');
     return base32.encode(keyBuffer,bs32Option);
   }
@@ -100,26 +104,28 @@ class PeerCrypto {
   loadKey__() {
     const keyJson = require(this.keyPath);
     //console.log('PeerCrypto::loadKey__ keyJson=<',keyJson,'>');
-    const keyJWK = jsrsasign.KEYUTIL.getKey(keyJson);
-    //console.log('PeerCrypto::loadKey__ keyJWK=<',keyJWK,'>');
-    this.keyMaster = keyJWK;
+    this.keyMaster = keyJson;
+    this.publicKey = nacl.util.decodeBase64(keyJson.publicKey);
+    this.secretKey = nacl.util.decodeBase64(keyJson.secretKey);
   }
   createKey__() {
-    const ec = new jsrsasign.KEYUTIL.generateKeypair("EC", "P-256");
-    //console.log('PeerCrypto::createKey__ ec=<',ec,'>');
-    const jwkPrv1 = jsrsasign.KEYUTIL.getJWKFromKey(ec.prvKeyObj);
-    //console.log('PeerCrypto::createKey__ jwkPrv1=<',jwkPrv1,'>');
-    fs.writeFileSync(this.keyPath,JSON.stringify(jwkPrv1,undefined,2));
-    this.keyMaster = ec.prvKeyObj;
+    const ed = new nacl.sign.keyPair();
+    //console.log('PeerCrypto::createKey__ ed=<',ed,'>');
+    const jwk = {kty:'ed25519'};
+    jwk.publicKey = Buffer.from(ed.publicKey).toString('base64');
+    jwk.secretKey = Buffer.from(ed.secretKey).toString('base64');
+    //console.log('PeerCrypto::createKey__ jwk=<',jwk,'>');
+    fs.writeFileSync(this.keyPath,JSON.stringify(jwk,undefined,2));
+    this.keyMaster = jwk;
+    this.publicKey = ed.publicKey;
+    this.secretKey = ed.secretKey;
   }
-  calcKeyBS32__() {
-    const pubKeyBuff = Buffer.from(this.keyMaster.pubKeyHex, 'hex');
-    this.pubBS32 = base32.encode(pubKeyBuff,bs32Option);
-    //console.log('PeerCrypto::calcKeyBS32__ this.id =<',this.id ,'>');
-    const keyRipemd = new RIPEMD160().update(this.keyMaster.pubKeyHex).digest('hex');
+  calcKeyID__() {
+    //console.log('PeerCrypto::loadKey__ this.keyMaster=<',this.keyMaster,'>');
+    const keyRipemd = new RIPEMD160().update(this.keyMaster.publicKey).digest('hex');
     const keyBuffer = Buffer.from(keyRipemd,'hex');
-    //console.log('PeerCrypto::calcKeyBS32__ keyBuffer =<',keyBuffer ,'>');
-    this.idBS32 = base32.encode(keyBuffer,bs32Option);
+    //console.log('PeerCrypto::calcKeyID__ keyBuffer =<',keyBuffer ,'>');
+    this.id = base32.encode(keyBuffer,bs32Option);
     this.address = keyBuffer;
   }
 }

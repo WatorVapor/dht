@@ -12,8 +12,9 @@ class PeerRoute {
     this.respBuckets_ = {};
   }
   addPeer(peer,storage) {
-    //console.log('PeerRoute::addPeer peer=<',peer,'>');
+    console.log('PeerRoute::addPeer peer=<',peer,'>');
     //console.log('PeerRoute::addPeer this.id_=<',this.id_,'>');
+    console.log('PeerRoute::addPeer storage_=<',storage,'>');
     const distance = this.calcDistance_(peer,this.id_);
     //console.log('PeerRoute::addPeer distance=<',distance,'>');
     if(storage) {
