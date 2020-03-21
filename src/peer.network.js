@@ -239,9 +239,9 @@ class PeerNetWork {
       //console.log('onPeerPong__ this.peers[id]=<',this.peers[id],'>');
       this.peers[id].ttr = ttr;
       if(ttr < iConstMaxTTRInMs) {
-        this.route_.updatePeer(peerid,ttr,this.peers[peerid].storage);
+        this.route_.updatePeer(id,ttr,this.peers[id].storage);
       } else {
-        this.route_.removePeer(peerid);
+        this.route_.removePeer(id);
       }
     }
     //console.log('onPeerPong__ this.peers=<',JSON.stringify(this.peers,undefined,2),'>');

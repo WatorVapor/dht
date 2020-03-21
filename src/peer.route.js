@@ -14,7 +14,7 @@ class PeerRoute {
   addPeer(peer,storage) {
     console.log('PeerRoute::addPeer peer=<',peer,'>');
     //console.log('PeerRoute::addPeer this.id_=<',this.id_,'>');
-    console.log('PeerRoute::addPeer storage_=<',storage,'>');
+    //console.log('PeerRoute::addPeer storage_=<',storage,'>');
     const distance = this.calcDistance_(peer,this.id_);
     //console.log('PeerRoute::addPeer distance=<',distance,'>');
     if(storage) {
@@ -28,7 +28,7 @@ class PeerRoute {
       this.respBuckets_[distance] = {};
     }
     this.respBuckets_[distance][peer] = {};
-    console.log('PeerRoute::addPeer this.respBuckets_=<',this.respBuckets_,'>');      
+    //console.log('PeerRoute::addPeer this.respBuckets_=<',this.respBuckets_,'>');      
   }
 
   updatePeer(peer,ttr,storage) {
@@ -49,7 +49,7 @@ class PeerRoute {
       this.respBuckets_[distance] = {};
     }
     this.respBuckets_[distance][peer] = ttr;
-    //console.log('PeerRoute::updatePeer this.respBuckets_=<',this.respBuckets_,'>');      
+    console.log('PeerRoute::updatePeer this.respBuckets_=<',this.respBuckets_,'>');      
   }
 
   removePeer(peer) {
