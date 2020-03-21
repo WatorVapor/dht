@@ -3,7 +3,6 @@ const os = require('os');
 const dgram = require("dgram");
 const PeerMachine = require('./peer.machine.js');
 const PeerCrypto = require('./peer.crypto.js');
-//const PeerPlace = require('./peer.place.js');
 const PeerStorage = require('./peer.storage.js');
 const PeerBucket = require('./peer.bucket.js');
 const PeerRoute = require('./peer.route.js');
@@ -45,11 +44,11 @@ class PeerNetWork {
   }
 
   publish(resource) {
-    console.log('PeerNetWork::publish resource=<',resource,'>');
+    //console.log('PeerNetWork::publish resource=<',resource,'>');
     const relayPeer = this.route_.calcContent(resource.address);
-    console.log('PeerNetWork::publish relayPeer=<',relayPeer,'>');
+    //console.log('PeerNetWork::publish relayPeer=<',relayPeer,'>');
     
-    console.log('PeerNetWork::publish this.crypto_.id=<',this.crypto_.id,'>');
+    //console.log('PeerNetWork::publish this.crypto_.id=<',this.crypto_.id,'>');
     if(relayPeer.min === this.crypto_.id || 
       relayPeer.max === this.crypto_.id
     ) {
@@ -63,21 +62,21 @@ class PeerNetWork {
     }   
   }
   fetch4KeyWord(keyWord,cb,reply) {
-    console.log('PeerNetWork::fetch4KeyWord keyWord=<',keyWord,'>');
+    //console.log('PeerNetWork::fetch4KeyWord keyWord=<',keyWord,'>');
     const address = this.crypto_.calcResourceAddress(keyWord);
-    console.log('PeerNetWork::fetch4KeyWord address=<',address,'>');
+    //console.log('PeerNetWork::fetch4KeyWord address=<',address,'>');
     
     const relayPeer = this.route_.calcContent(address);
-    console.log('PeerNetWork::publish relayPeer=<',relayPeer,'>');    
-    console.log('PeerNetWork::publish this.crypto_.id=<',this.crypto_.id,'>');
+    //console.log('PeerNetWork::publish relayPeer=<',relayPeer,'>');    
+    //console.log('PeerNetWork::publish this.crypto_.id=<',this.crypto_.id,'>');
 
+    const fetchMessge = {
+      address:address,
+      cb:cb
+    };
     if(relayPeer.min === this.crypto_.id || 
       relayPeer.max === this.crypto_.id
     ) {
-      const fetchMessge = {
-        address:address,
-        cb:cb
-      };
       this.storage_.fetch(fetchMessge,(localResource)=> {
         console.log('PeerNetWork::fetch4KeyWord localResource=<',JSON.stringify(localResource),'>');
         const fetchResp = {
@@ -90,40 +89,11 @@ class PeerNetWork {
       });
     }    
     if(relayPeer.min !== this.crypto_.id) {
-      this.relayMsgTo_(relayPeer.min,resource);
+      this.relayMsgTo_(relayPeer.min,fetchMessge);
     }
     if(relayPeer.max !== this.crypto_.id) {
-      this.relayMsgTo_(relayPeer.max,resource);
-    }   
-
-    /*
-    const place = new PeerPlace(address,this.storePeers_,this.crypto_);
-    console.log('PeerNetWork::fetch4KeyWord place=<',place,'>');
-    console.log('PeerNetWork::fetch4KeyWord this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
-    const fetchMessge = {
-      address:address,
-      cb:cb
-    };
-    if(place.isFinal(this.crypto_.idBS32)) {
-      this.storage_.fetch(fetchMessge,(localResource)=> {
-        console.log('PeerNetWork::fetch4KeyWord localResource=<',JSON.stringify(localResource),'>');
-        const fetchResp = {
-          fetchResp:localResource,
-          address:address,
-          local:true,
-          cb:cb
-        };
-        reply(fetchResp);        
-      });
+      this.relayMsgTo_(relayPeer.max,fetchMessge);
     }
-    this.replays_[cb] = reply;    
-    if(place.nearest !== this.crypto_.idBS32) {
-      this.relayFetchMessage_(place.nearest,fetchMessge);
-    }
-    if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest) {
-      this.relayFetchMessage_(place.farthest,fetchMessge);
-    }
-    */
   }
   
 
