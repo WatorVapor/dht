@@ -24,7 +24,9 @@ class DHT {
         port:this.resource_.port()
       }
     };
-    //this.peer_.onPeerJoint = this.onPeerJoint_.bind(this);
+    this.replyInvoke_ = {};
+    this.peer_.onPeerJoint = this.onPeerJoint_.bind(this);
+    this.peer_.onFetchResponse = this.onFetchResponse_.bind(this);
   }
   peerInfo() {
     return this.info_;
@@ -37,7 +39,7 @@ class DHT {
     //console.log('DHT::append dataStorage=<',dataStorage,'>');
     const dataStorage = {
       address:keyAddress,
-      resource:addResource,
+      store:addResource,
       rank:rank,
       cb:cbTag
     }
@@ -46,12 +48,21 @@ class DHT {
   }
   
   
-  fetch4KeyWord(keyWord,cbTag,reply) {
+  async fetch4KeyWord(keyWord,cbTag,reply) {
     console.log('DHT::fetch4KeyWord keyWord=<',keyWord,'>');
-    this.peer_.fetch4KeyWord(keyWord,cbTag,(responseToken)=>{
+    const keyAddress = await this.storage_.getAddress(keyWord);
+    console.log('DHT::fetch4KeyWord keyAddress=<',keyAddress,'>');
+    const fetchMessge = {
+      address:keyAddress,
+      fetch:true,
+      cb:cbTag
+    };
+
+    this.peer_.fetch4KeyWord(fetchMessge,(responseToken)=>{
       console.log('DHT::fetch4KeyWord responseToken=<',responseToken,'>');
       reply(responseToken);      
     });
+    this.replyInvoke_[cbTag] = reply;
   }
 
   
@@ -59,5 +70,15 @@ class DHT {
   onPeerJoint_(peer) {
     console.log('DHT::onPeerJoint_ peer=<',peer,'>');
   }
+
+  onFetchResponse_(fetchResp) {
+    console.log('DHT::onFetchResponse_ fetchResp=<',fetchResp,'>');
+    if(this.replyInvoke_) {
+      if(typeof this.replyInvoke_[fetchResp.address] === 'function') {
+        this.replyInvoke_[fetchResp.address](fetchResp);
+      }
+    }
+  }
+
 }
 module.exports = DHT;

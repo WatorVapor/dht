@@ -46,12 +46,12 @@ class PeerStorage {
       } else {
         db = this.dbOpenCache_[dbPath];
       }
-      const result = await db.get(request.resource);
+      const result = await db.get(request.store);
       //console.log('PeerStorage::append result=<',result,'>');
     } catch(err) {
       if (err) {
         if (err.notFound) {
-          await this.saveNewResult_(request.resource,db,rankPath);
+          await this.saveNewResult_(request.store,db,rankPath);
           const self = this;
           setTimeout(()=>{
             if(self.dbOpenCache_[dbPath]) {

@@ -32,7 +32,7 @@ const appendData = ()=> {
   });
 };
 
-setTimeout(appendData,1000);
+//setTimeout(appendData,1000);
 
 const fetchData = ()=> {
   dht.fetch4KeyWord('汉语',(resource) => {
@@ -50,8 +50,7 @@ const fetchData = ()=> {
 };
 
 
-//setTimeout(fetchData,2000);
-
+setTimeout(fetchData,2000);
 
 const onFetchResult = (result) => {
   console.log('dht.onFetchResult:: result=<',result,'>');

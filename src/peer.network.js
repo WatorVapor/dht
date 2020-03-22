@@ -33,8 +33,6 @@ class PeerNetWork {
       self.onMessageCtrlServer__(msg, rinfo)
     });
     this.serverCtrl.bind(config.listen.ctrl.port);
-    
-    this.replays_ = {};
   }
   host() {
     return this.machine_.readMachienIp();
@@ -61,19 +59,12 @@ class PeerNetWork {
       this.relayMsgTo_(relayPeer.max,resource);
     }   
   }
-  fetch4KeyWord(keyWord,cb,reply) {
-    //console.log('PeerNetWork::fetch4KeyWord keyWord=<',keyWord,'>');
-    const address = this.crypto_.calcResourceAddress(keyWord);
-    //console.log('PeerNetWork::fetch4KeyWord address=<',address,'>');
-    
-    const relayPeer = this.route_.calcContent(address);
+  fetch4KeyWord(fetchMessge,reply) {
+    //console.log('PeerNetWork::fetch4KeyWord fetchMessge=<',fetchMessge,'>');
+    const relayPeer = this.route_.calcContent(fetchMessge.address);
     //console.log('PeerNetWork::publish relayPeer=<',relayPeer,'>');    
     //console.log('PeerNetWork::publish this.crypto_.id=<',this.crypto_.id,'>');
 
-    const fetchMessge = {
-      address:address,
-      cb:cb
-    };
     if(relayPeer.min === this.crypto_.id || 
       relayPeer.max === this.crypto_.id
     ) {
@@ -81,9 +72,9 @@ class PeerNetWork {
         console.log('PeerNetWork::fetch4KeyWord localResource=<',JSON.stringify(localResource),'>');
         const fetchResp = {
           fetchResp:localResource,
-          address:address,
+          address:fetchMessge.address,
           local:true,
-          cb:cb
+          cb:fetchMessge.cb
         };
         reply(fetchResp);        
       });
@@ -122,13 +113,13 @@ class PeerNetWork {
         this.onPeerPong__(rPeerId, msgJson.pong);
       } else if (msgJson.store) {
           //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
-          this.onStore4Remote__(rPeerId, msgJson.store);
+          this.onStore4Remote__(rPeerId, msgJson.store,msgJson.rank,msgJson.address, msgJson.cb);
       } else if (msgJson.fetch) {
           //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
-          this.onFetch4Remote__(rPeerId, msgJson.fetch);
+          this.onFetch4Remote__(rPeerId, msgJson.fetch,msgJson.address, msgJson.cb);
       } else if (msgJson.fetchResp) {
           //console.log('onMessageCtrlServer__ msgJson=<',msgJson,'>');
-          this.onFetchResponse__(rPeerId, msgJson.fetchResp);
+          this.onFetchResponse__(rPeerId, msgJson.fetchResp,msgJson.address, msgJson.cb);
       } else {
         console.log('onMessageCtrlServer__ msgJson=<', msgJson, '>');
       }
@@ -340,50 +331,80 @@ class PeerNetWork {
       //console.log('sendMessage_ err=<',err,'>');
     });
   }
-  onStore4Remote__(fromId, store) {
-    //console.log('PeerNetWork::onStore4Remote__ fromId=<', fromId, '>');
-    //console.log('PeerNetWork::onStore4Remote__ store=<', store, '>');
-    const place = new PeerPlace(store.address,this.storePeers_,this.crypto_);
-    //console.log('PeerNetWork::onStore4Remote__ place=<',place,'>');
-    //console.log('PeerNetWork::onStore4Remote__:: this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
-    if(place.isFinal(this.crypto_.idBS32)) {
-      this.storage_.append(store);
+  onStore4Remote__(fromId, store,rank, address, cb) {
+    console.log('PeerNetWork::onStore4Remote__ fromId=<', fromId, '>');
+    console.log('PeerNetWork::onStore4Remote__ store=<', store, '>');
+    console.log('PeerNetWork::onStore4Remote__ rank=<', rank, '>');
+    console.log('PeerNetWork::onStore4Remote__ address=<', address, '>');
+    console.log('PeerNetWork::onStore4Remote__ cb=<', cb, '>');
+
+    const relayPeer = this.route_.calcContent(address);
+    console.log('PeerNetWork::onStore4Remote__ relayPeer=<',relayPeer,'>');
+    
+    console.log('PeerNetWork::onStore4Remote__ this.crypto_.id=<',this.crypto_.id,'>');
+    
+    const resource = {
+      address:address,
+      store:store,
+      rank:rank,
+      cb:cb      
     }
-    if(place.nearest !== this.crypto_.idBS32 && place.nearest !== fromId) {
-      this.relayStoreMessage_(place.nearest,store);
+    if(relayPeer.min === this.crypto_.id || 
+      relayPeer.max === this.crypto_.id
+    ) {
+      this.storage_.append(resource);
     }
-    if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest && place.farthest !== fromId) {
-      this.relayStoreMessage_(place.farthest,store);
+    if(relayPeer.min !== this.crypto_.id && relayPeer.min !== fromId) {
+      this.relayMsgTo_(relayPeer.min,resource);
     }
+    if(relayPeer.max !== this.crypto_.id && relayPeer.max !== fromId) {
+      this.relayMsgTo_(relayPeer.max,resource);
+    }   
   }
-  onFetch4Remote__(fromId, fetch) {
-    //console.log('PeerNetWork::onFetch4Remote__ fromId=<', fromId, '>');
-    //console.log('PeerNetWork::onFetch4Remote__ fetch=<', fetch, '>');
-    const place = new PeerPlace(fetch.address,this.storePeers_,this.crypto_);
-    //console.log('PeerNetWork::onFetch4Remote__ place=<',place,'>');
-    //console.log('PeerNetWork::onFetch4Remote__:: this.crypto_.idBS32=<',this.crypto_.idBS32,'>');
-    if(place.isFinal(this.crypto_.idBS32)) {
+  onFetch4Remote__(fromId, fetch, address, cb) {
+    console.log('PeerNetWork::onFetch4Remote__ fromId=<', fromId, '>');
+    console.log('PeerNetWork::onFetch4Remote__ fetch=<', fetch, '>');
+    console.log('PeerNetWork::onFetch4Remote__ address=<', address, '>');
+    console.log('PeerNetWork::onFetch4Remote__ cb=<', cb, '>');
+
+    const relayPeer = this.route_.calcContent(address);
+    console.log('PeerNetWork::onFetch4Remote__ relayPeer=<',relayPeer,'>');
+    
+    console.log('PeerNetWork::onFetch4Remote__ this.crypto_.id=<',this.crypto_.id,'>');
+
+
+
+    const resourceFetch = {
+      address:address,
+      fetch:fetch,
+      cb:cb      
+    }
+    if(relayPeer.min === this.crypto_.id || 
+      relayPeer.max === this.crypto_.id
+    ) {
       const self = this;
-      this.storage_.fetch(fetch,(localResource)=> {
+      this.storage_.fetch(resourceFetch,(localResource)=> {
         console.log('PeerNetWork::onFetch4Remote__:: localResource=<',localResource,'>');
         const fetchRespMsg = {
           fetchResp:localResource
         };
-        fetchRespMsg.fetchResp.cb = fetch.cb;
-        fetchRespMsg.fetchResp.address = fetch.address;
+        fetchRespMsg.fetchResp.cb = resourceFetch.cb;
+        fetchRespMsg.fetchResp.address = resourceFetch.address;
         self.sendMessage_(fromId,fetchRespMsg);        
       });
     }
-    if(place.nearest !== this.crypto_.idBS32 && place.nearest !== fromId) {
-      this.relayFetchMessage_(place.nearest,fetch);
+    if(relayPeer.min !== this.crypto_.id && relayPeer.min !== fromId) {
+      this.relayMsgTo_(relayPeer.min,resourceFetch);
     }
-    if(place.farthest !== this.crypto_.idBS32 && place.nearest !== place.farthest && place.farthest !== fromId) {
-      this.relayFetchMessage_(place.farthest,fetch);
-    }
+    if(relayPeer.max !== this.crypto_.id && relayPeer.max !== fromId) {
+      this.relayMsgTo_(relayPeer.max,resourceFetch);
+    }   
   }
   onFetchResponse__(fromId, fetchResp) {
     console.log('PeerNetWork::onFetchResponse__ fromId=<', fromId, '>');
     console.log('PeerNetWork::onFetchResponse__ fetchResp=<', fetchResp, '>');
+    this.onFetchResponse(fetchResp);
+    /*
     if(typeof this.replays_[fetchResp.cb] === 'function') {
       const respMsg = {
         fetchResp:fetchResp,
@@ -395,7 +416,21 @@ class PeerNetWork {
       delete respMsg.fetchResp.address;
       this.replays_[respMsg.cb](respMsg);
     }
+    */
   }
+
+  relayMsgTo_(dst,msg) {
+    //console.log('PeerNetWork::relayMsgTo_ dst=<', dst, '>');
+    //console.log('PeerNetWork::relayMsgTo_ msg=<', msg, '>');
+    this.sendMessage_(dst,msg);
+  }
+  
+  relayRespTo_(dst,msg) {
+    //console.log('PeerNetWork::relayRespTo_ dst=<', dst, '>');
+    //console.log('PeerNetWork::relayRespTo_ msg=<', msg, '>');
+    this.sendMessage_(dst,msg);
+  }
+
 }
 
 module.exports = PeerNetWork;
