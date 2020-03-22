@@ -57,10 +57,11 @@ class DHT {
       fetch:true,
       cb:cbTag
     };
-
+    const self = this;
     this.peer_.fetch4KeyWord(fetchMessge,(responseToken)=>{
       console.log('DHT::fetch4KeyWord responseToken=<',responseToken,'>');
-      reply(responseToken);      
+      reply(responseToken);
+      delete self.replyInvoke_[cbTag];
     });
     this.replyInvoke_[cbTag] = reply;
   }
@@ -76,6 +77,7 @@ class DHT {
     if(this.replyInvoke_) {
       if(typeof this.replyInvoke_[fetchResp.address] === 'function') {
         this.replyInvoke_[fetchResp.address](fetchResp);
+        delete this.replyInvoke_[cbTag];
       }
     }
   }
