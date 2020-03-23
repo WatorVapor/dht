@@ -116,21 +116,21 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
     const searchIndexContent = JSON.stringify(searchIndex);
     const address = DHTLevelDB.calcAddress(searchIndexContent);
     allSearchIndex[address] = searchIndex;
-    //const result = await onSave2DHTLevelDB(searchIndexContent);
-    //console.log('onSaveIndex::result=<',result,'>');
-    //await onSaveIndex2DHT(word,result.address,searchIndex.freq);
   }
+  //console.log('onSaveIndex::allSearchIndex=<',allSearchIndex,'>');
   const searchContent = JSON.stringify(allSearchIndex);
   //console.log('onSaveIndex::searchContent=<',searchContent,'>');
   const result = await onSave2DHTLevelDB(searchContent);
-  console.log('onSaveIndex::result=<',result,'>');
+  //console.log('onSaveIndex::result=<',result,'>');
   
-  /*
-  for(const word in wordIndex) {
-    const index = wordIndex[word];
-    await onSaveIndex2DHT(word,ipfsAddress,index.freq);
+  
+  for(const cidAddress in allSearchIndex) {
+    const index = allSearchIndex[cidAddress];
+    console.log('onSaveIndex::cidAddress=<',cidAddress,'>');
+    console.log('onSaveIndex::index=<',index,'>');
+    await onSaveIndex2DHT(index.word,cidAddress,index.freq);
   }
-  */
+  
   
   wai.clear();
   try {
@@ -148,7 +148,7 @@ dhtLevel.peerInfo((peerInfo)=>{
 
 const onSave2DHTLevelDB = async (contents) => {
   const promise = new Promise((resolve) => {
-    console.log('onSave2DHTLevelDB:: contents=<',contents,'>');
+    //console.log('onSave2DHTLevelDB:: contents=<',contents,'>');
     dhtLevel.putBatch(contents,(info) => {
       //console.log('onSave2DHTLevelDB:: info=<',info,'>');
       resolve(info);
