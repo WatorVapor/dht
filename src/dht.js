@@ -47,7 +47,6 @@ class DHT {
     return dataStorage;
   }
   
-  
   async fetch4KeyWord(keyWord,cbTag,reply) {
     console.log('DHT::fetch4KeyWord keyWord=<',keyWord,'>');
     const keyAddress = await this.storage_.getAddress(keyWord);
@@ -61,7 +60,6 @@ class DHT {
     this.peer_.fetch4KeyWord(fetchMessge,(responseToken)=>{
       console.log('DHT::fetch4KeyWord responseToken=<',responseToken,'>');
       reply(responseToken);
-      delete self.replyInvoke_[cbTag];
     });
     this.replyInvoke_[cbTag] = reply;
   }
@@ -72,15 +70,22 @@ class DHT {
     console.log('DHT::onPeerJoint_ peer=<',peer,'>');
   }
 
-  onFetchResponse_(fetchResp) {
-    console.log('DHT::onFetchResponse_ fetchResp=<',fetchResp,'>');
+  onFetchResponse_(remoteResource) {
+    //console.log('DHT::onFetchResponse_ remoteResource=<',remoteResource,'>');
+    //console.log('DHT::onFetchResponse_ this.replyInvoke_=<',this.replyInvoke_,'>');
     if(this.replyInvoke_) {
-      if(typeof this.replyInvoke_[fetchResp.address] === 'function') {
-        this.replyInvoke_[fetchResp.address](fetchResp);
-        delete this.replyInvoke_[cbTag];
+      const reply = this.replyInvoke_[remoteResource.cb];
+      //console.log('DHT::onFetchResponse_ reply=<',reply,'>');
+      if(typeof  reply === 'function') {
+        const fetchResp = {
+          fetchResp:remoteResource,
+          address:remoteResource.address,
+          local:true,
+          cb:remoteResource.cb
+        };
+        reply(fetchResp);
       }
     }
   }
-
 }
 module.exports = DHT;

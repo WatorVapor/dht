@@ -24,7 +24,7 @@ services:
       - ../:/opt/app
       - /dev/shm:/dev/shm
     working_dir: "/opt/app/cli"
-    command: node ./redis_dht.js
+    command: node ./redis.dht.js
     networks:
       - outside
     deploy:
