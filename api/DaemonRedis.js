@@ -147,7 +147,7 @@ class DaemonRedis {
     console.log('DaemonRedis::onFetchDataByKeyWordCache_::begin=<',begin,'>');
     console.log('DaemonRedis::onFetchDataByKeyWordCache_::end=<',end,'>');
     console.log('DaemonRedis::onFetchDataByKeyWordCache_::cb=<',cb,'>');
-    this.dht_.fetch4KeyWord(keyWord,cb,(resouce)=> {
+    this.dht_.fetch4KeyWord(keyWord,begin,end,cb,(resouce)=> {
       console.log('DaemonRedis::onFetchDataByKeyWordCache_::resouce=<',resouce,'>');
       try {
         const RespBuff = Buffer.from(JSON.stringify(resouce),'utf-8');

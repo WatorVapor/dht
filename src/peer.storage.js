@@ -78,7 +78,7 @@ class PeerStorage {
       let totalResult = 0;
       const rankConter = {};
       for(const rank of files) {
-        console.log('PeerStorage::fetch: rank=<',rank,'>');
+        //console.log('PeerStorage::fetch: rank=<',rank,'>');
         const dbStats = keyPath + '/' + rank + '/' + strConstStatsName;
         try {
           const stats = require(dbStats);
@@ -95,29 +95,39 @@ class PeerStorage {
         cb(responseStats);
       }
       //console.log('PeerStorage::fetch: rankConter=<',rankConter,'>');
-      let start = request.start;
-      if(!start) {
-        start = 0;
+      let begin = request.fetch.begin;
+      if(!begin) {
+        begin = 0;
       }
-      //console.log('PeerStorage::fetch: start=<',start,'>');
+      //console.log('PeerStorage::fetch: begin=<',begin,'>');
       const rankKeys = Object.keys(rankConter);
       rankKeys.sort((a,b) => {return parseInt(b) - parseInt(a);});
       //console.log('PeerStorage::fetch: rankKeys=<',rankKeys,'>');
       let countCollect = 0;
+      let prevCountCollect = 0;
       const rankGather = [];
+      //const rankAllGather = [];
+      let skipStartNumber = 0;
       for(const rank of rankKeys) {
         const count = rankConter[rank];
         //console.log('PeerStorage::fetch: count=<',count,'>');
         //console.log('PeerStorage::fetch: rank=<',rank,'>');
-        if(countCollect + count > start) {
-          rankGather.push({rank:rank,collect:countCollect});
-        }
         countCollect += count;
+        //rankAllGather.push({rank:rank,collect:countCollect});
+        if(countCollect > begin) {
+          if(skipStartNumber === 0) {
+            skipStartNumber = begin - prevCountCollect;
+          }
+          rankGather.push({rank:rank,left:prevCountCollect,right:countCollect});
+        }
+        prevCountCollect = countCollect;
       }
       //console.log('PeerStorage::fetch: rankGather=<',rankGather,'>');
-      const prevEnd = request.prevEnd;
+      //console.log('PeerStorage::fetch: rankAllGather=<',rankAllGather,'>');
+      //console.log('PeerStorage::fetch: skipStartNumber=<',skipStartNumber,'>');
+      
       const respResults = [];
-      const self = this;
+      const self = this;      
       const gatherResult = (index)=> {
         if(rankGather.length > index) {
           const rankInfo = rankGather[index];
@@ -134,15 +144,20 @@ class PeerStorage {
             db = this.dbOpenCache_[dbPath];
           }
           const keyStreamOption = {};
+          /*
           if(prevEnd) {
             keyStreamOption.gt = prevEnd;
           }
+          */
           console.log('PeerStorage::fetch: keyStreamOption=<',keyStreamOption,'>');
           const keyStream = db.createKeyStream(keyStreamOption);
           keyStream.on('data',  (data) =>{
             console.log('PeerStorage::fetch: data=<',data,'>');
             //console.log('PeerStorage::fetch:keyStream data respResults=<',respResults,'>');
             //console.log('PeerStorage::fetch:keyStream data request.cb=<',request.cb,'>');
+            if(skipStartNumber-- > 0) {
+              return;
+            }
             if(respResults.length >= iConstResourceOnce) {
               const responseObj = {results:respResults,finnish:true};
               console.log('PeerStorage::fetch: responseObj=<',responseObj,'>');

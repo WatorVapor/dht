@@ -47,13 +47,13 @@ class DHT {
     return dataStorage;
   }
   
-  async fetch4KeyWord(keyWord,cbTag,reply) {
+  async fetch4KeyWord(keyWord,begin,end,cbTag,reply) {
     console.log('DHT::fetch4KeyWord keyWord=<',keyWord,'>');
     const keyAddress = await this.storage_.getAddress(keyWord);
     console.log('DHT::fetch4KeyWord keyAddress=<',keyAddress,'>');
     const fetchMessge = {
       address:keyAddress,
-      fetch:true,
+      fetch:{begin:begin,end:end},
       cb:cbTag
     };
     const self = this;
