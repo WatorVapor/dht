@@ -321,7 +321,7 @@ class PeerNetWork {
   
   sendMessage_(dst,msg) {
     const dstPeer = this.peers[dst];
-    //console.log('sendMessage_ dstPeer=<', dstPeer, '>');
+    console.log('sendMessage_ dstPeer=<', dstPeer, '>');
     const dstHost = dstPeer.host;
     const dstPort = dstPeer.ports.ctrl.port;
     let msgSign = this.crypto_.sign(msg);
