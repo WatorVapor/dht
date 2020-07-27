@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
-    "redis": "^2.8.0",
-    "ripemd160": "^2.0.2"
+    "dht.mesh": "0.0.9",
+    "redis": "^2.8.0"
   }
 }

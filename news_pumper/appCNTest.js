@@ -6,7 +6,7 @@ for(let url of sina.seeds) {
 }
 console.log('requestList=<',requestList,'>');
 const NewsPumper = require('./NewsPumper.js');
-const dbLink = '/watorvapor/ldfs/tagbot/cn_test/news_discovery_db';
-const dbTextContent = '/watorvapor/ldfs/tagbot/cn_test/news_text_contents_db';
+const dbLink = './tagbot/cn_test/news_discovery_db';
+const dbTextContent = './tagbot/cn_test/news_text_contents_db';
 const pumper = new NewsPumper(requestList,dbLink,dbTextContent,'cn');
 pumper.turn();

@@ -3,20 +3,15 @@ const https = require('https');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const url = require('url');
+const KVFolder = require('dht.mesh').KVFolder;
+console.log('::KVFolder=<',KVFolder,'>');
+const DHTUtils = require('dht.mesh').DHTUtils;
+console.log('::DHTUtils=<',DHTUtils,'>');
 
-const RIPEMD160 = require('ripemd160');
-const base32 = require("base32.js");
-
-
-const LevelDFS = require('../api/LevelDFS.js');
-//console.log('::LevelDFS=<',LevelDFS,'>');
 
 const redis = require('redis');
 const redisOption = {
-  host:'node2.ceph.wator.xyz',
-  port:16379,
-  password:'QfIvXWQCxnTZlEpT',
-  family:'IPv6'
+  path:'/dev/shm/dht.ermu.api.redis.sock'
 };
 const bs32Option = { type: "crockford", lc: true };
 
@@ -39,18 +34,19 @@ module.exports = class NewsPumper {
     if (!fs.existsSync(linkDBPath)) {
       fs.mkdirSync(linkDBPath,{ recursive: true });
     }
-    this.linkDB_ = new LevelDFS(linkDBPath);
+    this.linkDB_ = new KVFolder(linkDBPath);
+    this.utils_ = new DHTUtils();
     this.lang_ = lang;
     this.lastReadTime_ = new Date();
     if (!fs.existsSync(dbTextContent)) {
       fs.mkdirSync(dbTextContent,{ recursive: true });
     }
     this.textDBPath_ = dbTextContent;
-    this.areaA_ = this.calcAddress_(JSON.stringify(this.seed_));
+    this.areaA_ = this.utils_.calcAddress(JSON.stringify(this.seed_));
     console.log('readNews_::this.areaA_=<',this.areaA_,'>');
-    this.areaB_ = this.calcAddress_(this.lastReadTime_.getFullYear().toString());
+    this.areaB_ = this.utils_.calcAddress(this.lastReadTime_.getFullYear().toString());
     console.log('readNews_::this.areaB_=<',this.areaB_,'>');
-    this.areaC_ = this.calcAddress_(this.lastReadTime_.getFullYear().toString() + this.lastReadTime_.getMonth().toString());
+    this.areaC_ = this.utils_.calcAddress(this.lastReadTime_.getFullYear().toString() + this.lastReadTime_.getMonth().toString());
     console.log('readNews_::this.areaC_=<',this.areaC_,'>');
   }
   turn() {
@@ -141,28 +137,24 @@ module.exports = class NewsPumper {
   
   onWatchLink_(href){
     //console.log('onWatchLink_::href=<',href,'>');
-    let self = this;
-    this.linkDB_.get(href, (err, value) => {
-      //console.log('onWatchLink_::err=<',err,'>');
-      if (err && err.notFound) {
-        const contentObj = {
-          href:href,
-          discover:true,
-          lang:this.lang_,
-          area:[this.areaA_,this.areaB_,this.areaC_]
-        };
-        const contents = JSON.stringify(contentObj);
-        self.linkDB_.put(href,contents,(address)=> {
-          self.onWathNewLink_(href,address);
-        });
-      }
-      //console.log('onWatchLink_::value=<',value,'>');
-    });
+    const result = this.linkDB_.get(href);
+    //console.log('onWatchLink_::result=<',result,'>');
+    if (result && result.notFound) {
+      const contentObj = {
+        href:href,
+        discover:true,
+        lang:this.lang_,
+        area:[this.areaA_,this.areaB_,this.areaC_]
+      };
+      const contents = JSON.stringify(contentObj);
+      const address = this.linkDB_.put(href,contents);
+      this.onWathNewLink_(href,address);
+    }
   }
   onWathNewLink_(href,address){
     console.log('onWathNewLink_::href=<',href,'>');
     const now = new Date();
-    console.log('onWathNewLink_::now=<',now.toUTCString(),'>');
+    console.log('onWathNewLink_::now=<',now.toString(),'>');
     let nextStage = {
       href:href,
       address:address,
@@ -183,14 +175,5 @@ module.exports = class NewsPumper {
     }
     setTimeout(this.onCheckTaskRun_.bind(this),1000*60*10);
   };
-
-
-  calcAddress_(msg) {
-    const msgRipemd = new RIPEMD160().update(msg).digest('hex');
-    const msgBuffer = Buffer.from(msgRipemd,'hex');
-    return base32.encode(msgBuffer,bs32Option);
-  }
-
-
 }
 
