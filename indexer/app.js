@@ -1,10 +1,8 @@
 const redis = require('redis');
 const redisOption = {
-  host:'node2.ceph.wator.xyz',
-  port:16379,
-  family:'IPv6',
-  password:'QfIvXWQCxnTZlEpT',
+  path:'/dev/shm/dht.ermu.api.redis.sock'
 };
+
 const redisNewsChannelDiscovery = 'redis.channel.news.discover.multi.lang';
 const gSubscriber = redis.createClient(redisOption);
 
@@ -25,9 +23,10 @@ const WaiIndexBot = require('./wai/wai.indexbot.js');
 const wai = new WaiIndexBot();
 const WaiIndexLinkCacheMax = 20;
 
-const LevelDFS = require('../api/LevelDFS.js');
-//console.log('::LevelDFS=<',LevelDFS,'>');
-const db = new LevelDFS('/storage/dhtfs/cluster/news_pumper/cn/news_discovery_db');
+const KVFolder = require('dht.mesh').KVFolder;
+//console.log('::KVFolder=<',KVFolder,'>');
+const db = new KVFolder('/storage/dhtfs/cluster/news_pumper/cn/news_discovery_db');
+
 const gNewMessageLinks = [];
 const onDiscoveryNewLink = (msg) => {
   gNewMessageLinks.push(msg);
@@ -53,28 +52,20 @@ const onLearnNewLink = () => {
     const href = msgJson.href;
     //console.log('onLearnNewLink::href=<',href,'>');
     //console.log('onLearnNewLink:: gNewMessageLinks=<',gNewMessageLinks,'>');
-    db.get(href, (err, value) => {
-      try {
-        if(err) {
-          throw err;
-        }
-        //console.log('onLearnNewLink::value=<',value,'>');
-        const jsValue = JSON.parse(value);
-        if(jsValue.indexer) {
-          setTimeout(onLearnNewLink,1000);
-          return;
-        }
-        jsValue.indexer = true;
-        let contents = JSON.stringify(jsValue);
-        db.put(href,contents);
-        const txtReader = new NewsTextReader(constTextDBPath);
-        //console.log('onLearnNewLink::jsValue=<',jsValue,'>');
-        txtReader.fetch(href,(txt,title,myhref)=>{
-          onNewsText(txt,title,myhref,jsValue.lang,jsValue);
-        });
-      } catch(e) {
-        console.log('onLearnNewLink::e=<',e,'>');
-      }
+    const value = db.get(href);
+    console.log('onLearnNewLink::value=<',value,'>');
+    const jsValue = JSON.parse(value);
+    if(jsValue.indexer) {
+      setTimeout(onLearnNewLink,1000);
+      return;
+    }
+    jsValue.indexer = true;
+    let contents = JSON.stringify(jsValue);
+    db.put(href,contents);
+    const txtReader = new NewsTextReader(constTextDBPath);
+    //console.log('onLearnNewLink::jsValue=<',jsValue,'>');
+    txtReader.fetch(href,(txt,title,myhref)=>{
+      onNewsText(txt,title,myhref,jsValue.lang,jsValue);
     });
   } catch(e) {
     console.log('onLearnNewLink::e=<',e,'>');
@@ -94,7 +85,16 @@ const onNewsText = async (txt,title,myhref,lang,crawler) => {
 }
 
 
-const DHTLevelDB = require('../api/DHTLevelDB.js');
+const DHTUtils = require('dht.mesh').DHTUtils;
+console.log('::DHTUtils=<',DHTUtils,'>');
+const dhtUtils = new DHTUtils();
+
+const KeyValueStore = require('dht.mesh').KV;
+const KeyWordStore = require('dht.mesh').KW;
+const kv = new KeyValueStore();
+console.log('::.:: kv=<',kv,'>');
+const kw = new KeyWordStore();
+console.log('::.:: kw=<',kw,'>');
 
 
 const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
@@ -112,72 +112,16 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
     searchIndex.title = title;
     searchIndex.href = myhref;
     searchIndex.area = crawler.area;
-    //console.log('onSaveIndex::searchIndex=<',searchIndex,'>');
-    const searchIndexContent = JSON.stringify(searchIndex);
-    const address = DHTLevelDB.calcAddress(searchIndexContent);
-    allSearchIndex[address] = searchIndex;
-  }
-  //console.log('onSaveIndex::allSearchIndex=<',allSearchIndex,'>');
-  const searchContent = JSON.stringify(allSearchIndex);
-  //console.log('onSaveIndex::searchContent=<',searchContent,'>');
-  const result = await onSave2DHTLevelDB(searchContent);
-  //console.log('onSaveIndex::result=<',result,'>');
-  
-  
-  for(const cidAddress in allSearchIndex) {
-    const index = allSearchIndex[cidAddress];
-    console.log('onSaveIndex::cidAddress=<',cidAddress,'>');
-    console.log('onSaveIndex::index=<',index,'>');
-    await onSaveIndex2DHT(index.word,cidAddress,index.freq);
-  }
-  
-  
+    //console.log('onSaveIndex::wordIndex=<',wordIndex,'>');
+    const address = kv.store(searchIndex);
+    //console.log('onSaveIndex::address=<',address,'>');
+    kw.append(word,address,wordIndex.freq) ;
+  }  
   wai.clear();
   try {
     global.gc();
   } catch(e) {   
   }  
-}
-
-const serverUTListenChannel = 'dht.level.api.server.listen';
-const dhtLevel = new DHTLevelDB(serverUTListenChannel);
-//console.log(':: dhtLevel=<',dhtLevel,'>');
-dhtLevel.peerInfo((peerInfo)=>{
-  console.log('dhtLevel.peerInfo:: peerInfo=<',peerInfo,'>');
-});
-
-const onSave2DHTLevelDB = async (contents) => {
-  const promise = new Promise((resolve) => {
-    //console.log('onSave2DHTLevelDB:: contents=<',contents,'>');
-    dhtLevel.putBatch(contents,(info) => {
-      //console.log('onSave2DHTLevelDB:: info=<',info,'>');
-      resolve(info);
-    });
-  });
-  return promise;
-}
-
-
-const DHT = require('../api/DHTRedis.js');
-const dht = new DHT();
-//console.log(':: dht=<',dht,'>');
-dht.peerInfo((peerInfo)=>{
-  console.log('dht.peerInfo:: peerInfo=<',peerInfo,'>');
-});
-
-
-
-const onSaveIndex2DHT = async (word,address,freq) => {
-  console.log('onSaveIndex2DHT::word=<',word,'>');
-  console.log('onSaveIndex2DHT::address=<',address,'>');
-  console.log('onSaveIndex2DHT::freq=<',freq,'>');
-  const promise = new Promise((resolve) => {
-    dht.append(word,address,freq,(info) => {
-      console.log('onSaveIndex2DHT:: info=<',info,'>');
-      resolve(info);
-    });
-  });
-  return promise;
 }
 
 

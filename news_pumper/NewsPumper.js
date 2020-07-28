@@ -8,7 +8,6 @@ console.log('::KVFolder=<',KVFolder,'>');
 const DHTUtils = require('dht.mesh').DHTUtils;
 console.log('::DHTUtils=<',DHTUtils,'>');
 
-
 const redis = require('redis');
 const redisOption = {
   path:'/dev/shm/dht.ermu.api.redis.sock'

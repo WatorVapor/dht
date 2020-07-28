@@ -28,7 +28,7 @@ class WaiAllPathGraph {
           allPath.push(path);
         }
       } else {
-        console.log('allPath::subIndex:=<',subIndex,'>');
+        //console.log('allPath::subIndex:=<',subIndex,'>');
         //console.log('allPath::subSentence:=<',subSentence,'>');
       }
     }
