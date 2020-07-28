@@ -3,10 +3,10 @@ SCRIPT_DIR=$(cd $(dirname $0); pwd)
 PARENT_DiR=$(dirname $SCRIPT_DIR)
 echo "SCRIPT_DIR:=${SCRIPT_DIR}"
 echo "PARENT_DiR:=${PARENT_DiR}"
-DOCKER_MAME=ermu.ws
+DOCKER_MAME=ermu.proxy.ws
 docker stop ${DOCKER_MAME}
 docker rm ${DOCKER_MAME}
-docker run -d \
+docker run -it \
   -v /etc/group:/etc/group:ro \
   -v /etc/passwd:/etc/passwd:ro \
   -v /storage/dhtfs/cluster:/storage/dhtfs/cluster \
