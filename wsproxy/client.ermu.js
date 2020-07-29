@@ -47,7 +47,7 @@ const onReqKeyWord = (reqMsg)=> {
   console.log('onReqKeyWord::reqMsg=<',reqMsg,'>');
   //kw.fetch('empty',) ;
   if(reqMsg.words) {
-    kw.fetch(reqMsg.words,reqMsg.begin) ;
+    kw.fetch(reqMsg.words) ;
   }
 }
 

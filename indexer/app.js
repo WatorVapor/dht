@@ -115,7 +115,10 @@ const onSaveIndex = async (myhref,wordIndex,lang,title,txt,crawler) => {
     //console.log('onSaveIndex::wordIndex=<',wordIndex,'>');
     const address = kv.store(searchIndex);
     //console.log('onSaveIndex::address=<',address,'>');
-    kw.append(word,address,wordIndex.freq) ;
+    console.log('onSaveIndex::wordIndex[word].freq=<',wordIndex[word].freq,'>');
+    if(wordIndex[word].freq > 0) {
+      kw.append(word,address,wordIndex[word].freq);
+    }
   }  
   wai.clear();
   try {
