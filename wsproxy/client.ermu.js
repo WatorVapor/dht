@@ -32,29 +32,51 @@ const KeyValueStore = require('dht.mesh').KV;
 const kv = new KeyValueStore();
 //console.log('::.:: kv=<',kv,'>');
 
-kv.onData = (data) => {
-  console.log('kv.onData:: data=<',data,'>');
-}
-
-kw.onData = (data) => {
-  console.log('kw.onData:: data=<',data,'>'); 
-  if(data.content) {
-    fetchKValue(data.content);
+const gKValueReplyNemo = {};
+kv.onData = (data,tag) => {
+  //console.log('kv.onData:: data=<',data,'>');
+  //console.log('kv.onData:: tag=<',tag,'>');
+  //console.log('kw.onData:: gKValueReplyNemo=<',gKValueReplyNemo,'>'); 
+  const reqMsg = gKValueReplyNemo[tag];
+  if(tag && reqMsg) {
+    reqMsg.kvalue = data;
+    pubRedis.publish(channelDHT2WS,JSON.stringify(reqMsg));
+    delete gKValueReplyNemo[tag];
   }
 }
+
+const gKWordReplyNemo = {};
+kw.onData = (data,tag) => {
+  //console.log('kw.onData:: data=<',data,'>'); 
+  //console.log('kw.onData:: tag=<',tag,'>'); 
+  //console.log('kw.onData:: gKWordReplyNemo=<',gKWordReplyNemo,'>');
+  const reqMsg = gKWordReplyNemo[tag];
+  if(tag && reqMsg) {
+    if(data.content) {
+      fetchKValue(data.content,reqMsg);
+    }
+    reqMsg.kword = data;
+    pubRedis.publish(channelDHT2WS,JSON.stringify(reqMsg));
+    delete gKWordReplyNemo[tag];
+  }
+}
+
 
 const onReqKeyWord = (reqMsg)=> {
   console.log('onReqKeyWord::reqMsg=<',reqMsg,'>');
   if(reqMsg.words) {
     const replyTag = kw.fetch(reqMsg.words,reqMsg.begin) ;
     console.log('onReqKeyWord::replyTag=<',replyTag,'>');
+    gKWordReplyNemo[replyTag] = reqMsg;
   }
 }
 
-const fetchKValue = (contents) => {
+
+const fetchKValue = (contents,reqMsg) => {
   for(const address of contents) {
     console.log('fetchKValue:: address=<',address,'>');
     const replyTag = kv.fetch(address);
     console.log('fetchKValue::replyTag=<',replyTag,'>');
+    gKValueReplyNemo[replyTag.tag] = reqMsg;
   }
 }

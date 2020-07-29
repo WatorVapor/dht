@@ -9,7 +9,6 @@ docker rm ${DOCKER_MAME}
 docker run -d \
   -v /etc/group:/etc/group:ro \
   -v /etc/passwd:/etc/passwd:ro \
-  -v /storage/dhtfs/cluster:/storage/dhtfs/cluster \
   -v /dev/shm/:/dev/shm/ \
   -v ${PARENT_DiR}:${PARENT_DiR} \
   -u $(id -u $USER):$(id -g $USER) \

@@ -11,6 +11,6 @@
   "dependencies": {
     "ws": "^7.3.1",
     "redis": "^3.0.2",
-    "dht.mesh": "0.0.9"
+    "dht.mesh": "0.0.10"
   }
 }
