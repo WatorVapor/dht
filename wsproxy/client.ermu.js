@@ -45,15 +45,16 @@ kw.onData = (data) => {
 
 const onReqKeyWord = (reqMsg)=> {
   console.log('onReqKeyWord::reqMsg=<',reqMsg,'>');
-  //kw.fetch('empty',) ;
   if(reqMsg.words) {
-    kw.fetch(reqMsg.words) ;
+    const replyTag = kw.fetch(reqMsg.words,reqMsg.begin) ;
+    console.log('onReqKeyWord::replyTag=<',replyTag,'>');
   }
 }
 
 const fetchKValue = (contents) => {
-  for(const content of contents) {
-    console.log('fetchKValue:: content=<',content,'>');
-    kv.fetch(content);
+  for(const address of contents) {
+    console.log('fetchKValue:: address=<',address,'>');
+    const replyTag = kv.fetch(address);
+    console.log('fetchKValue::replyTag=<',replyTag,'>');
   }
 }
