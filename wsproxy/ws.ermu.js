@@ -55,7 +55,6 @@ const onRedisMsg = (channel, message) => {
       if(client) {
         client.send(JSON.stringify(jsonMsg));
       }
-      delete jsonMsg.cbtag;
     }
   } catch(e) {
     

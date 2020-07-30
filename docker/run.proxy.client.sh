@@ -6,7 +6,7 @@ echo "PARENT_DiR:=${PARENT_DiR}"
 DOCKER_MAME=ermu.proxy.client
 docker stop ${DOCKER_MAME}
 docker rm ${DOCKER_MAME}
-docker run -it \
+docker run -d \
   -v /etc/group:/etc/group:ro \
   -v /etc/passwd:/etc/passwd:ro \
   -v /dev/shm/:/dev/shm/ \
@@ -17,4 +17,4 @@ docker run -it \
   --memory=32M \
   --cpu-shares=128 \
   --name "${DOCKER_MAME}" \
-  node:lts node ./ws/client.ermu.js
+  node:lts node ./wsproxy/client.ermu.js

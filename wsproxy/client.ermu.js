@@ -38,8 +38,10 @@ kv.onData = (data,tag) => {
   //console.log('kv.onData:: tag=<',tag,'>');
   //console.log('kw.onData:: gKValueReplyNemo=<',gKValueReplyNemo,'>'); 
   const reqMsg = gKValueReplyNemo[tag];
+  //console.log('kv.onData:: reqMsg=<',reqMsg,'>');
   if(tag && reqMsg) {
     reqMsg.kvalue = data;
+    //console.log('kv.onData:: reqMsg=<',reqMsg,'>');
     pubRedis.publish(channelDHT2WS,JSON.stringify(reqMsg));
     delete gKValueReplyNemo[tag];
   }
@@ -53,7 +55,7 @@ kw.onData = (data,tag) => {
   const reqMsg = gKWordReplyNemo[tag];
   if(tag && reqMsg) {
     if(data.content) {
-      fetchKValue(data.content,reqMsg);
+      fetchKValue(data.content,Object.assign({},reqMsg));
     }
     reqMsg.kword = data;
     pubRedis.publish(channelDHT2WS,JSON.stringify(reqMsg));
@@ -66,7 +68,7 @@ const onReqKeyWord = (reqMsg)=> {
   console.log('onReqKeyWord::reqMsg=<',reqMsg,'>');
   if(reqMsg.words) {
     const replyTag = kw.fetch(reqMsg.words,reqMsg.begin) ;
-    console.log('onReqKeyWord::replyTag=<',replyTag,'>');
+    //console.log('onReqKeyWord::replyTag=<',replyTag,'>');
     gKWordReplyNemo[replyTag] = reqMsg;
   }
 }
@@ -76,7 +78,8 @@ const fetchKValue = (contents,reqMsg) => {
   for(const address of contents) {
     console.log('fetchKValue:: address=<',address,'>');
     const replyTag = kv.fetch(address);
-    console.log('fetchKValue::replyTag=<',replyTag,'>');
+    //console.log('fetchKValue::replyTag=<',replyTag,'>');
     gKValueReplyNemo[replyTag.tag] = reqMsg;
-  }
+    //console.log('fetchKValue::gKValueReplyNemo=<',gKValueReplyNemo,'>');
+ }
 }
