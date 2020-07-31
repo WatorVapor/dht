@@ -28,24 +28,6 @@ const KeyWordStore = require('dht.mesh').KW;
 const kw = new KeyWordStore();
 //console.log('::.:: kw=<',kw,'>');
 
-const KeyValueStore = require('dht.mesh').KV;
-const kv = new KeyValueStore();
-//console.log('::.:: kv=<',kv,'>');
-
-const gKValueReplyNemo = {};
-kv.onData = (data,tag) => {
-  //console.log('kv.onData:: data=<',data,'>');
-  //console.log('kv.onData:: tag=<',tag,'>');
-  //console.log('kw.onData:: gKValueReplyNemo=<',gKValueReplyNemo,'>'); 
-  const reqMsg = gKValueReplyNemo[tag];
-  //console.log('kv.onData:: reqMsg=<',reqMsg,'>');
-  if(tag && reqMsg) {
-    reqMsg.kvalue = data;
-    //console.log('kv.onData:: reqMsg=<',reqMsg,'>');
-    pubRedis.publish(channelDHT2WS,JSON.stringify(reqMsg));
-    delete gKValueReplyNemo[tag];
-  }
-}
 
 const gKWordReplyNemo = {};
 kw.onData = (data,tag) => {
@@ -83,3 +65,28 @@ const fetchKValue = (contents,reqMsg) => {
     //console.log('fetchKValue::gKValueReplyNemo=<',gKValueReplyNemo,'>');
  }
 }
+
+
+const KeyValueStore = require('dht.mesh').KV;
+const kv = new KeyValueStore();
+//console.log('::.:: kv=<',kv,'>');
+
+const gKValueReplyNemo = {};
+kv.onData = (data,tag) => {
+  console.log('kv.onData:: data=<',data,'>');
+  if(data.content) {
+    const jContents = JSON.parse(data.content);
+    data.content = jContents;
+    //console.log('kv.onData:: tag=<',tag,'>');
+    //console.log('kw.onData:: gKValueReplyNemo=<',gKValueReplyNemo,'>'); 
+    const reqMsg = gKValueReplyNemo[tag];
+    //console.log('kv.onData:: reqMsg=<',reqMsg,'>');
+    if(tag && reqMsg) {
+      reqMsg.kvalue = data;
+      //console.log('kv.onData:: reqMsg=<',reqMsg,'>');
+      pubRedis.publish(channelDHT2WS,JSON.stringify(reqMsg));
+      delete gKValueReplyNemo[tag];
+    }
+  }
+}
+
