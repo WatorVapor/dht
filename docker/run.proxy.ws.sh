@@ -17,4 +17,5 @@ docker run -d \
   --memory=32M \
   --cpu-shares=128 \
   --name "${DOCKER_MAME}" \
+  --restart=always \
   node:lts node ./wsproxy/ws.ermu.js
