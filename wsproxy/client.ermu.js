@@ -56,37 +56,60 @@ const onReqKeyWord = (reqMsg)=> {
 }
 
 
-const fetchKValue = (contents,reqMsg) => {
+const fetchKValue = async (contents,reqMsg) => {
   for(const address of contents) {
-    console.log('fetchKValue:: address=<',address,'>');
-    const replyTag = kv.fetch(address);
-    //console.log('fetchKValue::replyTag=<',replyTag,'>');
-    gKValueReplyNemo[replyTag.tag] = reqMsg;
-    //console.log('fetchKValue::gKValueReplyNemo=<',gKValueReplyNemo,'>');
+    //console.log('fetchKValue:: address=<',address,'>');
+    const promise = new Promise( (resolve, reject) =>{
+      const replyTag = kv.fetch(address);
+      //console.log('fetchKValue::replyTag=<',replyTag,'>');
+      gKValueReplyMemo[replyTag.tag] = reqMsg;
+      gKValueReplyPromise[replyTag.tag] = {resolve:resolve,reject:reject};
+      //console.log('fetchKValue::gKValueReplyMemo=<',gKValueReplyMemo,'>');
+      setTimeout(()=> {
+        const reqPromise = gKValueReplyPromise[replyTag.tag];
+        //console.log('kv.onData:: reqPromise=<',reqPromise,'>');
+        if(reqPromise) {
+          reqPromise.reject({timeout:true});
+          delete gKValueReplyPromise[replyTag.tag];
+        }
+      },30*1000)
+    });
+    //console.log('fetchKValue::promise=<',promise,'>');
+    const result = await promise;
+    //console.log('fetchKValue::result=<',result,'>');
  }
 }
+
 
 
 const KeyValueStore = require('dht.mesh').KV;
 const kv = new KeyValueStore();
 //console.log('::.:: kv=<',kv,'>');
 
-const gKValueReplyNemo = {};
+const gKValueReplyMemo = {};
+const gKValueReplyPromise = {};
 kv.onData = (data,tag) => {
-  console.log('kv.onData:: data=<',data,'>');
+  //console.log('kv.onData:: data=<',data,'>');
+  //console.log('kv.onData:: tag=<',tag,'>');
   if(data.content) {
     const jContents = JSON.parse(data.content);
     data.content = jContents;
     //console.log('kv.onData:: tag=<',tag,'>');
-    //console.log('kw.onData:: gKValueReplyNemo=<',gKValueReplyNemo,'>'); 
-    const reqMsg = gKValueReplyNemo[tag];
+    //console.log('kw.onData:: gKValueReplyMemo=<',gKValueReplyMemo,'>'); 
+    const reqMsg = gKValueReplyMemo[tag];
     //console.log('kv.onData:: reqMsg=<',reqMsg,'>');
     if(tag && reqMsg) {
       reqMsg.kvalue = data;
       //console.log('kv.onData:: reqMsg=<',reqMsg,'>');
       pubRedis.publish(channelDHT2WS,JSON.stringify(reqMsg));
-      delete gKValueReplyNemo[tag];
+      delete gKValueReplyMemo[tag];
     }
+  }
+  const reqPromise = gKValueReplyPromise[tag];
+  //console.log('kv.onData:: reqPromise=<',reqPromise,'>');
+  if(reqPromise) {
+    reqPromise.resolve();
+    delete gKValueReplyPromise[tag];
   }
 }
 
