@@ -14,7 +14,7 @@ docker run -d \
   -u $(id -u $USER):$(id -g $USER) \
   -w ${PARENT_DiR} \
   --net host \
-  --memory=32M \
+  --memory=128M \
   --cpu-shares=128 \
   --name "${DOCKER_MAME}" \
   --restart=always \
