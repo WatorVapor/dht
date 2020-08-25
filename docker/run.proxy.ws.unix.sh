@@ -9,7 +9,8 @@ docker rm ${DOCKER_MAME}
 docker run -d \
   -v /etc/group:/etc/group:ro \
   -v /etc/passwd:/etc/passwd:ro \
-  -v /dev/shm/:/dev/shm/ \
+  -v /dev/shm:/dev/shm \
+  -v /tmp/wator/wss:/tmp/wator/wss \
   -v ${PARENT_DiR}:${PARENT_DiR} \
   -u $(id -u $USER):$(id -g $USER) \
   -w ${PARENT_DiR} \

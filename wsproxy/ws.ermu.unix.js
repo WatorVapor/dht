@@ -5,7 +5,9 @@ const { execSync } = require('child_process')
 
 const crypto = require('crypto');
 
-const socketPath = '/tmp/wator/ermu.wator.xyz' ;
+fs.mkdirSync('/tmp/wator/wss/', { recursive: true });
+const socketPath = '/tmp/wator/wss/ermu.wator.xyz' ;
+fs.mkdirSync('/tmp/wator/wss/', { recursive: true });
 fs.existsSync(socketPath) && fs.unlinkSync(socketPath);
 const hs = http.createServer();
 hs.listen(socketPath, () => {
