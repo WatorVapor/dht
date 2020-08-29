@@ -31,17 +31,17 @@ const kw = new KeyWordStore();
 
 const gKWordReplyMemo = {};
 kw.onData = (data,tag) => {
-  //console.log('kw.onData:: data=<',data,'>'); 
+  console.log('kw.onData:: data=<',data,'>'); 
   //console.log('kw.onData:: tag=<',tag,'>'); 
   //console.log('kw.onData:: gKWordReplyMemo=<',gKWordReplyMemo,'>');
   const reqMsg = gKWordReplyMemo[tag];
   if(tag && reqMsg) {
-    if(data.content) {
+    if(data.content.length > 0) {
       fetchKValue(data.content,Object.assign({},reqMsg));
+      delete gKWordReplyMemo[tag];
     }
     reqMsg.kword = data;
     pubRedis.publish(channelDHT2WS,JSON.stringify(reqMsg));
-    delete gKWordReplyMemo[tag];
   }
 }
 
