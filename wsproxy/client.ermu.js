@@ -29,19 +29,19 @@ const kw = new KeyWordStore();
 //console.log('::.:: kw=<',kw,'>');
 
 
-const gKWordReplyNemo = {};
+const gKWordReplyMemo = {};
 kw.onData = (data,tag) => {
   //console.log('kw.onData:: data=<',data,'>'); 
   //console.log('kw.onData:: tag=<',tag,'>'); 
-  //console.log('kw.onData:: gKWordReplyNemo=<',gKWordReplyNemo,'>');
-  const reqMsg = gKWordReplyNemo[tag];
+  //console.log('kw.onData:: gKWordReplyMemo=<',gKWordReplyMemo,'>');
+  const reqMsg = gKWordReplyMemo[tag];
   if(tag && reqMsg) {
     if(data.content) {
       fetchKValue(data.content,Object.assign({},reqMsg));
     }
     reqMsg.kword = data;
     pubRedis.publish(channelDHT2WS,JSON.stringify(reqMsg));
-    delete gKWordReplyNemo[tag];
+    delete gKWordReplyMemo[tag];
   }
 }
 
@@ -51,7 +51,7 @@ const onReqKeyWord = (reqMsg)=> {
   if(reqMsg.words) {
     const replyTag = kw.fetch(reqMsg.words,reqMsg.begin) ;
     //console.log('onReqKeyWord::replyTag=<',replyTag,'>');
-    gKWordReplyNemo[replyTag] = reqMsg;
+    gKWordReplyMemo[replyTag] = reqMsg;
   }
 }
 
@@ -72,11 +72,11 @@ const fetchKValue = async (contents,reqMsg) => {
           reqPromise.reject({timeout:true});
           delete gKValueReplyPromise[replyTag.tag];
         }
-      },30*1000)
+      },5*1000)
     });
     //console.log('fetchKValue::promise=<',promise,'>');
     const result = await promise;
-    //console.log('fetchKValue::result=<',result,'>');
+    console.log('fetchKValue::result=<',result,'>');
  }
 }
 
@@ -92,8 +92,15 @@ kv.onData = (data,tag) => {
   //console.log('kv.onData:: data=<',data,'>');
   //console.log('kv.onData:: tag=<',tag,'>');
   if(data.content) {
-    const jContents = JSON.parse(data.content);
-    data.content = jContents;
+    try {
+      if( typeof data.content === 'string') {
+        const jContents = JSON.parse(data.content);
+        data.content = jContents;
+      }
+    } catch(err) {
+      console.log('kv.onData:: err=<',err,'>');
+      console.log('kv.onData:: data.content=<',data.content,'>');
+    }
     //console.log('kv.onData:: tag=<',tag,'>');
     //console.log('kw.onData:: gKValueReplyMemo=<',gKValueReplyMemo,'>'); 
     const reqMsg = gKValueReplyMemo[tag];

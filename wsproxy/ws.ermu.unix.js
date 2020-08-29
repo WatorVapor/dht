@@ -23,11 +23,6 @@ wss.on('connection', (ws) => {
   onConnected(ws);
 });
 
-
-wss.on('connection', (ws) => {
-  onConnected(ws);
-});
-
 const onConnected = (ws) => {
   ws.on('message', (message) => {
     onWSMsg(message,ws);
