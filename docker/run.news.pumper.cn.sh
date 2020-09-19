@@ -18,4 +18,5 @@ docker run -d \
   --memory=128M \
   --cpu-shares=256 \
   --name "${DOCKER_MAME}" \
+  -e TZ=Asia/Tokyo \
   node:lts node ./news_pumper/appCN.js

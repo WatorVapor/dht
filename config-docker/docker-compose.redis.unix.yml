@@ -1,11 +1,13 @@
 version: '3'
 services:
   redis:
-    image: redis
+    image: redis:6
     volumes:
       - ./redis/redis.conf:/opt/redis/redis.conf
       - /dev/shm:/dev/shm
     command: redis-server /opt/redis/redis.conf
+    environment:
+      TZ: Asia/Tokyo
     deploy:
       resources:
         limits:

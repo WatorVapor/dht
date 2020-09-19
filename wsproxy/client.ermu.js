@@ -32,6 +32,7 @@ const kw = new KeyWordStore();
 const gKWordReplyMemo = {};
 kw.onData = (data,tag) => {
   console.log('kw.onData:: data=<',data,'>'); 
+  console.log('kw.onData:: tag=<',tag,'>'); 
   //console.log('kw.onData:: tag=<',tag,'>'); 
   //console.log('kw.onData:: gKWordReplyMemo=<',gKWordReplyMemo,'>');
   const reqMsg = gKWordReplyMemo[tag];
