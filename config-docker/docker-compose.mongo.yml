@@ -1,0 +1,20 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:bionic
+    volumes:
+      - /storage/dhtfs/cluster/dht_mesh_daemon/kword_store_mongodb:/data/db
+      - /dev/shm:/dev/shm
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: EBWzun82iVjW
+      MONGO_INITDB_ROOT_PASSWORD: RNQCeZn2aqqR
+    ports:
+      - 127.0.0.1:27018:27017
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+        reservations:
+          cpus: '0.4'
+          memory: 128M
