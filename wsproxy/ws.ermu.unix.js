@@ -5,7 +5,7 @@ const { execSync } = require('child_process')
 
 const crypto = require('crypto');
 
-const socketPath = '/dev/shm/wss.api.wator.xyz' ;
+const socketPath = '/dev/shm/wss.ermu.wator.xyz' ;
 fs.existsSync(socketPath) && fs.unlinkSync(socketPath);
 const hs = http.createServer();
 hs.listen(socketPath, () => {
