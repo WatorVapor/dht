@@ -23,9 +23,9 @@ const WaiIndexBot = require('./wai/wai.indexbot.js');
 const wai = new WaiIndexBot();
 const WaiIndexLinkCacheMax = 20;
 
-const KVFolder = require('dht.mesh').KVFolder;
-//console.log('::KVFolder=<',KVFolder,'>');
-const db = new KVFolder('/storage/dhtfs/cluster/news_pumper/cn/news_discovery_db');
+const KVContent = require('dht.mesh').KVContent;
+//console.log('::KVContent=<',KVContent,'>');
+const db = new KVContent('/storage/dhtfs/cluster/news_pumper/cn/news_discovery_db');
 
 const gNewMessageLinks = [];
 const onDiscoveryNewLink = (msg) => {
@@ -52,9 +52,8 @@ const onLearnNewLink = () => {
     const href = msgJson.href;
     //console.log('onLearnNewLink::href=<',href,'>');
     //console.log('onLearnNewLink:: gNewMessageLinks=<',gNewMessageLinks,'>');
-    const value = db.get(href);
-    console.log('onLearnNewLink::value=<',value,'>');
-    const jsValue = JSON.parse(value);
+    const jsValue = db.get(href);
+    console.log('onLearnNewLink::jsValue=<',jsValue,'>');
     if(jsValue.indexer) {
       setTimeout(onLearnNewLink,1000);
       return;
