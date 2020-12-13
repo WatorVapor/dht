@@ -6,7 +6,7 @@ echo "PARENT_DiR:=${PARENT_DiR}"
 DOCKER_MAME=ermu.proxy.ws.unix
 docker stop ${DOCKER_MAME}
 docker rm ${DOCKER_MAME}
-docker run -d \
+nohup docker run -d \
   -v /etc/group:/etc/group:ro \
   -v /etc/passwd:/etc/passwd:ro \
   -v /dev/shm:/dev/shm \

@@ -1,37 +1,17 @@
 version: '3'
 services:
-  daemon:
+  proxyWS:
     image: node:lts
     volumes:
       - ../:/opt/app
-      - /storage/dhtfs/cluster:/storage/dhtfs/cluster
       - /dev/shm:/dev/shm
     working_dir: "/opt/app/cli"
-    command: node ./redis.daemon_proxy.js
-    networks:
-      - outside
+    command: node ./wsproxy/ws.ermu.unix.js
     deploy:
       resources:
         limits:
           cpus: '1.00'
           memory: 256M
-        reservations:
-          cpus: '0.1'
-          memory: 16M
-  redis_dht:
-    image: node:lts
-    volumes:
-      - ../:/opt/app
-      - /dev/shm:/dev/shm
-    working_dir: "/opt/app/cli"
-    command: node ./redis.dht.js
-    networks:
-      - outside
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 32M
         reservations:
           cpus: '0.1'
           memory: 16M
