@@ -5,7 +5,7 @@ services:
     volumes:
       - ../:/opt/app
       - /dev/shm:/dev/shm
-    working_dir: "/opt/app/cli"
+    working_dir: "/opt/app"
     command: node ./wsproxy/ws.ermu.unix.js
     deploy:
       resources:
